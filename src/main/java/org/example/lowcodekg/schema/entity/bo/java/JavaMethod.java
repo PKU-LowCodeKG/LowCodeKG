@@ -23,7 +23,17 @@ public class JavaMethod {
     private String description;
 
     /**
-     * 参数列表
+     * 方法参数列表
      */
-    private List<String> params;
+    private List<Param> params;
+
+
+}
+
+class Param {
+
+    private String name;
+
+    private String type;
+
 }
