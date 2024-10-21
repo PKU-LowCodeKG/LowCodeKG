@@ -30,4 +30,11 @@ public class ConfigItemEntity {
     @Property("description")
     private String description;
 
+    public ConfigItemEntity(String code, String type, String defaultValue, String description) {
+        this.code = code;
+        this.type = type;
+        this.defaultValue = defaultValue;
+        this.description = description;
+    }
+
 }

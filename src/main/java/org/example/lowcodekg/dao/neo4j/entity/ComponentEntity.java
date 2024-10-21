@@ -5,6 +5,7 @@ import org.example.lowcodekg.schema.constant.ComponentCategory;
 import org.example.lowcodekg.schema.constant.SceneLabel;
 import org.springframework.data.neo4j.core.schema.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,11 +36,18 @@ public class ComponentEntity {
      * 组件对组件的依赖
      */
     @Relationship(type = "DEPENDENCY", direction = Relationship.Direction.OUTGOING)
-    private List<ComponentEntity> relatedComponents;
+    private List<ComponentEntity> relatedComponents = new ArrayList<>();
 //    private Component relatedComponent;
 
     @Relationship(type = "CONTAIN", direction = Relationship.Direction.OUTGOING)
-    private List<ConfigItemEntity> containedConfigItems;
+    private List<ConfigItemEntity> containedConfigItems = new ArrayList<>();
+
+    public ComponentEntity(String name, ComponentCategory category, SceneLabel sceneLabel, String description) {
+        this.name = name;
+        this.category = category;
+        this.sceneLabel = sceneLabel;
+        this.description = description;
+    }
 
 
 }
