@@ -1,7 +1,5 @@
 package org.example.lowcodekg;
 
-import org.example.lowcodekg.dao.neo4j.entity.ComponentEntity;
-import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 import org.example.lowcodekg.schema.constant.ComponentCategory;
