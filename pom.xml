@@ -59,10 +59,20 @@
             <artifactId>neo4j</artifactId>
             <version>5.1.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-rest-webmvc -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-rest-webmvc</artifactId>
+            <version>4.3.4</version>
+        </dependency>
         <dependency>
             <groupId>args4j</groupId>
             <artifactId>args4j</artifactId>
             <version>2.33</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
         </dependency>
     </dependencies>
 

@@ -5,11 +5,16 @@ import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.ExplicitBooleanOptionHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.File;
 
+@EnableTransactionManagement
+@EnableNeo4jRepositories
 @SpringBootApplication
 public class LowCodeKgApplication {
 
@@ -46,6 +51,6 @@ class CmdOption {
     @Option(name = "-gen", usage = "Generate a knowledge graph according to the yaml configure file")
     public String genConfigPath = null;
 
-    @Option(name = "-exec", usage = "Run the web application in localhost")
+    @Option(name = "-exec", usage = "Run the web application in localhost", handler = ExplicitBooleanOptionHandler.class)
     public boolean exec = false;
 }
