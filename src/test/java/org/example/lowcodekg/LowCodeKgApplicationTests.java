@@ -1,5 +1,7 @@
 package org.example.lowcodekg;
 
+import org.example.lowcodekg.dao.neo4j.entity.Component;
+import org.example.lowcodekg.dao.neo4j.entity.ConfigItem;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 import org.example.lowcodekg.schema.constant.ComponentCategory;
@@ -29,17 +31,17 @@ class LowCodeKgApplicationTests {
         componentRepo.deleteAll();
         configItemRepo.deleteAll();
 
-        ComponentEntity component = new ComponentEntity(
+        Component component = new Component(
                  "单选框",
                  ComponentCategory.UI_COMPONENT,
                  SceneLabel.ECOMMERCE,
                  "用于在多个备选项中选中单个状态。");
-        ConfigItemEntity configItem1 = new ConfigItemEntity(
+        ConfigItem configItem1 = new ConfigItem(
                 "autoFocus",
                 "boolean",
                 "false",
                 "自动获取焦点");
-        ConfigItemEntity configItem2 = new ConfigItemEntity(
+        ConfigItem configItem2 = new ConfigItem(
                 "checked",
                 "boolean",
                 "false",
@@ -53,10 +55,10 @@ class LowCodeKgApplicationTests {
         componentRepo.save(component);
         configItemRepo.saveAll(component.getContainedConfigItems());
 
-        List<ComponentEntity> components = componentRepo.findByNameContaining("单选");
+        List<Component> components = componentRepo.findByNameContaining("单选");
         System.out.println("查询名字包含[单选]的ComponentEntity: " + components);
 
-        List<ConfigItemEntity> configItems = componentRepo.findConfigItemsByComponentName("单选框");
+        List<ConfigItem> configItems = configItemRepo.findConfigItemsByComponentName("单选框");
         System.out.println("查询名字为[单选框]的组件包含的ConfigItemEntity: " + configItems);
     }
 

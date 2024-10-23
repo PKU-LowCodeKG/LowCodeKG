@@ -18,7 +18,7 @@ public class ComponentService {
     public void relateConfig(Long componentId, Long configItemId) {
         Component component = componentRepo.findById(componentId).orElseThrow();
         ConfigItem configItem = configItemRepo.findById(configItemId).orElseThrow();
-        component.getRelateConfigItems().add(configItem);
+        component.getContainedConfigItems().add(configItem);
         componentRepo.save(component);
     }
 }
