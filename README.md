@@ -5,9 +5,7 @@
 ## 环境配置
 JDK 17 \
 Spring Boot 3.3.4 \
-Maven 3.9.9 \
-Neo4j 5.1.0 \
-ES
+Maven 3.9.9
 
 ### neo4j配置
 使用docker配置，neo4j版本为5.24
