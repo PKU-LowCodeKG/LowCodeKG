@@ -1,20 +1,20 @@
 package org.example.lowcodekg.schema.constant;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public enum SceneLabel {
 
-    ECOMMERCE("电商"),
+    ECOMMERCE("电商", "ecommerce"),
 
-    FINANCE("金融"),
+    FINANCE("金融", "finance"),
 
-    EDUCATION("教育"),
+    EDUCATION("教育", "education"),
 
-    ENTERTAINMENT("娱乐"),
+    ENTERTAINMENT("娱乐", "entertainment"),
 
-    OTHER("其他");
+    OTHER("其他", "other");
 
      private String label;
-
-     SceneLabel(String label) {
-         this.label = label;
-     }
+     private String code;
 }
