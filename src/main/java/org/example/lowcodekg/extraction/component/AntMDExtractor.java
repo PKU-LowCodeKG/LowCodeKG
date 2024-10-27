@@ -1,4 +1,4 @@
-package org.example.lowcodekg.extraction.markdown;
+package org.example.lowcodekg.extraction.component;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -7,14 +7,12 @@ import java.nio.file.Paths;
 
 import java.util.*;
 
+import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
+import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.schema.constant.ComponentCategory;
-import org.example.lowcodekg.schema.constant.SceneLabel;
 import org.example.lowcodekg.schema.entity.Component;
-import org.example.lowcodekg.schema.entity.ConfigItem;
-
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Markdown文件解析 AntDesign专用
@@ -37,25 +35,21 @@ import lombok.Setter;
  * 3. 配置项信息中存在一些较复杂的内容形式, 目前统一以字符串形式保存.
  * 
  */
+@Service
 public class AntMDExtractor extends KnowledgeExtractor {
+
+    @Autowired
+    private ComponentRepo componentRepo;
+    @Autowired
+    private ConfigItemRepo configItemRepo;
+
     // extract results
     public ArrayList<RawData> dataList = new ArrayList<RawData>();
 
     // private variables for extracting
     private String WorkDir;     // temp sub-directory for current component
     private int lineNum;        // temp couter for current line number
-    
-    // Test function
-    public static void main(String[] args) {
-        System.out.println("Testing AntMDExtractor.");
-        AntMDExtractor test = new AntMDExtractor();
-        test.setDataDir("E:\\test\\ant-design-master\\components");
-        test.extraction();
-        for (int i = 0; i < test.dataList.size(); i++) {
-            // Debug: output extracted info
-            // test.dataList.get(i).Test();
-        }
-    }
+
 
     @Override
     public void extraction() {
@@ -64,15 +58,18 @@ public class AntMDExtractor extends KnowledgeExtractor {
             if (!Files.exists(Paths.get(this.getDataDir(), folders[i].getName(), "index.zh-CN.md"))) {
                 System.err.println(".md File Not Found (May not component): " + folders[i].getName());
                 continue;
-            }
-            else {
+            } else {
                 RawData data = new RawData();
                 WorkDir = this.getDataDir() + "/" + folders[i].getName();
                 parseComponent(WorkDir + "/index.zh-CN.md", data);
                 dataList.add(data);
             }
         }
-
+        // 转化为 Schema 对象
+        for(RawData data: dataList) {
+            Component component = data.convertToComponent();
+            component.storeInNeo4j(componentRepo, configItemRepo);
+        }
         return;
     }
 
@@ -201,155 +198,4 @@ public class AntMDExtractor extends KnowledgeExtractor {
         }
     }
 
-}
-
-class RawData {
-    @Getter
-    @Setter
-    private String name;
-
-    @Getter
-    @Setter
-    private String name_CN;
-
-    @Getter
-    @Setter
-    private String category;
-
-    @Getter
-    @Setter
-    private String sceneLabel;
-
-    @Getter
-    @Setter
-    private String description = "";
-
-    @Getter
-    @Setter
-    private String usage = "";
-
-    @Getter
-    private ArrayList<CodeDemo> codeDemos = new ArrayList<CodeDemo>();
-
-    @Getter
-    private ArrayList<RawConfigItem> configItems = new ArrayList<RawConfigItem>();
-
-    // Test function for RawData
-    public void Test() {
-        System.out.println("name = " + name);
-        System.out.println("name_CN = " + name_CN);
-        System.out.println("category = " + category);
-        System.out.println("sceneLabel = " + sceneLabel);
-        System.out.println("description = " + description);
-        System.out.println("usage = " + usage);
-        for (int i = 0; i < codeDemos.size(); i++) {
-            codeDemos.get(i).Test();
-        }
-        for (int i = 0; i < configItems.size(); i++) {
-            configItems.get(i).Test();
-        }
-    }
-
-    public void toComponent(Component component) {
-        component.setName(name);
-        component.setCategory(ComponentCategory.UI_COMPONENT);
-        // TODO: parse category from data info
-        component.setSceneLabel(SceneLabel.OTHER);
-        component.setDescription(description);
-        return;
-    }
-
-}
-
-class CodeDemo {
-    @Getter
-    @Setter
-    private String name;
-
-    @Getter
-    @Setter
-    private String name_CN;
-    
-    @Getter
-    @Setter
-    private String code = "";
-
-    @Getter
-    @Setter
-    private String description = "";
-
-
-    public CodeDemo(String name) {
-        this.name = name;
-    }
-
-    public void parseCode(String fileName) {
-        try {
-            List<String> lines = Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
-            for (int i = 0; i < lines.size(); i++) {
-                code += (lines.get(i) + "\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void parseDescription(String fileName) {
-        try {
-            List<String> lines = Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
-            for (int i = 0; i < lines.size(); i++) {
-                description += (lines.get(i) + "\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Test function for CodeDemo
-    public void Test() {
-        System.out.println("name = " + name);
-        System.out.println("name_CN = " + name_CN);
-        System.out.println("code = " + code);
-        System.out.println("description = " + description);
-    }
-
-}
-
-class RawConfigItem {
-    @Getter
-    @Setter
-    private String name;
-
-    @Getter
-    @Setter
-    private String description;
-
-    @Getter
-    @Setter
-    private String type;
-
-    @Getter
-    @Setter
-    private String defaultValue;
-
-    @Getter
-    @Setter
-    private String version;
-
-    // Test function for RawConfigItem
-    public void Test() {
-        System.out.println("name = " + name);
-        System.out.println("description = " + description);
-        System.out.println("type = " + type);
-        System.out.println("defaultValue = " + defaultValue);
-        System.out.println("version = " + version);
-    }
-
-    public void toConfigItem(ConfigItem configItem) {
-        configItem.setCode(name);
-        configItem.setDefaultValue(defaultValue);
-        configItem.setDescription(description);
-        configItem.setType(type);
-        return;
-    }
 }

@@ -1,7 +1,7 @@
 package org.example.lowcodekg.service;
 
-import org.example.lowcodekg.dao.neo4j.entity.Component;
-import org.example.lowcodekg.dao.neo4j.entity.ConfigItem;
+import org.example.lowcodekg.dao.neo4j.entity.ComponentEntity;
+import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,9 @@ public class ComponentService {
     private ConfigItemRepo configItemRepo;
 
     public void relateConfig(Long componentId, Long configItemId) {
-        Component component = componentRepo.findById(componentId).orElseThrow();
-        ConfigItem configItem = configItemRepo.findById(configItemId).orElseThrow();
-        component.getContainedConfigItems().add(configItem);
-        componentRepo.save(component);
+        ComponentEntity componentEntity = componentRepo.findById(componentId).orElseThrow();
+        ConfigItemEntity configItemEntity = configItemRepo.findById(configItemId).orElseThrow();
+        componentEntity.getContainedConfigItemEntities().add(configItemEntity);
+        componentRepo.save(componentEntity);
     }
 }

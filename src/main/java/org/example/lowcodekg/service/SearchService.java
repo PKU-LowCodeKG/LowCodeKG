@@ -1,11 +1,11 @@
 package org.example.lowcodekg.service;
 
-import org.example.lowcodekg.dao.neo4j.entity.Component;
+import org.example.lowcodekg.dao.neo4j.entity.ComponentEntity;
 
 import java.util.List;
 
 public interface SearchService {
-    public List<Component> searchComponentsByName(String name);
+    public List<ComponentEntity> searchComponentsByName(String name);
 
-    public List<Component> getConfigItemsByComponentName(String name);
+    public List<ComponentEntity> getConfigItemsByComponentName(String name);
 }

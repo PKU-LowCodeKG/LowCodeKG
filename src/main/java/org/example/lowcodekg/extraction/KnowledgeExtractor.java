@@ -3,6 +3,8 @@ package org.example.lowcodekg.extraction;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -14,6 +16,7 @@ import java.util.Map;
 /**
  * 定义知识挖掘的抽象类
  */
+@Service
 public abstract class KnowledgeExtractor {
 
     @Getter
@@ -70,7 +73,7 @@ public abstract class KnowledgeExtractor {
 
     public static void main(String[] args) {
         try {
-            KnowledgeExtractor.executeFromYaml(FileUtils.readFileToString(new File(args[0]), "utf-8"));
+            KnowledgeExtractor.executeFromYaml(FileUtils.readFileToString(new File("/Users/chang/Documents/projects/LowCodeKG/config.yml"), "utf-8"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -79,11 +82,6 @@ public abstract class KnowledgeExtractor {
     public abstract void extraction();
 
     public void execute() throws IOException {
-        //TODO: neo4j config
-        // create neo4j db connection
-
         this.extraction();
-
-        // shutdown
     }
 }

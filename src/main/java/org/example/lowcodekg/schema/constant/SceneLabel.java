@@ -1,6 +1,8 @@
 package org.example.lowcodekg.schema.constant;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
 public enum SceneLabel {
@@ -13,8 +15,16 @@ public enum SceneLabel {
 
     ENTERTAINMENT("娱乐", "entertainment"),
 
-    OTHER("其他", "other");
+    GENERAL("通用", "general");
 
-     private String label;
-     private String code;
+    @Getter
+    @Setter
+    private String label;
+    @Getter
+    @Setter
+    private String code;
+
+    public static SceneLabel setByCode(String code) {
+        return GENERAL;
+    }
 }

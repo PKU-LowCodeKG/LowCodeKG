@@ -1,6 +1,8 @@
 package org.example.lowcodekg.schema.entity;
 
 import lombok.Data;
+import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
+import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 import org.neo4j.graphdb.Label;
 
 /**
@@ -8,7 +10,6 @@ import org.neo4j.graphdb.Label;
  */
 @Data
 public class ConfigItem {
-    private static final Label label = Label.label("ConfigItem");
 
     /**
      * 配置项标识符
@@ -29,4 +30,19 @@ public class ConfigItem {
      * 配置项描述
      */
     private String description;
+
+    public void storeInNeo4j(ConfigItemRepo configItemRepo) {
+        try {
+            ConfigItemEntity configEntity = new ConfigItemEntity();
+            configEntity.setCode(code);
+            configEntity.setType(type);
+            configEntity.setDefaultValue(defaultValue);
+            configEntity.setDescription(description);
+            // 存储配置项节点
+            configItemRepo.save(configEntity);
+        } catch (Exception e) {
+            System.err.println("Error in storeInNeo4j: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

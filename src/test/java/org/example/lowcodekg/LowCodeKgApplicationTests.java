@@ -1,11 +1,13 @@
 package org.example.lowcodekg;
 
-import org.example.lowcodekg.dao.neo4j.entity.Component;
-import org.example.lowcodekg.dao.neo4j.entity.ConfigItem;
+import org.example.lowcodekg.dao.neo4j.entity.ComponentEntity;
+import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 import org.example.lowcodekg.schema.constant.ComponentCategory;
+import org.example.lowcodekg.schema.constant.FunctionalityCategory;
 import org.example.lowcodekg.schema.constant.SceneLabel;
+import org.example.lowcodekg.schema.entity.Category;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,35 +33,38 @@ class LowCodeKgApplicationTests {
         componentRepo.deleteAll();
         configItemRepo.deleteAll();
 
-        Component component = new Component(
+        Category category = new Category();
+        category.setFunctionalityCategory(FunctionalityCategory.FORM);
+        category.setSceneLabel(SceneLabel.ECOMMERCE);
+
+        ComponentEntity componentEntity = new ComponentEntity(
                  "单选框",
-                 ComponentCategory.UI_COMPONENT,
-                 SceneLabel.ECOMMERCE,
+                 "component",
                  "用于在多个备选项中选中单个状态。");
-        ConfigItem configItem1 = new ConfigItem(
+        ConfigItemEntity configItemEntity1 = new ConfigItemEntity(
                 "autoFocus",
                 "boolean",
                 "false",
                 "自动获取焦点");
-        ConfigItem configItem2 = new ConfigItem(
+        ConfigItemEntity configItemEntity2 = new ConfigItemEntity(
                 "checked",
                 "boolean",
                 "false",
                 "指定当前是否选中"
         );
 
-        component.getContainedConfigItems().add(configItem1);
-        component.getContainedConfigItems().add(configItem2);
-        System.out.println("目前component的配置项有： " + component.getContainedConfigItems());
+        componentEntity.getContainedConfigItemEntities().add(configItemEntity1);
+        componentEntity.getContainedConfigItemEntities().add(configItemEntity2);
+        System.out.println("目前component的配置项有： " + componentEntity.getContainedConfigItemEntities());
 
-        componentRepo.save(component);
-        configItemRepo.saveAll(component.getContainedConfigItems());
+        componentRepo.save(componentEntity);
+        configItemRepo.saveAll(componentEntity.getContainedConfigItemEntities());
 
-        List<Component> components = componentRepo.findByNameContaining("单选");
-        System.out.println("查询名字包含[单选]的ComponentEntity: " + components);
+        List<ComponentEntity> componentEntities = componentRepo.findByNameContaining("单选");
+        System.out.println("查询名字包含[单选]的ComponentEntity: " + componentEntities);
 
-        List<ConfigItem> configItems = configItemRepo.findConfigItemsByComponentName("单选框");
-        System.out.println("查询名字为[单选框]的组件包含的ConfigItemEntity: " + configItems);
+        List<ConfigItemEntity> configItemEntities = configItemRepo.findConfigItemsByComponentName("单选框");
+        System.out.println("查询名字为[单选框]的组件包含的ConfigItemEntity: " + configItemEntities);
     }
 
 }

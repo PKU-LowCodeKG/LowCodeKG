@@ -1,6 +1,8 @@
 package org.example.lowcodekg.schema.constant;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
 public enum FunctionalityCategory {
@@ -19,6 +21,14 @@ public enum FunctionalityCategory {
 
     FEEDBACK("反馈", "feedback");
 
+    @Getter
+    @Setter
     private String label;
+    @Getter
+    @Setter
     private String code;
+
+    public static FunctionalityCategory setByCode(String code) {
+        return GENERAL;
+    }
 }
