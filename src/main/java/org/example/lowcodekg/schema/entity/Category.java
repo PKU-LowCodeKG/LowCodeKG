@@ -30,6 +30,7 @@ public class Category {
     }
 
     public String toString() {
+        // TODO: 判空的处理
         JSONObject json = new JSONObject();
         try {
             json.put("functionalityCategory", functionalityCategory.getCode());

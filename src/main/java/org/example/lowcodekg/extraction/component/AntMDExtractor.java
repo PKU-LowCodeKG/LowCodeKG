@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Markdown文件解析 AntDesign专用
- * @param DataDir 以AntDesign的github仓库为输入, 需将@DataDir设置为[Folder:ant-design-master]的路径.
+ * DataDir 以AntDesign的github仓库为输入, 需将@DataDir设置为[Folder:ant-design-master]的路径.
  * 使用 public void extraction() 对指定路径的ant仓库进行解析.
  * 抽取结果将生成一组 "RawData" 的列表; 每个 "RawData" 对象对应一个组件, 里面包含了文档中给出的对应信息.
  * 
@@ -48,7 +48,7 @@ public class AntMDExtractor extends KnowledgeExtractor {
 
     // private variables for extracting
     private String WorkDir;     // temp sub-directory for current component
-    private int lineNum;        // temp couter for current line number
+    private int lineNum;        // temp counter for current line number
 
 
     @Override
