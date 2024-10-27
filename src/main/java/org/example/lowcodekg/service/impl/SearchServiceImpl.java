@@ -1,4 +1,4 @@
-package org.example.lowcodekg.search.impl;
+package org.example.lowcodekg.service.impl;
 
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.springframework.beans.factory.annotation.Autowired;

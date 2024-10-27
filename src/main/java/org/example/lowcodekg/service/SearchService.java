@@ -1,4 +1,4 @@
-package org.example.lowcodekg.search;
+package org.example.lowcodekg.service;
 
 import org.example.lowcodekg.dao.neo4j.entity.Component;
 
