@@ -45,6 +45,15 @@ public class Component {
     private List<Component> relatedComponents;
 
 
+    public Component() {}
+
+    public Component(ComponentEntity entity) {
+        this.name = entity.getName();
+        this.category = Category.setCategoryBy(entity.getCategory());
+        this.description = entity.getDescription();
+        this.containedConfigItems = entity.getContainedConfigItemEntities().stream().map(e -> new ConfigItem(e)).toList();
+    }
+
     /**
      * 将数据对象持久化到Neo4j
      */

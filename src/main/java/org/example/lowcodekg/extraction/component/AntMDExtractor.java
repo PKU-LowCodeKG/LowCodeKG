@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import java.util.*;
 
+import lombok.Getter;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
@@ -37,11 +38,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AntMDExtractor extends KnowledgeExtractor {
-
-    @Autowired
-    private ComponentRepo componentRepo;
-    @Autowired
-    private ConfigItemRepo configItemRepo;
 
     // extract results
     public ArrayList<RawData> dataList = new ArrayList<RawData>();
