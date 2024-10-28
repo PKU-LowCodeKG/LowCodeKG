@@ -29,6 +29,7 @@ public enum FunctionalityCategory {
     private String code;
 
     public static FunctionalityCategory setByCode(String code) {
+        // TODO:功能分类
         return GENERAL;
     }
 }
