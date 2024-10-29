@@ -2,6 +2,7 @@ package org.example.lowcodekg.controller;
 
 import org.example.lowcodekg.dao.neo4j.entity.Project;
 import org.example.lowcodekg.dto.Neo4jNode;
+import org.example.lowcodekg.dto.Neo4jRelation;
 import org.example.lowcodekg.schema.entity.Component;
 import org.example.lowcodekg.service.Neo4jGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,12 @@ public class Controller {
     @PostMapping("/node")
     synchronized public Neo4jNode node(@RequestParam("id") long id, @RequestParam("project") String project) {
         return neo4jGraphService.getNodeDetail(id);
+    }
+
+    @PostMapping("/relationList")
+    synchronized public List<Neo4jRelation> relationList(@RequestParam("id") long id,
+                                                         @RequestParam("project") String project) {
+        return neo4jGraphService.getRelationList(id);
     }
 
 }
