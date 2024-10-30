@@ -11,6 +11,7 @@ import org.neo4j.driver.types.Path;
 import org.neo4j.driver.types.Relationship;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;

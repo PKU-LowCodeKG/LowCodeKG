@@ -1,6 +1,5 @@
 package org.example.lowcodekg.controller;
 
-import org.example.lowcodekg.dao.neo4j.entity.Project;
 import org.example.lowcodekg.dto.Neo4jNode;
 import org.example.lowcodekg.dto.Neo4jRelation;
 import org.example.lowcodekg.dto.Neo4jSubGraph;
@@ -26,15 +25,6 @@ public class Controller {
     synchronized public List<Component> searchComponent(String keyword) {
 
         return null;
-    }
-
-    @RequestMapping(value = "/projects", method = {RequestMethod.GET})
-    public List<Project> searchProjects(){
-        List<Project> projects = new ArrayList<>();
-        projects.add(new Project("name1", "123"));
-        projects.add(new Project("name2", "123456"));
-
-        return projects;
     }
 
     @PostMapping("/node")

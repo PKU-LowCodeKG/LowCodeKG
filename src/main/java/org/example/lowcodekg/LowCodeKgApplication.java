@@ -40,6 +40,7 @@ public class LowCodeKgApplication {
                 ApplicationContext ctx = SpringApplication.run(LowCodeKgApplication.class, args);
                 KnowledgeExtractorService extractor = ctx.getBean(KnowledgeExtractorService.class);
                 extractor.execute(FileUtils.readFileToString(new File(option.genConfigPath), "utf-8"));
+                System.exit(0);
             }
 
         } catch (CmdLineException cle) {

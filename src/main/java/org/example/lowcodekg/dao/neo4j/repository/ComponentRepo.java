@@ -19,4 +19,7 @@ public interface ComponentRepo extends Neo4jRepository<ComponentEntity, Long> {
 
     @Query("MATCH (c:Component) WHERE c.name CONTAINS $key RETURN c")
     List<ComponentEntity> findByNameContaining(String key);
+
+    @Override
+    void deleteAll();
 }

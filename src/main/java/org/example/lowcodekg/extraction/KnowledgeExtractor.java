@@ -68,11 +68,8 @@ public abstract class KnowledgeExtractor {
             configs.add(new ExtractorConfig(key, graphDir, (String) ret.get(key)));
         }
         if (new File(graphDir).exists() && !increment){
-            try {
-                FileUtils.deleteDirectory(new File(graphDir));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            FileUtils.deleteDirectory(new File(graphDir));
+            componentRepo.deleteAll();
         }
         execute(configs);
     }
