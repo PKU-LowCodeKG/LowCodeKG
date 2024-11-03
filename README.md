@@ -26,7 +26,7 @@ docker run -d -p 7474:7474 -p 7687:7687 --name neo4j-5.24 -e "NEO4J_AUTH=neo4j/n
 
 
 ## 知识图谱 Schema
-![img.png](src/main/resources/static/img.png)
+![img.png](src/main/resources/static/img_v2.png)
 
 ## 数据源
 - [蚂蚁开源组件库](https://github.com/ant-design/ant-design)
