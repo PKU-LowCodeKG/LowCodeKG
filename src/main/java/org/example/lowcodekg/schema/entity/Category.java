@@ -4,6 +4,9 @@ import lombok.Data;
 import org.apache.shiro.util.CollectionUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.example.lowcodekg.schema.constant.DevMode;
+import org.example.lowcodekg.schema.constant.FrameWorkType;
+import org.example.lowcodekg.schema.constant.FrameworkType;
 import org.example.lowcodekg.schema.constant.FunctionalityCategory;
 import org.example.lowcodekg.schema.constant.SceneLabel;
 
@@ -26,6 +29,17 @@ public class Category {
      * 场景标签
      */
     private List<SceneLabel> sceneLabels;
+
+    /**
+     * 框架类别
+     */
+    private List<FrameworkType> frameWorkTypes;
+
+    /**
+     * 开发模式
+     */
+    private List<DevMode> devModes;
+
 
     public static Category setCategoryBy(String str) {
         Category category = new Category();

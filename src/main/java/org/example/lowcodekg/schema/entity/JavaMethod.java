@@ -1,4 +1,4 @@
-package org.example.lowcodekg.schema.entity.bo.java;
+package org.example.lowcodekg.schema.entity;
 
 import lombok.Data;
 

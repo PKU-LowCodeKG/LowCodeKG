@@ -8,11 +8,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public enum DevMode {
 
-    DATA("数据", "data"),
+    DATA("数据建模", "data"),
 
-    WORKFLOW("工作流", "workflow"),
+    WORKFLOW("工作流逻辑", "workflow"),
 
-    VIEW("界面", "view");
+    VIEW("界面组件", "view");
 
     @Setter
     @Getter

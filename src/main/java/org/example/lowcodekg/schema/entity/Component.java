@@ -25,6 +25,11 @@ public class Component {
     private String name;
 
     /**
+     * 组件中文名称
+     */
+    private String cnName;
+
+    /**
      * 组件类别，包括场景标签、功能分类等
      */
     private Category category;
