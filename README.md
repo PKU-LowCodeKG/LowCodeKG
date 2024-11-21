@@ -18,7 +18,7 @@ docker run -d -p 7474:7474 -p 7687:7687 --name neo4j-5.24 -e "NEO4J_AUTH=neo4j/n
 ```
 
 ### ES 配置
-
+使用 docker 配置
 
 ## 项目结构
 - controller: 前端请求处理，调用服务接口并返回
