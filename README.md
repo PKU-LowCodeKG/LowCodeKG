@@ -7,7 +7,7 @@ JDK 17 \
 Spring Boot 3.3.4 \
 Maven 3.9.9
 
-### neo4j 配置
+### neo4j配置
 使用docker配置，neo4j版本为5.24
 
 请提前准备一个文件夹{your_path}，用来挂载容器内的目录
@@ -18,7 +18,7 @@ docker run -d -p 7474:7474 -p 7687:7687 --name neo4j-5.24 -e "NEO4J_AUTH=neo4j/n
 ```
 
 ### ES 配置
-使用 docker 配置
+
 
 ## 项目结构
 - controller: 前端请求处理，调用服务接口并返回
@@ -29,7 +29,7 @@ docker run -d -p 7474:7474 -p 7687:7687 --name neo4j-5.24 -e "NEO4J_AUTH=neo4j/n
 
 
 ## 知识图谱 Schema
-![img.png](src/main/resources/static/img_v3.png)
+![img_v4.png](src/main/resources/static/img_v4.png)
 
 ## 数据源
 - [蚂蚁开源组件库](https://github.com/ant-design/ant-design)
