@@ -22,7 +22,7 @@ public class Workflow {
     /**
      * 后端类
      */
-    private List<Class> classList;
+    private List<JavaClass> classList;
 
     /**
      * 三方服务

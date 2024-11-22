@@ -5,9 +5,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class Method {
+public class JavaMethod {
 
     private String name;
+
+    private String fullName;
 
     private String returnType;
 

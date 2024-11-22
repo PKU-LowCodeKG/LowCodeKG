@@ -8,9 +8,11 @@ import java.util.List;
  * 领域实体类（Java 语言）
  */
 @Data
-public class Class {
+public class JavaClass {
 
     private String name;
+
+    private String fullName;
 
     private boolean isInterface;
 
@@ -25,8 +27,4 @@ public class Class {
     private String superClassType;
 
     private String superInterfaceType;
-
-    private List<Field> fieldList;
-
-    private List<Method> methodList;
 }

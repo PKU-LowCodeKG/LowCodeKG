@@ -1,9 +1,11 @@
 package org.example.lowcodekg.schema.entity.workflow;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class Field {
+@AllArgsConstructor
+public class JavaField {
 
     private String name;
 
