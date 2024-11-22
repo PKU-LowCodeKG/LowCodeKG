@@ -2,9 +2,7 @@ package org.example.lowcodekg.extraction.component;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.lowcodekg.schema.constant.ComponentCategory;
-import org.example.lowcodekg.schema.constant.SceneLabel;
-import org.example.lowcodekg.schema.entity.Category;
+import org.example.lowcodekg.schema.entity.category.Category;
 import org.example.lowcodekg.schema.entity.Component;
 import org.example.lowcodekg.schema.entity.ConfigItem;
 

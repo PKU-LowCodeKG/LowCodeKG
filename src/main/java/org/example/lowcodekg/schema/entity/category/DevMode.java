@@ -1,4 +1,4 @@
-package org.example.lowcodekg.schema.constant;
+package org.example.lowcodekg.schema.entity.category;
 
 
 import lombok.AllArgsConstructor;

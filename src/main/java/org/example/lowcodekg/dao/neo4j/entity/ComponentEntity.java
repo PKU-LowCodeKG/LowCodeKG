@@ -2,9 +2,6 @@ package org.example.lowcodekg.dao.neo4j.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.lowcodekg.schema.constant.ComponentCategory;
-import org.example.lowcodekg.schema.constant.SceneLabel;
-import org.example.lowcodekg.schema.entity.Category;
 import org.springframework.data.neo4j.core.schema.*;
 import org.springframework.data.neo4j.core.schema.Node;
 

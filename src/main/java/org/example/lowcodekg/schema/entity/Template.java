@@ -3,7 +3,7 @@ package org.example.lowcodekg.schema.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.neo4j.graphdb.Label;
+import org.example.lowcodekg.schema.entity.category.Category;
 
 import java.util.List;
 

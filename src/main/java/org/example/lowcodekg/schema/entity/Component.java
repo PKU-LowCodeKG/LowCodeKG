@@ -5,10 +5,7 @@ import org.example.lowcodekg.dao.neo4j.entity.ComponentEntity;
 import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
-import org.example.lowcodekg.schema.constant.ComponentCategory;
-import org.example.lowcodekg.schema.constant.SceneLabel;
-import org.neo4j.graphdb.Label;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.example.lowcodekg.schema.entity.category.Category;
 
 import java.util.ArrayList;
 import java.util.List;

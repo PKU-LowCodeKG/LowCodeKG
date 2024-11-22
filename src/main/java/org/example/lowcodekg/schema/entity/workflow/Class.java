@@ -1,12 +1,14 @@
-package org.example.lowcodekg.schema.entity;
+package org.example.lowcodekg.schema.entity.workflow;
 
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * 领域实体类（Java 语言）
  */
 @Data
-public class JavaClass {
+public class Class {
 
     private String name;
 
@@ -23,4 +25,8 @@ public class JavaClass {
     private String superClassType;
 
     private String superInterfaceType;
+
+    private List<Field> fieldList;
+
+    private List<Method> methodList;
 }

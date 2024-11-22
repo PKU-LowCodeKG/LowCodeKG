@@ -1,11 +1,11 @@
-package org.example.lowcodekg.schema.entity;
+package org.example.lowcodekg.schema.entity.workflow;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class JavaMethod {
+public class Method {
 
     private String name;
 

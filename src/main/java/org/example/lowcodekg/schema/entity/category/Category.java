@@ -1,16 +1,11 @@
-package org.example.lowcodekg.schema.entity;
+package org.example.lowcodekg.schema.entity.category;
 
 import lombok.Data;
 import org.apache.shiro.util.CollectionUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.example.lowcodekg.schema.constant.DevMode;
 import org.example.lowcodekg.schema.constant.FrameWorkType;
-import org.example.lowcodekg.schema.constant.FrameworkType;
-import org.example.lowcodekg.schema.constant.FunctionalityCategory;
-import org.example.lowcodekg.schema.constant.SceneLabel;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
