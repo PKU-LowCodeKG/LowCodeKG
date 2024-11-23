@@ -1,9 +1,11 @@
 package org.example.lowcodekg.extraction.java;
 
+import lombok.AllArgsConstructor;
 import org.eclipse.jdt.core.dom.*;
 import org.example.lowcodekg.schema.entity.workflow.JavaClass;
 import org.example.lowcodekg.schema.entity.workflow.JavaField;
 import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
+import org.example.lowcodekg.schema.entity.workflow.JavaProject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,29 +13,30 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 public class JavaASTVisitor extends ASTVisitor {
 
-    private String sourceContent;
-
     private JavaProject javaProject;
+
+    private String sourceContent;
 
     @Override
     public boolean visit(TypeDeclaration node) {
         JavaClass javaClassInfo = createJavaClassInfo(node);
-        javaProject.addClassInfo(javaClassInfo);
+        javaProject.addClass(javaClassInfo);
 
         MethodDeclaration[] methodDeclarations = node.getMethods();
         for (MethodDeclaration methodDeclaration : methodDeclarations) {
             JavaMethod javaMethodInfo = createJavaMethodInfo(methodDeclaration, javaClassInfo.getFullName());
             if (javaMethodInfo != null)
-                javaProject.addMethodInfo(javaMethodInfo);
+                javaProject.addMethod(javaMethodInfo);
         }
 
         FieldDeclaration[] fieldDeclarations = node.getFields();
         for (FieldDeclaration fieldDeclaration : fieldDeclarations) {
             List<JavaField> javaFieldInfos = createJavaFieldInfos(fieldDeclaration, javaClassInfo.getFullName());
             for (JavaField javaFieldInfo : javaFieldInfos)
-                javaProject.addFieldInfo(javaFieldInfo);
+                javaProject.addField(javaFieldInfo);
         }
         return false;
     }
@@ -48,7 +51,7 @@ public class JavaASTVisitor extends ASTVisitor {
         String content = sourceContent.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());
         String superClassType = node.getSuperclassType() == null ? "java.lang.Object" : NameResolver.getFullName(node.getSuperclassType());
         String superInterfaceTypes = String.join(", ", (List<String>) node.superInterfaceTypes().stream().map(n -> NameResolver.getFullName((Type) n)).collect(Collectors.toList()));
-        return new JavaClass(name, fullName, isInterface, isAbstract, isFinal, comment, content, superClassType, superInterfaceTypes);
+        return new JavaClass(name, fullName, comment, content, superClassType, superInterfaceTypes);
 
     }
 
@@ -81,8 +84,7 @@ public class JavaASTVisitor extends ASTVisitor {
         StringBuilder fullVariables = new StringBuilder();
         StringBuilder fieldAccesses = new StringBuilder();
         parseMethodBody(methodCalls, fullVariables, fieldAccesses, node.getBody());
-        JavaMethod info = new JavaMethod(name, fullName, returnType, isConstruct, isAbstract,
-                isFinal, isStatic, isSynchronized, content, comment, params, methodBinding,
+        JavaMethod info = new JavaMethod(name, fullName, returnType, content, comment, params, methodBinding,
                 fullReturnType, belongTo, fullParams, fullVariables.toString(), methodCalls, fieldAccesses.toString(), throwTypes);
         return info;
     }
@@ -98,7 +100,7 @@ public class JavaASTVisitor extends ASTVisitor {
             VariableDeclarationFragment fragment = (VariableDeclarationFragment) n;
             String name = fragment.getName().getFullyQualifiedName();
             String fullName = belongTo + "." + name;
-            r.add(new JavaField(name, fullName, type, isStatic, isFinal, comment, belongTo, fullType));
+            r.add(new JavaField(name, fullName, type, comment, belongTo, fullType));
         });
         return r;
     }
