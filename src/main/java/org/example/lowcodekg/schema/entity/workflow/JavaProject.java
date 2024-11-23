@@ -140,7 +140,22 @@ public class JavaProject {
     }
 
     public void storeRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
-
+        classEntityMap.values().forEach(classEntity -> {
+            javaClassRepo.saveAll(classEntity.getSuperClassList());
+            javaClassRepo.saveAll(classEntity.getSuperInterfaceList());
+            javaMethodRepo.saveAll(classEntity.getMethodList());
+            javaFieldRepo.saveAll(classEntity.getFieldList());
+        });
+        methodEntityMap.values().forEach(methodEntity -> {
+            javaMethodRepo.saveAll(methodEntity.getMethodCallList());
+            javaFieldRepo.saveAll(methodEntity.getFieldAccessList());
+            javaClassRepo.saveAll(methodEntity.getParamTypeList());
+            javaClassRepo.saveAll(methodEntity.getReturnTypeList());
+            javaClassRepo.saveAll(methodEntity.getVariableTypeList());
+        });
+        fieldEntityMap.values().forEach(fieldEntity -> {
+            javaClassRepo.saveAll(fieldEntity.getTypeList());
+        });
     }
 
     private Set<JavaClass> findJavaClassInfo(String str) {
