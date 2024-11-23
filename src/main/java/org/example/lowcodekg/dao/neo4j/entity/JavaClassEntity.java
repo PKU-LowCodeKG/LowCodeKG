@@ -41,10 +41,10 @@ public class JavaClassEntity {
     @Relationship(type = "IMPLEMENT", direction = Relationship.Direction.OUTGOING)
     private List<JavaClassEntity> superInterfaceList = new ArrayList<>();
 
-    @Relationship(type = "HAVA_METHOD", direction = Relationship.Direction.OUTGOING)
+    @Relationship(type = "HAVE_METHOD", direction = Relationship.Direction.OUTGOING)
     private List<JavaMethodEntity> methodList = new ArrayList<>();
 
-    @Relationship(type = "HAVA_FIELD", direction = Relationship.Direction.OUTGOING)
+    @Relationship(type = "HAVE_FIELD", direction = Relationship.Direction.OUTGOING)
     private List<JavaFieldEntity> fieldList = new ArrayList<>();
 
     public JavaClassEntity() {}
