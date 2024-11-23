@@ -3,14 +3,14 @@ package org.example.lowcodekg.schema.entity.workflow;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
+import org.example.lowcodekg.dao.neo4j.entity.JavaFieldEntity;
+import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JavaProject {
     @Getter
@@ -18,10 +18,13 @@ public class JavaProject {
     private String projectName;
 
     private Map<String, JavaClass> classMap = new HashMap<>();
+    private Map<String, JavaClassEntity> classEntityMap = new HashMap<>();
 
     private Map<String, JavaMethod> methodMap = new HashMap<>();
+    private Map<String, JavaMethodEntity> methodEntityMap = new HashMap<>();
 
     private Map<String, JavaField> fieldMap = new HashMap<>();
+    private Map<String, JavaFieldEntity> fieldEntityMap = new HashMap<>();
 
     private Map<IMethodBinding, JavaMethod> methodBindingMap = new HashMap<>();
 
@@ -38,7 +41,105 @@ public class JavaProject {
         fieldMap.put(javaField.getFullName(), javaField);
     }
 
-    public void storeInNeo4j(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
+    public void parseRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
+        methodMap.values().forEach(info -> methodBindingMap.put(info.getMethodBiding(), info));
+
+        // record created JavaClassEntity
+        classMap.values().forEach(classInfo -> {
+            classInfo.getSuperClassList().addAll(findJavaClassInfo(classInfo.getSuperClassType()));
+            classInfo.getSuperInterfaceList().addAll(findJavaClassInfo(classInfo.getSuperInterfaceType()));
+            classEntityMap.put(classInfo.getFullName(), classInfo.storeInNeo4j(javaClassRepo));
+        });
+        // class -[extend | implement]-> class
+        classMap.values().forEach(classInfo -> {
+            JavaClassEntity classEntity = classEntityMap.get(classInfo.getFullName());
+            if(!Objects.isNull(classEntity)) {
+                classEntity.getSuperClassList().addAll(
+                        classInfo.getSuperClassList().stream().map(cls ->
+                                classEntityMap.get(cls.getFullName())).toList());
+                classEntity.getSuperInterfaceList().addAll(
+                        classInfo.getSuperInterfaceList().stream().map(cls ->
+                                classEntityMap.get(cls.getFullName())).toList());
+            }
+        });
+
+        methodMap.values().forEach(methodInfo -> {
+           findJavaClassInfo(methodInfo.getBelongTo()).forEach(owner -> owner.getContainMethodList().add(methodInfo));
+           findJavaClassInfo(methodInfo.getFullParams()).forEach(param -> methodInfo.getParamTypeList().add(param));
+           findJavaClassInfo(methodInfo.getFullReturnType()).forEach(returnType -> methodInfo.getReturnTypeList().add(returnType));
+           findJavaClassInfo(methodInfo.getFullVariables()).forEach(variable -> methodInfo.getVariableTypeList().add(variable));
+           methodInfo.getMethodCalls().forEach(call -> {
+               if (methodBindingMap.containsKey(call)) {
+                   methodInfo.getMethodCallList().add(methodBindingMap.get(call));
+               }
+           });
+           findJavaFieldInfo(methodInfo.getFieldAccesses()).forEach(access -> methodInfo.getFieldAccessList().add(access));
+           methodEntityMap.put(methodInfo.getFullName(), methodInfo.storeInNeo4j(javaMethodRepo));
+        });
+        // class -[have_method]-> method
+        classMap.values().forEach(classInfo -> {
+            JavaClassEntity classEntity = classEntityMap.get(classInfo.getFullName());
+            if(!Objects.isNull(classEntity)) {
+                classEntity.getMethodList().addAll(
+                        classInfo.getContainMethodList().stream().map(method ->
+                                methodEntityMap.get(method.getFullName())).toList());
+            }
+        });
+        // method -[param_type | return_type | variable_type]-> class
+        // method -[method_call]-> method
+        methodMap.values().forEach(methodInfo -> {
+            JavaMethodEntity methodEntity = methodEntityMap.get(methodInfo.getFullName());
+            if(!Objects.isNull(methodEntity)) {
+                methodEntity.getParamTypeList().addAll(
+                        methodInfo.getParamTypeList().stream().map(param ->
+                                classEntityMap.get(param.getFullName())).toList());
+                methodEntity.getReturnTypeList().addAll(
+                        methodInfo.getReturnTypeList().stream().map(returnType ->
+                                classEntityMap.get(returnType.getFullName())).toList());
+                methodEntity.getVariableTypeList().addAll(
+                        methodInfo.getVariableTypeList().stream().map(variable ->
+                                classEntityMap.get(variable.getFullName())).toList());
+                methodEntity.getMethodCallList().addAll(
+                        methodInfo.getMethodCallList().stream().map(call ->
+                                methodEntityMap.get(call.getFullName())).toList());
+            }
+        });
+
+        fieldMap.values().forEach(fieldInfo -> {
+            findJavaClassInfo(fieldInfo.getBelongTo()).forEach(owner -> owner.getContainFieldList().add(fieldInfo));
+            findJavaClassInfo(fieldInfo.getFullType()).forEach(type -> fieldInfo.getFiledTypeList().add(type));
+            fieldEntityMap.put(fieldInfo.getFullName(), fieldInfo.storeInNeo4j(javaFieldRepo));
+        });
+        // class -[have_field]-> field
+        classMap.values().forEach(classInfo -> {
+            JavaClassEntity classEntity = classEntityMap.get(classInfo.getFullName());
+            if(!Objects.isNull(classEntity)) {
+                classEntity.getFieldList().addAll(
+                        classInfo.getContainFieldList().stream().map(field ->
+                                fieldEntityMap.get(field.getFullName())).toList());
+            }
+        });
+        // method -[field_access]-> field
+        methodMap.values().forEach(methodInfo -> {
+            JavaMethodEntity methodEntity = methodEntityMap.get(methodInfo.getFullName());
+            if(!Objects.isNull(methodEntity)) {
+                methodEntity.getFieldAccessList().addAll(
+                        methodInfo.getFieldAccessList().stream().map(access ->
+                                fieldEntityMap.get(access.getFullName())).toList());
+            }
+        });
+        // field -[filed_type]-> class
+        fieldMap.values().forEach(fieldInfo -> {
+            JavaFieldEntity fieldEntity = fieldEntityMap.get(fieldInfo.getFullName());
+            if(!Objects.isNull(fieldEntity)) {
+                fieldEntity.getTypeList().addAll(
+                        fieldInfo.getFiledTypeList().stream().map(type ->
+                                classEntityMap.get(type.getFullName())).toList());
+            }
+        });
+    }
+
+    public void storeRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
 
     }
 

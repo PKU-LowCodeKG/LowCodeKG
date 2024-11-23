@@ -28,9 +28,13 @@ public class JavaClass {
 
     private String superInterfaceType;
 
-    private List<JavaMethod> methodList;
-
-    private List<JavaField> fieldList;
+    /**
+     * 记录实体间关系
+     */
+    private List<JavaClass> superClassList;
+    private List<JavaClass> superInterfaceList;
+    private List<JavaMethod> containMethodList;
+    private List<JavaField> containFieldList;
 
     public JavaClass(String name, String fullName, String comment, String content, String superClassType, String superInterfaceType) {
         this.name = name;
@@ -41,13 +45,14 @@ public class JavaClass {
         this.superInterfaceType = superInterfaceType;
     }
 
-
-    public void storeInNeo4j(JavaClassRepo javaClassRepo) {
-        try {
-            JavaClassEntity javaClassEntity = new JavaClassEntity();
-        } catch (Exception e) {
-            System.err.println("Error in storeInNeo4j: " + e.getMessage());
-            e.printStackTrace();
-        }
+    public JavaClassEntity storeInNeo4j(JavaClassRepo javaClassRepo) {
+        JavaClassEntity classEntity = new JavaClassEntity();
+        classEntity.setName(this.name);
+        classEntity.setFullName(this.fullName);
+        classEntity.setComment(this.comment);
+        classEntity.setContent(this.content);
+        classEntity.setDescription(this.description);
+        javaClassRepo.save(classEntity);
+        return classEntity;
     }
 }
