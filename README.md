@@ -32,6 +32,17 @@ docker run -d -p 7474:7474 -p 7687:7687 --name neo4j-5.24 -e "NEO4J_AUTH=neo4j/n
 - 执行插件：java -jar target/LowCodeKG-0.0.1-SNAPSHOT.jar -gen {yml_config_path}
 - 启动服务：java -jar target/LowCodeKG-0.0.1-SNAPSHOT.jar -exec
 
+config.yml 示例
+```yaml
+graphDir: /Users/chang/Documents/projects/neo4j_data
+
+# 依次执行以下插件
+
+org.example.lowcodekg.extraction.component.AntMDExtractor: /Users/chang/Documents/projects/ant-design/components
+org.example.lowcodekg.extraction.java.JavaExtractor: /Users/chang/Documents/projects/NBlog/blog-api
+
+```
+
 ## 知识图谱 Schema
 ![img_v4.png](src/main/resources/static/schema_v4.png)
 
