@@ -2,9 +2,11 @@ package org.example.lowcodekg.schema.entity.workflow;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +14,7 @@ import java.util.List;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class JavaClass {
 
     private String name;
@@ -31,10 +34,10 @@ public class JavaClass {
     /**
      * 记录实体间关系
      */
-    private List<JavaClass> superClassList;
-    private List<JavaClass> superInterfaceList;
-    private List<JavaMethod> containMethodList;
-    private List<JavaField> containFieldList;
+    private List<JavaClass> superClassList = new ArrayList<>();
+    private List<JavaClass> superInterfaceList = new ArrayList<>();
+    private List<JavaMethod> containMethodList = new ArrayList<>();
+    private List<JavaField> containFieldList = new ArrayList<>();
 
     public JavaClass(String name, String fullName, String comment, String content, String superClassType, String superInterfaceType) {
         this.name = name;

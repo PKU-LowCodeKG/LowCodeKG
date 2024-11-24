@@ -6,6 +6,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -53,11 +54,11 @@ public class JavaMethod {
     /**
      * 记录实体间关系
      */
-    private List<JavaClass> paramTypeList;
-    private List<JavaClass> returnTypeList;
-    private List<JavaClass> variableTypeList;
-    private List<JavaMethod> methodCallList;
-    private List<JavaField> fieldAccessList;
+    private List<JavaClass> paramTypeList = new ArrayList<>();
+    private List<JavaClass> returnTypeList = new ArrayList<>();
+    private List<JavaClass> variableTypeList = new ArrayList<>();
+    private List<JavaMethod> methodCallList = new ArrayList<>();
+    private List<JavaField> fieldAccessList = new ArrayList<>();
 
 
     public JavaMethod(String name, String fullName, String returnType, String content, String comment, String params, IMethodBinding methodBinding,

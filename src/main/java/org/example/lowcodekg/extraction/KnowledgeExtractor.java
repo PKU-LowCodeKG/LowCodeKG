@@ -3,10 +3,11 @@ package org.example.lowcodekg.extraction;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
-import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
-import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
+import org.example.lowcodekg.dao.neo4j.repository.*;
+import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.ApplicationScope;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -24,6 +25,12 @@ public abstract class KnowledgeExtractor {
     protected static ComponentRepo componentRepo;
     @Setter
     protected static ConfigItemRepo configItemRepo;
+    @Setter
+    protected static JavaClassRepo javaClassRepo;
+    @Setter
+    protected static JavaMethodRepo javaMethodRepo;
+    @Setter
+    protected static JavaFieldRepo javaFieldRepo;
 
     @Getter
     @Setter

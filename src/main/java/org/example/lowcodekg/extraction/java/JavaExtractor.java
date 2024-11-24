@@ -28,13 +28,6 @@ import java.util.Set;
 @Service
 public class JavaExtractor extends KnowledgeExtractor {
 
-    @Autowired
-    private JavaClassRepo javaClassRepo;
-    @Autowired
-    private JavaMethodRepo javaMethodRepo;
-    @Autowired
-    private JavaFieldRepo javaFieldRepo;
-
     @Override
     public void extraction() {
         JavaProject javaProject = new JavaProject();
