@@ -38,6 +38,8 @@ public class JavaExtractor extends KnowledgeExtractor {
     @Override
     public void extraction() {
         JavaProject javaProject = new JavaProject();
+        String projectName = this.getDataDir().split("/")[this.getDataDir().split("/").length - 1];
+        javaProject.setProjectName(projectName);
         Collection<File> javaFiles = FileUtils.listFiles(new File(this.getDataDir()), new String[]{"java"}, true);
         Set<String> srcPathSet = new HashSet<>();
         Set<String> srcFolderSet = new HashSet<>();
@@ -79,5 +81,11 @@ public class JavaExtractor extends KnowledgeExtractor {
         // 调用 dao 接口存储到 neo4j
         javaProject.parseRelations(javaClassRepo, javaMethodRepo, javaFieldRepo);
         javaProject.storeRelations(javaClassRepo, javaMethodRepo, javaFieldRepo);
+    }
+
+
+    public static void main(String[] args) {
+        String path = "usr/chang/projects/LowCodeKG";
+        System.out.println(path.split("/")[path.split("/").length - 1]);
     }
 }

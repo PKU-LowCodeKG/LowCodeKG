@@ -43,14 +43,14 @@ public class JavaASTVisitor extends ASTVisitor {
 
     private JavaClass createJavaClassInfo(TypeDeclaration node) {
         String name = node.getName().getFullyQualifiedName();
-        String fullName = NameResolver.getFullName(node);
+        String fullName = javaProject.getProjectName() + NameResolver.getFullName(node);
         boolean isInterface = node.isInterface();
         boolean isAbstract = Modifier.isAbstract(node.getModifiers());
         boolean isFinal = Modifier.isFinal(node.getModifiers());
         String comment = node.getJavadoc() == null ? "" : sourceContent.substring(node.getJavadoc().getStartPosition(), node.getJavadoc().getStartPosition() + node.getJavadoc().getLength());
         String content = sourceContent.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());
-        String superClassType = node.getSuperclassType() == null ? "java.lang.Object" : NameResolver.getFullName(node.getSuperclassType());
-        String superInterfaceTypes = String.join(", ", (List<String>) node.superInterfaceTypes().stream().map(n -> NameResolver.getFullName((Type) n)).collect(Collectors.toList()));
+        String superClassType = node.getSuperclassType() == null ? "java.lang.Object" : javaProject.getProjectName() + NameResolver.getFullName(node.getSuperclassType());
+        String superInterfaceTypes = String.join(", ", (List<String>) node.superInterfaceTypes().stream().map(n -> javaProject.getProjectName() + NameResolver.getFullName((Type) n)).collect(Collectors.toList()));
         return new JavaClass(name, fullName, comment, content, superClassType, superInterfaceTypes);
 
     }
@@ -62,7 +62,7 @@ public class JavaASTVisitor extends ASTVisitor {
         String name = node.getName().getFullyQualifiedName();
         Type type = node.getReturnType2();
         String returnType = type == null ? "void" : type.toString();
-        String fullReturnType = NameResolver.getFullName(type);
+        String fullReturnType = javaProject.getProjectName() + NameResolver.getFullName(type);
         boolean isConstruct = node.isConstructor();
         boolean isAbstract = Modifier.isAbstract(node.getModifiers());
         boolean isFinal = Modifier.isFinal(node.getModifiers());
@@ -74,10 +74,10 @@ public class JavaASTVisitor extends ASTVisitor {
             SingleVariableDeclaration param = (SingleVariableDeclaration) n;
             return (Modifier.isFinal(param.getModifiers()) ? "final " : "") + param.getType().toString() + " " + param.getName().getFullyQualifiedName();
         }).collect(Collectors.toList()));
-        String fullName = belongTo + "." + name + "( " + params + " )";
+        String fullName = javaProject.getProjectName() + belongTo + "." + name + "( " + params + " )";
         String fullParams = String.join(", ", (List<String>) node.parameters().stream().map(n -> {
             SingleVariableDeclaration param = (SingleVariableDeclaration) n;
-            return NameResolver.getFullName(param.getType());
+            return javaProject.getProjectName() + NameResolver.getFullName(param.getType());
         }).collect(Collectors.toList()));
         String throwTypes = String.join(", ", (List<String>) node.thrownExceptionTypes().stream().map(n -> NameResolver.getFullName((Type) n)).collect(Collectors.toList()));
         Set<IMethodBinding> methodCalls = new HashSet<>();
@@ -92,14 +92,14 @@ public class JavaASTVisitor extends ASTVisitor {
     private List<JavaField> createJavaFieldInfos(FieldDeclaration node, String belongTo) {
         List<JavaField> r = new ArrayList<>();
         String type = node.getType().toString();
-        String fullType = NameResolver.getFullName(node.getType());
+        String fullType = javaProject.getProjectName() + NameResolver.getFullName(node.getType());
         boolean isStatic = Modifier.isStatic(node.getModifiers());
         boolean isFinal = Modifier.isFinal(node.getModifiers());
         String comment = node.getJavadoc() == null ? "" : sourceContent.substring(node.getJavadoc().getStartPosition(), node.getJavadoc().getStartPosition() + node.getJavadoc().getLength());
         node.fragments().forEach(n -> {
             VariableDeclarationFragment fragment = (VariableDeclarationFragment) n;
             String name = fragment.getName().getFullyQualifiedName();
-            String fullName = belongTo + "." + name;
+            String fullName = javaProject.getProjectName() + belongTo + "." + name;
             r.add(new JavaField(name, fullName, type, comment, belongTo, fullType));
         });
         return r;
@@ -144,7 +144,7 @@ public class JavaASTVisitor extends ASTVisitor {
             else if (statements.get(i).getNodeType() == ASTNode.ENHANCED_FOR_STATEMENT) {
                 Expression expression = ((EnhancedForStatement) statements.get(i)).getExpression();
                 Type type = ((EnhancedForStatement) statements.get(i)).getParameter().getType();
-                fullVariables.append(NameResolver.getFullName(type) + ", ");
+                fullVariables.append(javaProject.getProjectName() + NameResolver.getFullName(type) + ", ");
                 if (expression != null) {
                     parseExpression(methodCalls, fieldAccesses, expression);
                 }
@@ -218,7 +218,7 @@ public class JavaASTVisitor extends ASTVisitor {
             }
             else if (statements.get(i).getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
                 Type type = ((VariableDeclarationStatement) statements.get(i)).getType();
-                fullVariables.append(NameResolver.getFullName(type) + ", ");
+                fullVariables.append(javaProject.getProjectName() + NameResolver.getFullName(type) + ", ");
                 ((VariableDeclarationStatement) statements.get(i)).fragments().forEach(n -> parseExpression(methodCalls, fieldAccesses, ((VariableDeclaration) n).getInitializer()));
             }
             else if (statements.get(i).getNodeType() == ASTNode.WHILE_STATEMENT) {

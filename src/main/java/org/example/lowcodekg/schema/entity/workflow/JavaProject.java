@@ -140,12 +140,14 @@ public class JavaProject {
     }
 
     public void storeRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
+        // class outgoing relations
         classEntityMap.values().forEach(classEntity -> {
             javaClassRepo.saveAll(classEntity.getSuperClassList());
             javaClassRepo.saveAll(classEntity.getSuperInterfaceList());
             javaMethodRepo.saveAll(classEntity.getMethodList());
             javaFieldRepo.saveAll(classEntity.getFieldList());
         });
+        // method outgoing relations
         methodEntityMap.values().forEach(methodEntity -> {
             javaMethodRepo.saveAll(methodEntity.getMethodCallList());
             javaFieldRepo.saveAll(methodEntity.getFieldAccessList());
@@ -153,6 +155,7 @@ public class JavaProject {
             javaClassRepo.saveAll(methodEntity.getReturnTypeList());
             javaClassRepo.saveAll(methodEntity.getVariableTypeList());
         });
+        // field outgoing relations
         fieldEntityMap.values().forEach(fieldEntity -> {
             javaClassRepo.saveAll(fieldEntity.getTypeList());
         });
