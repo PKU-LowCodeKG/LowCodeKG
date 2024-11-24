@@ -1,14 +1,15 @@
 package org.example.lowcodekg.schema.entity.workflow;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import org.example.lowcodekg.dao.neo4j.entity.JavaFieldEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class JavaField {
 

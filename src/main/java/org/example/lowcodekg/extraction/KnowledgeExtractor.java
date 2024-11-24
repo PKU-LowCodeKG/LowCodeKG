@@ -60,34 +60,13 @@ public abstract class KnowledgeExtractor {
         }
     }
 
-    public static void executeFromYaml(String yamlStr) {
-        Yaml yaml = new Yaml();
-        Map<String, Object> ret = yaml.load(yamlStr);
-        String graphDir = (String) ret.get("graphDir");
-        ret.remove("graphDir");
-        boolean increment = false;
-        if (ret.containsKey("increment") && (boolean)ret.get("increment")){
-            increment = true;
-            ret.remove("increment");
-        }
-        List<ExtractorConfig> configs = new ArrayList<>();
-        for (String key : ret.keySet()) {
-            configs.add(new ExtractorConfig(key, graphDir, (String) ret.get(key)));
-        }
-        if (new File(graphDir).exists() && !increment){
-//            FileUtils.deleteDirectory(new File(graphDir));
-            componentRepo.deleteAll();
-        }
-        execute(configs);
-    }
-
-    public static void main(String[] args) {
-        try {
-            KnowledgeExtractor.executeFromYaml(FileUtils.readFileToString(new File("/Users/chang/Documents/projects/LowCodeKG/config.yml"), "utf-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        try {
+//            KnowledgeExtractor.executeFromYaml(FileUtils.readFileToString(new File("/Users/chang/Documents/projects/LowCodeKG/config.yml"), "utf-8"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public abstract void extraction();
 

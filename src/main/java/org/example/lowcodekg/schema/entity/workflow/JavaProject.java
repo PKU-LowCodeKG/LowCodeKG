@@ -83,6 +83,8 @@ public class JavaProject {
                 classEntity.getMethodList().addAll(
                         classInfo.getContainMethodList().stream().map(method ->
                                 methodEntityMap.get(method.getFullName())).toList());
+                // debug
+//                System.out.println("class " + classInfo.getName() + " have_methods " + classInfo.getContainMethodList());
             }
         });
         // method -[param_type | return_type | variable_type]-> class

@@ -1,7 +1,6 @@
 package org.example.lowcodekg.schema.entity.workflow;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
@@ -10,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class JavaMethod {
 

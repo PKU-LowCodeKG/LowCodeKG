@@ -1,8 +1,6 @@
 package org.example.lowcodekg.schema.entity.workflow;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 
@@ -12,7 +10,8 @@ import java.util.List;
 /**
  * 领域实体类（Java 语言）
  */
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class JavaClass {
