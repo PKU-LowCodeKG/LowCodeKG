@@ -27,6 +27,10 @@ docker run -d -p 7474:7474 -p 7687:7687 --name neo4j-5.24 -e "NEO4J_AUTH=neo4j/n
 - schema: 定义知识图谱的元模型，包括实体、关系、属性等。通过调用 dao 层接口实现数据持久化
 - search: 组件及模板检索的接口定义及实现，基于 dao 层接口调用，向 controller 提供检索服务
 
+## 运行
+- 编译打包：mvn package -Dmaven.test.skip=true（跳过测试，可选）
+- 执行插件：java -jar target/LowCodeKG-0.0.1-SNAPSHOT.jar -gen {yml_config_path}
+- 启动服务：java -jar target/LowCodeKG-0.0.1-SNAPSHOT.jar -exec
 
 ## 知识图谱 Schema
 ![img_v4.png](src/main/resources/static/schema_v4.png)
