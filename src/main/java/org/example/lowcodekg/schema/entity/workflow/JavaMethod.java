@@ -89,8 +89,7 @@ public class JavaMethod {
         methodEntity.setComment(comment);
         methodEntity.setDescription(description);
         methodEntity.setParams(params);
-        javaMethodRepo.save(methodEntity);
-        return methodEntity;
+        return javaMethodRepo.save(methodEntity);
     }
 
 

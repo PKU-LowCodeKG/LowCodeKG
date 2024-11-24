@@ -54,7 +54,6 @@ public class JavaClass {
         classEntity.setComment(this.comment);
         classEntity.setContent(this.content);
         classEntity.setDescription(this.description);
-        javaClassRepo.save(classEntity);
-        return classEntity;
+        return javaClassRepo.save(classEntity);
     }
 }

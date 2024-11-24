@@ -48,7 +48,6 @@ public class JavaField {
         entity.setType(type);
         entity.setComment(comment);
         entity.setDescription(description);
-        javaFieldRepo.save(entity);
-        return entity;
+        return javaFieldRepo.save(entity);
     }
 }
