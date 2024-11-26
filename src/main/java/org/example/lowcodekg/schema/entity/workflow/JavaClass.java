@@ -1,11 +1,13 @@
 package org.example.lowcodekg.schema.entity.workflow;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.*;
 import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 领域实体类（Java 语言）
@@ -15,6 +17,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JavaClass {
+
+    /**
+     * 向量检索 id
+     */
+    private Long vid;
 
     private String name;
 
@@ -47,13 +54,16 @@ public class JavaClass {
         this.superInterfaceType = superInterfaceType;
     }
 
-    public JavaClassEntity storeInNeo4j(JavaClassRepo javaClassRepo) {
+    public JavaClassEntity storeInNeo4j(JavaClassRepo javaClassRepo, JSONObject jsonContent) {
         JavaClassEntity classEntity = new JavaClassEntity();
         classEntity.setName(this.name);
         classEntity.setFullName(this.fullName);
         classEntity.setComment(this.comment);
         classEntity.setContent(this.content);
-        classEntity.setDescription(this.description);
+        if(!Objects.isNull(jsonContent)) {
+            classEntity.setVid(jsonContent.getLong("vid"));
+            classEntity.setDescription(jsonContent.getString("description"));
+        }
         return javaClassRepo.save(classEntity);
     }
 }

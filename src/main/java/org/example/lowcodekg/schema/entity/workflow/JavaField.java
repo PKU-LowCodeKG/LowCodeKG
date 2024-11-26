@@ -1,17 +1,21 @@
 package org.example.lowcodekg.schema.entity.workflow;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.*;
 import org.example.lowcodekg.dao.neo4j.entity.JavaFieldEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class JavaField {
+
+    private String vid;
 
     private String name;
 
@@ -41,13 +45,16 @@ public class JavaField {
         this.fullType = fullType;
     }
 
-    public JavaFieldEntity storeInNeo4j(JavaFieldRepo javaFieldRepo) {
-        JavaFieldEntity entity = new JavaFieldEntity();
-        entity.setName(name);
-        entity.setFullName(fullName);
-        entity.setType(type);
-        entity.setComment(comment);
-        entity.setDescription(description);
-        return javaFieldRepo.save(entity);
+    public JavaFieldEntity storeInNeo4j(JavaFieldRepo javaFieldRepo, JSONObject jsonContent) {
+        JavaFieldEntity fieldEntity = new JavaFieldEntity();
+        fieldEntity.setName(name);
+        fieldEntity.setFullName(fullName);
+        fieldEntity.setType(type);
+        fieldEntity.setComment(comment);
+        if(!Objects.isNull(jsonContent)) {
+            fieldEntity.setVid(jsonContent.getLong("vid"));
+            fieldEntity.setDescription(jsonContent.getString("description"));
+        }
+        return javaFieldRepo.save(fieldEntity);
     }
 }

@@ -14,6 +14,9 @@ public class JavaClassEntity {
     @GeneratedValue
     private Long id;
 
+    @Property("vid")
+    private Long vid;
+
     @Property("name")
     private String name;
 

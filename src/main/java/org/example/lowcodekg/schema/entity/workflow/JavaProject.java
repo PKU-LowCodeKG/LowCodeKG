@@ -1,5 +1,6 @@
 package org.example.lowcodekg.schema.entity.workflow;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -9,6 +10,7 @@ import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
+import org.example.lowcodekg.util.JSONUtils;
 
 import java.util.*;
 
@@ -41,14 +43,20 @@ public class JavaProject {
         fieldMap.put(javaField.getFullName(), javaField);
     }
 
+    /**
+     * 创建实体及关系
+     */
     public void parseRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
+        // load local json file
+        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile("/src/main/resources/data/javaInfo.json");
+
         methodMap.values().forEach(info -> methodBindingMap.put(info.getMethodBiding(), info));
 
         // record created JavaClassEntity
         classMap.values().forEach(classInfo -> {
             classInfo.getSuperClassList().addAll(findJavaClassInfo(classInfo.getSuperClassType()));
             classInfo.getSuperInterfaceList().addAll(findJavaClassInfo(classInfo.getSuperInterfaceType()));
-            classEntityMap.put(classInfo.getFullName(), classInfo.storeInNeo4j(javaClassRepo));
+            classEntityMap.put(classInfo.getFullName(), classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName())));
         });
         // class -[extend | implement]-> class
         classMap.values().forEach(classInfo -> {
@@ -74,7 +82,7 @@ public class JavaProject {
                }
            });
            findJavaFieldInfo(methodInfo.getFieldAccesses()).forEach(access -> methodInfo.getFieldAccessList().add(access));
-           methodEntityMap.put(methodInfo.getFullName(), methodInfo.storeInNeo4j(javaMethodRepo));
+           methodEntityMap.put(methodInfo.getFullName(), methodInfo.storeInNeo4j(javaMethodRepo, jsonMap.get(methodInfo.getFullName())));
         });
         // class -[have_method]-> method
         classMap.values().forEach(classInfo -> {
@@ -110,7 +118,7 @@ public class JavaProject {
         fieldMap.values().forEach(fieldInfo -> {
             findJavaClassInfo(fieldInfo.getBelongTo()).forEach(owner -> owner.getContainFieldList().add(fieldInfo));
             findJavaClassInfo(fieldInfo.getFullType()).forEach(type -> fieldInfo.getFiledTypeList().add(type));
-            fieldEntityMap.put(fieldInfo.getFullName(), fieldInfo.storeInNeo4j(javaFieldRepo));
+            fieldEntityMap.put(fieldInfo.getFullName(), fieldInfo.storeInNeo4j(javaFieldRepo, jsonMap.get(fieldInfo.getFullName())));
         });
         // class -[have_field]-> field
         classMap.values().forEach(classInfo -> {

@@ -1,5 +1,6 @@
 package org.example.lowcodekg.schema.entity.workflow;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.*;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
@@ -7,6 +8,7 @@ import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -14,6 +16,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JavaMethod {
+
+    private String vid;
 
     private String name;
 
@@ -80,15 +84,18 @@ public class JavaMethod {
         this.throwType = throwTypes;
     }
 
-    public JavaMethodEntity storeInNeo4j(JavaMethodRepo javaMethodRepo) {
+    public JavaMethodEntity storeInNeo4j(JavaMethodRepo javaMethodRepo, JSONObject jsonContent) {
         JavaMethodEntity methodEntity = new JavaMethodEntity();
         methodEntity.setName(name);
         methodEntity.setFullName(fullName);
         methodEntity.setReturnType(returnType);
         methodEntity.setContent(content);
         methodEntity.setComment(comment);
-        methodEntity.setDescription(description);
         methodEntity.setParams(params);
+        if(!Objects.isNull(jsonContent)) {
+            methodEntity.setVid(jsonContent.getLong("vid"));
+            methodEntity.setDescription(jsonContent.getString("description"));
+        }
         return javaMethodRepo.save(methodEntity);
     }
 
