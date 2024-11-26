@@ -28,11 +28,12 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 
     @Override
     public Neo4jNode getNodeDetail(long id) {
+        String formattedId = String.format("%d", id);
         String nodeCypher = MessageFormat.format("""
                 MATCH (n)
                 WHERE id(n) = {0}
                 RETURN n
-                """, id);
+                """, formattedId);
         QueryRunner runner = neo4jClient.getQueryRunner();
         Result result = runner.run(nodeCypher);
         if (result.hasNext()) {
@@ -63,11 +64,12 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 
     @Override
     public List<Neo4jRelation> getRelationList(long id) {
+        String formattedId = String.format("%d", id);
         String relationCypher = MessageFormat.format("""
                 MATCH (n)-[r]->()
                 WHERE id(n) = {0}
                 RETURN r
-                """, id);
+                """, formattedId);
         QueryRunner runner = neo4jClient.getQueryRunner();
         Result result = runner.run(relationCypher);
 
