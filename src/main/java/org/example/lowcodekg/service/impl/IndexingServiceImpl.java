@@ -14,6 +14,7 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileReader;
@@ -22,13 +23,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class IndexingServiceImpl implements IndexingService {
+
     @Autowired
     private JavaClassRepo javaClassRepo;
-
     @Autowired
     private JavaMethodRepo javaMethodRepo;
-
     @Autowired
     private ChatClient chatClient;
 
