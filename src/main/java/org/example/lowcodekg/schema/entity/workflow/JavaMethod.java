@@ -93,7 +93,7 @@ public class JavaMethod {
         methodEntity.setComment(comment);
         methodEntity.setParams(params);
         if(!Objects.isNull(jsonContent)) {
-            methodEntity.setVid(jsonContent.getLong("vid"));
+            methodEntity.setVid(jsonContent.getLong("id"));
             methodEntity.setDescription(jsonContent.getString("description"));
         }
         return javaMethodRepo.save(methodEntity);

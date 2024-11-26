@@ -52,7 +52,7 @@ public class JavaField {
         fieldEntity.setType(type);
         fieldEntity.setComment(comment);
         if(!Objects.isNull(jsonContent)) {
-            fieldEntity.setVid(jsonContent.getLong("vid"));
+            fieldEntity.setVid(Long.valueOf(jsonContent.getLong("id")));
             fieldEntity.setDescription(jsonContent.getString("description"));
         }
         return javaFieldRepo.save(fieldEntity);

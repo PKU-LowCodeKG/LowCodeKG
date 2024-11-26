@@ -61,7 +61,7 @@ public class JavaClass {
         classEntity.setComment(this.comment);
         classEntity.setContent(this.content);
         if(!Objects.isNull(jsonContent)) {
-            classEntity.setVid(jsonContent.getLong("vid"));
+            classEntity.setVid(jsonContent.getLong("id"));
             classEntity.setDescription(jsonContent.getString("description"));
         }
         return javaClassRepo.save(classEntity);
