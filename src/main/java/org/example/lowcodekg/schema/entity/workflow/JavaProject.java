@@ -48,7 +48,7 @@ public class JavaProject {
      */
     public void parseRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
         // load local json file
-        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile("/src/main/resources/data/javaInfo.json");
+        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile("/Users/chang/Documents/projects/LowCodeKG/src/main/resources/data/javaInfo.json");
 
         methodMap.values().forEach(info -> methodBindingMap.put(info.getMethodBiding(), info));
 
