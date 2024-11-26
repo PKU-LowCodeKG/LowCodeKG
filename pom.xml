@@ -91,6 +91,11 @@
             <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
             <version>1.0.0.M1</version>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.83</version>
+        </dependency>
     </dependencies>
 
     <repositories>
