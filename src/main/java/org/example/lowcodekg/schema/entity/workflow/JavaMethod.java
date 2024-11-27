@@ -17,7 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class JavaMethod {
 
-    private String vid;
+    private Long vid;
 
     private String name;
 

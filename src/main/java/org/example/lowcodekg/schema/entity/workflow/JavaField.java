@@ -15,7 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class JavaField {
 
-    private String vid;
+    private Long vid;
 
     private String name;
 
