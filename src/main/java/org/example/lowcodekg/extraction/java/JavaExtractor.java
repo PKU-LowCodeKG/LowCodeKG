@@ -77,12 +77,12 @@ public class JavaExtractor extends KnowledgeExtractor {
         javaProject.parseRelations(javaClassRepo, javaMethodRepo, javaFieldRepo);
         javaProject.storeRelations(javaClassRepo, javaMethodRepo, javaFieldRepo);
 
-
-        try {
-            System.out.println(elasticSearchService.searchEmbedding("获取用户在线列表"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // test
+//        try {
+//            System.out.println(elasticSearchService.searchEmbedding("获取用户在线列表"));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
 

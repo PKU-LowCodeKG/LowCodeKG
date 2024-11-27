@@ -68,7 +68,7 @@ public class ElasticSearchService {
 
             embeddingStore.add(embedding, vidSegment);
         } else {
-            System.out.println(javaField.getFullName() + " description is null or empty");
+//            System.out.println(javaField.getFullName() + " description is null or empty");
         }
     }
     // 查询嵌入数据
