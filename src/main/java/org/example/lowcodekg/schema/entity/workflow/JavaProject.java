@@ -61,6 +61,7 @@ public class JavaProject {
     public void parseRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
         // load local json file
         Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile(jsonFilePath);
+        System.out.println("jsonObject number:" + jsonMap.size());
 
         methodMap.values().forEach(info -> methodBindingMap.put(info.getMethodBiding(), info));
 

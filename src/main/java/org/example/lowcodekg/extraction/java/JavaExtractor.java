@@ -76,6 +76,13 @@ public class JavaExtractor extends KnowledgeExtractor {
         // 调用 dao 接口存储到 neo4j
         javaProject.parseRelations(javaClassRepo, javaMethodRepo, javaFieldRepo);
         javaProject.storeRelations(javaClassRepo, javaMethodRepo, javaFieldRepo);
+
+
+        try {
+            System.out.println(elasticSearchService.searchEmbedding("获取用户在线列表"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
