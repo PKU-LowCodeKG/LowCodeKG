@@ -64,11 +64,19 @@ public class JavaProject {
 
         methodMap.values().forEach(info -> methodBindingMap.put(info.getMethodBiding(), info));
 
-        // record created JavaClassEntity
+        /*
+         * create JavaClassEntity
+         */
         classMap.values().forEach(classInfo -> {
             classInfo.getSuperClassList().addAll(findJavaClassInfo(classInfo.getSuperClassType()));
             classInfo.getSuperInterfaceList().addAll(findJavaClassInfo(classInfo.getSuperInterfaceType()));
-            classEntityMap.put(classInfo.getFullName(), classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName())));
+            JavaClassEntity classEntity = classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName()));
+            classEntityMap.put(classInfo.getFullName(), classEntity);
+
+            // vector store
+            classInfo.setVid(classEntity.getVid());
+            classEntity.setDescription(classInfo.getDescription());
+            elasticSearchService.storeJavaClassEmbedding(classInfo);
         });
         // class -[extend | implement]-> class
         classMap.values().forEach(classInfo -> {
@@ -83,6 +91,9 @@ public class JavaProject {
             }
         });
 
+        /*
+         * create JavaMethodEntity
+         */
         methodMap.values().forEach(methodInfo -> {
            findJavaClassInfo(methodInfo.getBelongTo()).forEach(owner -> owner.getContainMethodList().add(methodInfo));
            findJavaClassInfo(methodInfo.getFullParams()).forEach(param -> methodInfo.getParamTypeList().add(param));
@@ -94,7 +105,14 @@ public class JavaProject {
                }
            });
            findJavaFieldInfo(methodInfo.getFieldAccesses()).forEach(access -> methodInfo.getFieldAccessList().add(access));
-           methodEntityMap.put(methodInfo.getFullName(), methodInfo.storeInNeo4j(javaMethodRepo, jsonMap.get(methodInfo.getFullName())));
+
+           JavaMethodEntity methodEntity = methodInfo.storeInNeo4j(javaMethodRepo, jsonMap.get(methodInfo.getFullName()));
+           methodEntityMap.put(methodInfo.getFullName(), methodEntity);
+
+           // vector store
+           methodInfo.setVid(methodEntity.getVid());
+           methodInfo.setDescription(methodInfo.getDescription());
+           elasticSearchService.storeJavaMethodEmbedding(methodInfo);
         });
         // class -[have_method]-> method
         classMap.values().forEach(classInfo -> {
@@ -103,8 +121,6 @@ public class JavaProject {
                 classEntity.getMethodList().addAll(
                         classInfo.getContainMethodList().stream().map(method ->
                                 methodEntityMap.get(method.getFullName())).toList());
-                // debug
-//                System.out.println("class " + classInfo.getName() + " have_methods " + classInfo.getContainMethodList());
             }
         });
         // method -[param_type | return_type | variable_type]-> class
@@ -127,10 +143,20 @@ public class JavaProject {
             }
         });
 
+        /*
+         * create JavaFieldEntity
+         */
         fieldMap.values().forEach(fieldInfo -> {
             findJavaClassInfo(fieldInfo.getBelongTo()).forEach(owner -> owner.getContainFieldList().add(fieldInfo));
             findJavaClassInfo(fieldInfo.getFullType()).forEach(type -> fieldInfo.getFiledTypeList().add(type));
-            fieldEntityMap.put(fieldInfo.getFullName(), fieldInfo.storeInNeo4j(javaFieldRepo, jsonMap.get(fieldInfo.getFullName())));
+
+            JavaFieldEntity fieldEntity = fieldInfo.storeInNeo4j(javaFieldRepo, jsonMap.get(fieldInfo.getFullName()));
+            fieldEntityMap.put(fieldInfo.getFullName(), fieldEntity);
+
+            // vector store
+            fieldInfo.setVid(fieldEntity.getVid());
+            fieldInfo.setDescription(fieldInfo.getDescription());
+            elasticSearchService.storeJavaFieldEmbedding(fieldInfo);
         });
         // class -[have_field]-> field
         classMap.values().forEach(classInfo -> {
