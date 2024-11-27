@@ -18,7 +18,7 @@ docker run -d -p 7474:7474 -p 7687:7687 --name neo4j-5.24 -e "NEO4J_AUTH=neo4j/n
 ```
 
 ### ES 配置
-使用docker配置 elasticsearch的版本为8.15.0
+使用 docker 配置 elasticsearch的版本为8.15.0
 ```
 docker pull docker.elastic.co/elasticsearch/elasticsearch:8.15.0
 
@@ -30,7 +30,7 @@ docker run -d --name elasticsearch \
   -p 9300:9300 \
   docker.elastic.co/elasticsearch/elasticsearch:8.15.0
 ```
-需要对于elasticsearch容器的Files/usr/share/elasticsearch/config/elasticsearch.yml作如下配置
+需要对于 elasticsearch 容器的 Files/usr/share/elasticsearch/config/elasticsearch.yml 作如下配置
 ```
 cluster.name: "docker-cluster"
 network.host: 0.0.0.0
