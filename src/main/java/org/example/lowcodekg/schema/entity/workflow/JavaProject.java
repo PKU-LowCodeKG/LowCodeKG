@@ -22,9 +22,9 @@ import java.util.*;
 public class JavaProject {
 
     @Value("${json.path}")
-    private String jsonFilePath;
+    private final String jsonFilePath = "/Users/chang/Documents/projects/LowCodeKG/src/main/resources/data/javaInfo.json";
 
-    @Autowired
+    @Setter
     private ElasticSearchService elasticSearchService;
 
     @Getter
@@ -75,7 +75,7 @@ public class JavaProject {
 
             // vector store
             classInfo.setVid(classEntity.getVid());
-            classEntity.setDescription(classInfo.getDescription());
+            classInfo.setDescription(classEntity.getDescription());
             elasticSearchService.storeJavaClassEmbedding(classInfo);
         });
         // class -[extend | implement]-> class
@@ -111,7 +111,7 @@ public class JavaProject {
 
            // vector store
            methodInfo.setVid(methodEntity.getVid());
-           methodInfo.setDescription(methodInfo.getDescription());
+           methodInfo.setDescription(methodEntity.getDescription());
            elasticSearchService.storeJavaMethodEmbedding(methodInfo);
         });
         // class -[have_method]-> method
@@ -155,7 +155,7 @@ public class JavaProject {
 
             // vector store
             fieldInfo.setVid(fieldEntity.getVid());
-            fieldInfo.setDescription(fieldInfo.getDescription());
+            fieldInfo.setDescription(fieldEntity.getDescription());
             elasticSearchService.storeJavaFieldEmbedding(fieldInfo);
         });
         // class -[have_field]-> field

@@ -31,6 +31,8 @@ public class JavaExtractor extends KnowledgeExtractor {
     @Override
     public void extraction() {
         JavaProject javaProject = new JavaProject();
+        javaProject.setElasticSearchService(elasticSearchService);
+
         String projectName = this.getDataDir().split("/")[this.getDataDir().split("/").length - 1];
         javaProject.setProjectName(projectName);
         Collection<File> javaFiles = FileUtils.listFiles(new File(this.getDataDir()), new String[]{"java"}, true);
