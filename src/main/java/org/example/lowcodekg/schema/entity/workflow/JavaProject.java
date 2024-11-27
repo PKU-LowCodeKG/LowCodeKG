@@ -10,11 +10,23 @@ import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
+import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.util.JSONUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class JavaProject {
+
+    @Value("${json.path}")
+    private String jsonFilePath;
+
+    @Autowired
+    private ElasticSearchService elasticSearchService;
+
     @Getter
     @Setter
     private String projectName;
@@ -48,7 +60,7 @@ public class JavaProject {
      */
     public void parseRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
         // load local json file
-        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile("/Users/chang/Documents/projects/LowCodeKG/src/main/resources/data/javaInfo.json");
+        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile(jsonFilePath);
 
         methodMap.values().forEach(info -> methodBindingMap.put(info.getMethodBiding(), info));
 

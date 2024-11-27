@@ -35,7 +35,7 @@ public class ElasticSearchService {
     }
 
     //
-    public void storeJavaClassEmbedding(JavaClass javaClass) throws IOException {
+    public void storeJavaClassEmbedding(JavaClass javaClass) {
         if (javaClass.getDescription() != null && !javaClass.getDescription().isEmpty()) {
             TextSegment descriptionSegment = TextSegment.from(javaClass.getDescription());
             TextSegment vidSegment = TextSegment.from(String.valueOf(javaClass.getVid()));
@@ -43,30 +43,30 @@ public class ElasticSearchService {
 
             embeddingStore.add(embedding, vidSegment);
         } else {
-            throw new IllegalArgumentException("Description must be non-null and non-empty");
+            System.out.println(javaClass.getFullName() + " description is null or empty");
         }
     }
 
     public void storeJavaMethodEmbedding(JavaMethod javaMethod) throws IOException {
         if (javaMethod.getDescription() != null && !javaMethod.getDescription().isEmpty()) {
             TextSegment descriptionSegment = TextSegment.from(javaMethod.getDescription());
-            TextSegment vidSegment = TextSegment.from(javaMethod.getVid());
+            TextSegment vidSegment = TextSegment.from(String.valueOf(javaMethod.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
 
             embeddingStore.add(embedding, vidSegment);
         } else {
-            throw new IllegalArgumentException("Description must be non-null and non-empty");
+            System.out.println(javaMethod.getFullName() + " description is null or empty");
         }
     }
     public void storeJavaFieldEmbedding(JavaField javaField) throws IOException {
         if (javaField.getDescription() != null && !javaField.getDescription().isEmpty()) {
             TextSegment descriptionSegment = TextSegment.from(javaField.getDescription());
-            TextSegment vidSegment = TextSegment.from(javaField.getVid());
+            TextSegment vidSegment = TextSegment.from(String.valueOf(javaField.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
 
             embeddingStore.add(embedding, vidSegment);
         } else {
-            throw new IllegalArgumentException("Description must be non-null and non-empty");
+            System.out.println(javaField.getFullName() + " description is null or empty");
         }
     }
     // 查询嵌入数据
