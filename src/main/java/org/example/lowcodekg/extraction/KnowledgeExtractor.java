@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.repository.*;
 import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
+import org.example.lowcodekg.service.ElasticSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
@@ -31,6 +32,9 @@ public abstract class KnowledgeExtractor {
     protected static JavaMethodRepo javaMethodRepo;
     @Setter
     protected static JavaFieldRepo javaFieldRepo;
+
+    @Setter
+    protected static ElasticSearchService elasticSearchService;
 
     @Getter
     @Setter

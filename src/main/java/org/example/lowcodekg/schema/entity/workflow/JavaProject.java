@@ -10,11 +10,23 @@ import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
+import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.util.JSONUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class JavaProject {
+
+    @Value("${json.path}")
+    private final String jsonFilePath = "/Users/chang/Documents/projects/LowCodeKG/src/main/resources/data/javaInfo.json";
+
+    @Setter
+    private ElasticSearchService elasticSearchService;
+
     @Getter
     @Setter
     private String projectName;
@@ -48,15 +60,24 @@ public class JavaProject {
      */
     public void parseRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
         // load local json file
-        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile("/Users/chang/Documents/projects/LowCodeKG/src/main/resources/data/javaInfo.json");
+        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile(jsonFilePath);
+        System.out.println("jsonObject number:" + jsonMap.size());
 
         methodMap.values().forEach(info -> methodBindingMap.put(info.getMethodBiding(), info));
 
-        // record created JavaClassEntity
+        /*
+         * create JavaClassEntity
+         */
         classMap.values().forEach(classInfo -> {
             classInfo.getSuperClassList().addAll(findJavaClassInfo(classInfo.getSuperClassType()));
             classInfo.getSuperInterfaceList().addAll(findJavaClassInfo(classInfo.getSuperInterfaceType()));
-            classEntityMap.put(classInfo.getFullName(), classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName())));
+            JavaClassEntity classEntity = classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName()));
+            classEntityMap.put(classInfo.getFullName(), classEntity);
+
+            // vector store
+            classInfo.setVid(classEntity.getVid());
+            classInfo.setDescription(classEntity.getDescription());
+            elasticSearchService.storeJavaClassEmbedding(classInfo);
         });
         // class -[extend | implement]-> class
         classMap.values().forEach(classInfo -> {
@@ -71,6 +92,9 @@ public class JavaProject {
             }
         });
 
+        /*
+         * create JavaMethodEntity
+         */
         methodMap.values().forEach(methodInfo -> {
            findJavaClassInfo(methodInfo.getBelongTo()).forEach(owner -> owner.getContainMethodList().add(methodInfo));
            findJavaClassInfo(methodInfo.getFullParams()).forEach(param -> methodInfo.getParamTypeList().add(param));
@@ -82,7 +106,14 @@ public class JavaProject {
                }
            });
            findJavaFieldInfo(methodInfo.getFieldAccesses()).forEach(access -> methodInfo.getFieldAccessList().add(access));
-           methodEntityMap.put(methodInfo.getFullName(), methodInfo.storeInNeo4j(javaMethodRepo, jsonMap.get(methodInfo.getFullName())));
+
+           JavaMethodEntity methodEntity = methodInfo.storeInNeo4j(javaMethodRepo, jsonMap.get(methodInfo.getFullName()));
+           methodEntityMap.put(methodInfo.getFullName(), methodEntity);
+
+           // vector store
+           methodInfo.setVid(methodEntity.getVid());
+           methodInfo.setDescription(methodEntity.getDescription());
+           elasticSearchService.storeJavaMethodEmbedding(methodInfo);
         });
         // class -[have_method]-> method
         classMap.values().forEach(classInfo -> {
@@ -91,8 +122,6 @@ public class JavaProject {
                 classEntity.getMethodList().addAll(
                         classInfo.getContainMethodList().stream().map(method ->
                                 methodEntityMap.get(method.getFullName())).toList());
-                // debug
-//                System.out.println("class " + classInfo.getName() + " have_methods " + classInfo.getContainMethodList());
             }
         });
         // method -[param_type | return_type | variable_type]-> class
@@ -115,10 +144,20 @@ public class JavaProject {
             }
         });
 
+        /*
+         * create JavaFieldEntity
+         */
         fieldMap.values().forEach(fieldInfo -> {
             findJavaClassInfo(fieldInfo.getBelongTo()).forEach(owner -> owner.getContainFieldList().add(fieldInfo));
             findJavaClassInfo(fieldInfo.getFullType()).forEach(type -> fieldInfo.getFiledTypeList().add(type));
-            fieldEntityMap.put(fieldInfo.getFullName(), fieldInfo.storeInNeo4j(javaFieldRepo, jsonMap.get(fieldInfo.getFullName())));
+
+            JavaFieldEntity fieldEntity = fieldInfo.storeInNeo4j(javaFieldRepo, jsonMap.get(fieldInfo.getFullName()));
+            fieldEntityMap.put(fieldInfo.getFullName(), fieldEntity);
+
+            // vector store
+            fieldInfo.setVid(fieldEntity.getVid());
+            fieldInfo.setDescription(fieldEntity.getDescription());
+            elasticSearchService.storeJavaFieldEmbedding(fieldInfo);
         });
         // class -[have_field]-> field
         classMap.values().forEach(classInfo -> {

@@ -31,6 +31,8 @@ public class JavaExtractor extends KnowledgeExtractor {
     @Override
     public void extraction() {
         JavaProject javaProject = new JavaProject();
+        javaProject.setElasticSearchService(elasticSearchService);
+
         String projectName = this.getDataDir().split("/")[this.getDataDir().split("/").length - 1];
         javaProject.setProjectName(projectName);
         Collection<File> javaFiles = FileUtils.listFiles(new File(this.getDataDir()), new String[]{"java"}, true);
@@ -74,6 +76,13 @@ public class JavaExtractor extends KnowledgeExtractor {
         // 调用 dao 接口存储到 neo4j
         javaProject.parseRelations(javaClassRepo, javaMethodRepo, javaFieldRepo);
         javaProject.storeRelations(javaClassRepo, javaMethodRepo, javaFieldRepo);
+
+        // test
+//        try {
+//            System.out.println(elasticSearchService.searchEmbedding("获取用户在线列表"));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
 
