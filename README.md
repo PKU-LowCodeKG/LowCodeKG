@@ -18,7 +18,49 @@ docker run -d -p 7474:7474 -p 7687:7687 --name neo4j-5.24 -e "NEO4J_AUTH=neo4j/n
 ```
 
 ### ES 配置
+使用docker配置 elasticsearch的版本为8.15.0
+```
+docker pull docker.elastic.co/elasticsearch/elasticsearch:8.15.0
 
+docker run -d --name elasticsearch \
+  -e ELASTIC_USERNAME=elastic \
+  -e ELASTIC_PASSWORD=changeme \
+  -e discovery.type=single-node \
+  -p 9200:9200 \
+  -p 9300:9300 \
+  docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+```
+需要对于elasticsearch容器的Files/usr/share/elasticsearch/config/elasticsearch.yml作如下配置
+```
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+
+#----------------------- BEGIN SECURITY AUTO CONFIGURATION -----------------------
+#
+# The following settings, TLS certificates, and keys have been automatically      
+# generated to configure Elasticsearch security features on 13-11-2024 07:02:45
+#
+# --------------------------------------------------------------------------------
+
+# Enable security features
+xpack.security.enabled: true
+
+xpack.security.enrollment.enabled: true
+
+# Enable encryption for HTTP API client connections, such as Kibana, Logstash, and Agents
+xpack.security.http.ssl:
+  enabled: false
+  keystore.path: certs/http.p12
+
+# Enable encryption and mutual authentication between cluster nodes
+xpack.security.transport.ssl:
+  enabled: true
+  verification_mode: certificate
+  keystore.path: certs/transport.p12
+  truststore.path: certs/transport.p12
+http.host: 0.0.0.0
+#----------------------- END SECURITY AUTO CONFIGURATION -------------------------
+```
 
 ## 项目结构
 - controller: 前端请求处理，调用服务接口并返回
