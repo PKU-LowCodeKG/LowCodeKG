@@ -111,4 +111,46 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         subGraph.setCypher(componentConfigCypher);
         return subGraph;
     }
+
+    @Override
+    public Neo4jSubGraph findAddTags(String query) {
+        List<Long> queryResultIdList = new ArrayList<>();
+        queryResultIdList.add(1526L);
+        queryResultIdList.add(1641L);
+
+        QueryRunner runner = neo4jClient.getQueryRunner();
+        Neo4jSubGraph subGraph = new Neo4jSubGraph();
+        Set<Long> addedNodeIds = new HashSet<>();
+        Set<Long> addedRelationIds = new HashSet<>();
+        for (Long queryResultId : queryResultIdList) {
+            String formattedId = String.format("%d", queryResultId);
+            String oneHopCypher = MessageFormat.format("""
+                    MATCH (n)-[r]->(m)
+                    WHERE id(n) = {0}
+                    RETURN n, m, r
+                    """, formattedId);
+            Result result = runner.run(oneHopCypher);
+            while (result.hasNext()) {
+                Record record = result.next();
+                Node n = record.get("n").asNode();
+                Node m = record.get("m").asNode();
+                Relationship r = record.get("r").asRelationship();
+                if (!addedNodeIds.contains(n.id())) {
+                    subGraph.addNeo4jNode(getNodeDetail(n.id()));
+                    addedNodeIds.add(n.id());
+                }
+                if (!addedNodeIds.contains(m.id())) {
+                    subGraph.addNeo4jNode(getNodeDetail(m.id()));
+                    addedNodeIds.add(m.id());
+                }
+                if (!addedRelationIds.contains(r.id())) {
+                    subGraph.addNeo4jRelation(getRelationDetail(r));
+                    addedRelationIds.add(r.id());
+                }
+            }
+        }
+
+        subGraph.setCypher("cypher");
+        return subGraph;
+    }
 }
