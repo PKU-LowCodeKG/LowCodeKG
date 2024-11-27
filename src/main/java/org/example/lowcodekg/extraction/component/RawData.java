@@ -37,6 +37,14 @@ public class RawData {
     private String usage = "";
 
     @Getter
+    @Setter
+    private String source;
+
+    @Getter
+    @Setter
+    private String language;
+
+    @Getter
     private ArrayList<CodeDemo> codeDemos = new ArrayList<CodeDemo>();
 
     @Getter

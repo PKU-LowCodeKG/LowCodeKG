@@ -23,8 +23,8 @@ import org.springframework.stereotype.Service;
  * 
  * "RawData" 中包含一个代码示例  "CodeDemo" 列表, 提供了若干代码应用实例.
  * "RawData" 中包含一个配置项    "RawConfigItem" 列表, 提供了该组件的配置项相关信息.
- * "RawData"        ---   public void toComponent(Component component)
- * "RawConfigItem"  ---   public void toConfigItem(ConfigItem config)
+ * "RawData"        ---   public void convertToComponent(Component component)
+ * "RawConfigItem"  ---   public void convertToConfigItem(ConfigItem config)
  * 使用上述函数将原始数据转换为schema中的对象.
  * 
  * @BugsOrUnfinished
@@ -49,20 +49,9 @@ public class AntMDExtractor extends KnowledgeExtractor {
 
     @Override
     public void extraction() {
-        File[] folders = new File(this.getDataDir()).listFiles(File::isDirectory);
-        for (int i = 0; i < folders.length; i++) {
-            if (!Files.exists(Paths.get(this.getDataDir(), folders[i].getName(), "index.zh-CN.md"))) {
-                System.err.println(".md File Not Found (May not component): " + folders[i].getName());
-                continue;
-            } else {
-                RawData data = new RawData();
-                WorkDir = this.getDataDir() + "/" + folders[i].getName();
-                parseComponent(WorkDir + "/index.zh-CN.md", data);
-                dataList.add(data);
-            }
-        }
+        parseData();
         // 转化为 Schema 对象
-        for(RawData data: dataList) {
+        for(RawData data : dataList) {
             Component component = data.convertToComponent();
             component.storeInNeo4j(componentRepo, configItemRepo);
         }
@@ -75,6 +64,8 @@ public class AntMDExtractor extends KnowledgeExtractor {
             List<String> lines = Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
             while (lineNum < lines.size()) {
                 parseLine(lines, data);
+                data.setLanguage("React");
+                data.setSource("Ant-Design");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,6 +80,10 @@ public class AntMDExtractor extends KnowledgeExtractor {
             data.setCategory(line.substring(10));
             line.substring(10);
             return;
+        }
+        if (line.startsWith("group: ")) {
+            // group / sceneLabel-functional
+            data.setSceneLabel(line.substring(7));
         }
         if (line.startsWith("title: ")) {
             // title / name-EN
@@ -162,36 +157,63 @@ public class AntMDExtractor extends KnowledgeExtractor {
     private void parseConfig(List<String> lines, RawData data) {
         String line;
         while (lineNum < lines.size()) {
+            // TODO: 有一些异种“配置项”，主要是不足5列的部分。暂未专门有效区分。
             line = lines.get(lineNum);
-            if (line.startsWith("##")) {
+            if (line.startsWith("## ")) {
                 parseLine(lines, data);
                 return;
             }
-            if (line.startsWith("| ") && !line.startsWith("| 属性") && !line.startsWith("| 参数") && !line.startsWith("| --- |")) {
+            if (line.startsWith("| ") && !line.startsWith("| 属性") && !line.startsWith("| 参数") && !line.startsWith("| 名称") && !line.startsWith("| Property") && !line.startsWith("| --- |")) {
                 line = line.substring(1, line.length() - 2);
                 String[] values = line.split(" \\|");
-                if (values.length != 5) {
-                    // Debug:
-                    // System.err.println("Bug or Invalid source data: ConfigItem Values = " + values.length);
-                    // System.err.println("WorkDir = " + WorkDir);
-                    // System.err.println(line);
-                    // for (int i = 0; i < values.length; i++) {
-                    //     System.err.println(values[i]);
-                    // }
+
+                if (values.length < 2) {
+                    System.err.println("Error: Invalid configItem values: " + WorkDir + ": " + line);
+                    lineNum++;
+                    continue;
                 }
-                else {
-                    RawConfigItem config = new RawConfigItem();
-                    config.setName(values[0].substring(1));
-                    config.setDescription(values[1].substring(1));
+
+                RawConfigItem config = new RawConfigItem();
+                config.setName(values[0].substring(1));
+                config.setDescription(values[1].substring(1));
+
+                if (values.length >= 3) {
                     config.setType(values[2].substring(1));
-                    config.setDefaultValue(values[3].substring(1));
-                    config.setVersion(values[4].substring(1));
-                    data.getConfigItems().add(config);
                 }
-                
+                if (values.length >= 4) {
+                    config.setDefaultValue(values[3].substring(1));
+                }
+                if (values.length >= 5) {
+                    config.setVersion(values[4].substring(1));
+                }
+                if (values.length >= 6) {
+                    // System.err.println("Error: Invalid configItem values: " + WorkDir + ": " + line);
+                }
+                data.getConfigItems().add(config);
             }
             lineNum++;
         }
+    }
+
+    public void parseData() {
+        this.setDataDir(this.getDataDir() + "/components");
+        File[] folders = new File(this.getDataDir()).listFiles(File::isDirectory);
+        for (int i = 0; i < folders.length; i++) {
+            if (!Files.exists(Paths.get(this.getDataDir(), folders[i].getName(), "index.zh-CN.md"))) {
+                System.err.println(".md File Not Found (May not component): " + folders[i].getName());
+                continue;
+            } else {
+                RawData data = new RawData();
+                WorkDir = this.getDataDir() + "/" + folders[i].getName();
+                parseComponent(WorkDir + "/index.zh-CN.md", data);
+                if (data.getName().equals("组件总览") || data.getName().equals("Util")) {
+                    continue;
+                }
+                dataList.add(data);
+            }
+        }
+
+        return;
     }
 
 }
