@@ -23,6 +23,9 @@ public class JavaMethodEntity {
     @Property("fullName")
     private String fullName;
 
+    @Property("projectName")
+    private String projectName;
+
     @Property("returnType")
     private String returnType;
 

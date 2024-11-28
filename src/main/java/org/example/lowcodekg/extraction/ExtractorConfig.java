@@ -2,14 +2,17 @@ package org.example.lowcodekg.extraction;
 
 import lombok.Getter;
 
+import java.util.List;
+
 public class ExtractorConfig {
 
     @Getter
-    private String className, graphDir, dataDir;
+    private String className;
+    @Getter
+    private List<String> dataDir;
 
-    public ExtractorConfig(String className, String graphDir, String dataDir) {
+    public ExtractorConfig(String className, List<String> dataDir) {
         this.className = className;
-        this.graphDir = graphDir;
         this.dataDir = dataDir;
     }
 }

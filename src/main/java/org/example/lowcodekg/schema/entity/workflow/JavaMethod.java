@@ -23,6 +23,8 @@ public class JavaMethod {
 
     private String fullName;
 
+    private String projectName;
+
     private String returnType;
 
     private String fullReturnType;
@@ -88,6 +90,7 @@ public class JavaMethod {
         JavaMethodEntity methodEntity = new JavaMethodEntity();
         methodEntity.setName(name);
         methodEntity.setFullName(fullName);
+        methodEntity.setProjectName(projectName);
         methodEntity.setReturnType(returnType);
         methodEntity.setContent(content);
         methodEntity.setComment(comment);

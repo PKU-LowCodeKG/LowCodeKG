@@ -27,6 +27,8 @@ public class JavaClass {
 
     private String fullName;
 
+    private String projectName;
+
     private String comment;
 
     private String content;
@@ -60,6 +62,7 @@ public class JavaClass {
         classEntity.setFullName(this.fullName);
         classEntity.setComment(this.comment);
         classEntity.setContent(this.content);
+        classEntity.setProjectName(this.projectName);
         if(!Objects.isNull(jsonContent)) {
             classEntity.setVid(jsonContent.getLong("id"));
             classEntity.setDescription(jsonContent.getString("description"));

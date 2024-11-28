@@ -69,6 +69,7 @@ public class JavaProject {
          * create JavaClassEntity
          */
         classMap.values().forEach(classInfo -> {
+            classInfo.setProjectName(projectName);
             classInfo.getSuperClassList().addAll(findJavaClassInfo(classInfo.getSuperClassType()));
             classInfo.getSuperInterfaceList().addAll(findJavaClassInfo(classInfo.getSuperInterfaceType()));
             JavaClassEntity classEntity = classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName()));
@@ -96,6 +97,7 @@ public class JavaProject {
          * create JavaMethodEntity
          */
         methodMap.values().forEach(methodInfo -> {
+            methodInfo.setProjectName(projectName);
            findJavaClassInfo(methodInfo.getBelongTo()).forEach(owner -> owner.getContainMethodList().add(methodInfo));
            findJavaClassInfo(methodInfo.getFullParams()).forEach(param -> methodInfo.getParamTypeList().add(param));
            findJavaClassInfo(methodInfo.getFullReturnType()).forEach(returnType -> methodInfo.getReturnTypeList().add(returnType));
@@ -148,6 +150,7 @@ public class JavaProject {
          * create JavaFieldEntity
          */
         fieldMap.values().forEach(fieldInfo -> {
+            fieldInfo.setProjectName(projectName);
             findJavaClassInfo(fieldInfo.getBelongTo()).forEach(owner -> owner.getContainFieldList().add(fieldInfo));
             findJavaClassInfo(fieldInfo.getFullType()).forEach(type -> fieldInfo.getFiledTypeList().add(type));
 

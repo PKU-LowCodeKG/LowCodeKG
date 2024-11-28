@@ -21,6 +21,8 @@ public class JavaField {
 
     private String fullName;
 
+    private String projectName;
+
     private String type;
 
     private String comment;
@@ -49,6 +51,7 @@ public class JavaField {
         JavaFieldEntity fieldEntity = new JavaFieldEntity();
         fieldEntity.setName(name);
         fieldEntity.setFullName(fullName);
+        fieldEntity.setProjectName(projectName);
         fieldEntity.setType(type);
         fieldEntity.setComment(comment);
         if(!Objects.isNull(jsonContent)) {
