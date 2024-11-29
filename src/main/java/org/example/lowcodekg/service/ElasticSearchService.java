@@ -13,10 +13,9 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.example.lowcodekg.schema.entity.workflow.JavaClass;
 import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
@@ -30,6 +29,7 @@ public class ElasticSearchService {
     private final EmbeddingStore<TextSegment> embeddingStore;
     private final EmbeddingModel embeddingModel;
 
+
     @Autowired
     public ElasticSearchService(RestClient client) {
         this.client = client;
@@ -38,7 +38,7 @@ public class ElasticSearchService {
     }
 
     public void storeJavaClassEmbedding(JavaClass javaClass) {
-        if (javaClass.getDescription() != null && !javaClass.getDescription().isEmpty()) {
+        if (!Objects.isNull(javaClass.getDescription())) {
             TextSegment descriptionSegment = TextSegment.from(javaClass.getDescription());
             TextSegment vidSegment = TextSegment.from(String.valueOf(javaClass.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
@@ -50,7 +50,7 @@ public class ElasticSearchService {
     }
 
     public void storeJavaMethodEmbedding(JavaMethod javaMethod) {
-        if (javaMethod.getDescription() != null && !javaMethod.getDescription().isEmpty()) {
+        if (!Objects.isNull(javaMethod.getDescription())) {
             TextSegment descriptionSegment = TextSegment.from(javaMethod.getDescription());
             TextSegment vidSegment = TextSegment.from(String.valueOf(javaMethod.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
@@ -61,7 +61,7 @@ public class ElasticSearchService {
         }
     }
     public void storeJavaFieldEmbedding(JavaField javaField) {
-        if (javaField.getDescription() != null && !javaField.getDescription().isEmpty()) {
+        if (!Objects.isNull(javaField.getDescription())) {
             TextSegment descriptionSegment = TextSegment.from(javaField.getDescription());
             TextSegment vidSegment = TextSegment.from(String.valueOf(javaField.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
@@ -71,8 +71,11 @@ public class ElasticSearchService {
 //            System.out.println(javaField.getFullName() + " description is null or empty");
         }
     }
-    // 查询嵌入数据
-    public List<String> searchEmbedding(String query) throws IOException {
+
+    /**
+     * 查询嵌入数据
+     */
+    public List<String> searchEmbedding(String query) {
         if (query == null || query.isEmpty()) {
             throw new IllegalArgumentException("Query cannot be null or empty");
         }

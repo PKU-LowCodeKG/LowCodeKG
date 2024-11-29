@@ -181,56 +181,52 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 
     @Override
     public Neo4jSubGraph searchRelevantGraph(String query) {
-        try {
-            List<String> relevantNodeVids = elasticSearchService.searchEmbedding(query);
-            QueryRunner runner = neo4jClient.getQueryRunner();
-            Neo4jSubGraph subGraph = new Neo4jSubGraph();
+        List<String> relevantNodeVids = elasticSearchService.searchEmbedding(query);
+        QueryRunner runner = neo4jClient.getQueryRunner();
+        Neo4jSubGraph subGraph = new Neo4jSubGraph();
 
-            Set<Long> addedNodeIds = new HashSet<>();
-            Set<Long> addedRelationIds = new HashSet<>();
+        Set<Long> addedNodeIds = new HashSet<>();
+        Set<Long> addedRelationIds = new HashSet<>();
 
-            int top = Math.min(2, relevantNodeVids.size());  // 找top-2最相关的节点
-            int maxExtendNum = 4;  // 目前限定每个查询出的节点最多扩展出4个节点
-            for (int i = 0; i < top; i++) {
-                String vid = relevantNodeVids.get(i);
-                String oneHopCypher = MessageFormat.format("""
-                    MATCH (n)-[r]->(m)
-                    WHERE n.vid = {0}
-                    RETURN n, m, r
-                    """, vid);
-                Result result = runner.run(oneHopCypher);
+        int top = Math.min(2, relevantNodeVids.size());  // 找top-2最相关的节点
+        int maxExtendNum = 4;  // 目前限定每个查询出的节点最多扩展出4个节点
+        for (int i = 0; i < top; i++) {
+            String vid = relevantNodeVids.get(i);
+            String oneHopCypher = MessageFormat.format("""
+                MATCH (n)-[r]->(m)
+                WHERE n.vid = {0}
+                RETURN n, m, r
+                """, vid);
+            Result result = runner.run(oneHopCypher);
 
-                int recordNum = 0;
-                while (result.hasNext()) {
-                    recordNum++;
-                    if (recordNum > maxExtendNum) {
-                        break;
-                    }
-                    Record record = result.next();
-                    Node n = record.get("n").asNode();
-                    Node m = record.get("m").asNode();
-                    Relationship r = record.get("r").asRelationship();
-                    if (!addedNodeIds.contains(n.id())) {
-                        subGraph.addNeo4jNode(getNodeDetail(n.id()));
-                        addedNodeIds.add(n.id());
-                    }
-                    if (!addedRelationIds.contains(r.id())) {
-                        subGraph.addNeo4jRelation(getRelationDetail(r));
-                        addedRelationIds.add(r.id());
-                    }
-                    if (!addedNodeIds.contains(m.id())) {
-                        subGraph.addNeo4jNode(getNodeDetail(m.id()));
-                        addedNodeIds.add(m.id());
-                    }
+            int recordNum = 0;
+            while (result.hasNext()) {
+                recordNum++;
+                if (recordNum > maxExtendNum) {
+                    break;
+                }
+                Record record = result.next();
+                Node n = record.get("n").asNode();
+                Node m = record.get("m").asNode();
+                Relationship r = record.get("r").asRelationship();
+                if (!addedNodeIds.contains(n.id())) {
+                    subGraph.addNeo4jNode(getNodeDetail(n.id()));
+                    addedNodeIds.add(n.id());
+                }
+                if (!addedRelationIds.contains(r.id())) {
+                    subGraph.addNeo4jRelation(getRelationDetail(r));
+                    addedRelationIds.add(r.id());
+                }
+                if (!addedNodeIds.contains(m.id())) {
+                    subGraph.addNeo4jNode(getNodeDetail(m.id()));
+                    addedNodeIds.add(m.id());
                 }
             }
-
-            String llmAnswer = llmGenerateService.graphPromptToCode(query, subGraph.getNodes());
-
-            subGraph.setGeneratedCode(llmAnswer);
-            return subGraph;
-        } catch (IOException e) {
-            return null;
         }
+
+        String llmAnswer = llmGenerateService.graphPromptToCode(query, subGraph.getNodes());
+
+        subGraph.setGeneratedCode(llmAnswer);
+        return subGraph;
     }
 }
