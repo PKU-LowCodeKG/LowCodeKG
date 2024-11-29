@@ -8,7 +8,7 @@ Spring Boot 3.3.4 \
 Maven 3.9.9
 
 ### Neo4j 配置
-使用 docker 配置，neo4j版本为5.24
+使用 docker 配置，neo4j 版本为 5.24
 
 请提前准备一个文件夹 {your_path}，用来挂载容器内的目录
 ```
