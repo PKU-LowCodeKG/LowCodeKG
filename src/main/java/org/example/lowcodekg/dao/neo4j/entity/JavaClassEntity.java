@@ -23,6 +23,9 @@ public class JavaClassEntity {
     @Property("fullName")
     private String fullName;
 
+    @Property("projectName")
+    private String projectName;
+
     @Property("comment")
     private String comment;
 

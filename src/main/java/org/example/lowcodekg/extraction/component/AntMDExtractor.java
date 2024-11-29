@@ -49,22 +49,24 @@ public class AntMDExtractor extends KnowledgeExtractor {
 
     @Override
     public void extraction() {
-        File[] folders = new File(this.getDataDir()).listFiles(File::isDirectory);
-        for (int i = 0; i < folders.length; i++) {
-            if (!Files.exists(Paths.get(this.getDataDir(), folders[i].getName(), "index.zh-CN.md"))) {
-                System.err.println(".md File Not Found (May not component): " + folders[i].getName());
-                continue;
-            } else {
-                RawData data = new RawData();
-                WorkDir = this.getDataDir() + "/" + folders[i].getName();
-                parseComponent(WorkDir + "/index.zh-CN.md", data);
-                dataList.add(data);
+        for(String filePath: this.getDataDir()) {
+            File[] folders = new File(filePath).listFiles(File::isDirectory);
+            for (int i = 0; i < folders.length; i++) {
+                if (!Files.exists(Paths.get(filePath, folders[i].getName(), "index.zh-CN.md"))) {
+                    System.err.println(".md File Not Found (May not component): " + folders[i].getName());
+                    continue;
+                } else {
+                    RawData data = new RawData();
+                    WorkDir = this.getDataDir() + "/" + folders[i].getName();
+                    parseComponent(WorkDir + "/index.zh-CN.md", data);
+                    dataList.add(data);
+                }
             }
-        }
-        // 转化为 Schema 对象
-        for(RawData data: dataList) {
-            Component component = data.convertToComponent();
-            component.storeInNeo4j(componentRepo, configItemRepo);
+            // 转化为 Schema 对象
+            for(RawData data: dataList) {
+                Component component = data.convertToComponent();
+                component.storeInNeo4j(componentRepo, configItemRepo);
+            }
         }
         return;
     }

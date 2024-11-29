@@ -23,6 +23,9 @@ public class JavaFieldEntity {
     @Property("fullName")
     private String fullName;
 
+    @Property("projectName")
+    private String projectName;
+
     @Property("type")
     private String type;
 

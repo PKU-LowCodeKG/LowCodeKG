@@ -1,5 +1,6 @@
 package org.example.lowcodekg.service;
 
+import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.repository.*;
 import org.example.lowcodekg.extraction.ExtractorConfig;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -46,8 +49,6 @@ public class KnowledgeExtractorService {
 //        KnowledgeExtractor.executeFromYaml(yamlStr);
         Yaml yaml = new Yaml();
         Map<String, Object> ret = yaml.load(yamlStr);
-        String graphDir = (String) ret.get("graphDir");
-        ret.remove("graphDir");
         boolean increment = false;
         if (ret.containsKey("increment") && (boolean)ret.get("increment")){
             increment = true;
@@ -55,13 +56,35 @@ public class KnowledgeExtractorService {
         }
         List<ExtractorConfig> configs = new ArrayList<>();
         for (String key : ret.keySet()) {
-            configs.add(new ExtractorConfig(key, graphDir, (String) ret.get(key)));
+            Object value = ret.get(key);
+            if(value instanceof String) {
+                configs.add(new ExtractorConfig(key, Collections.singletonList((String) value)));
+            } else if(value instanceof List) {
+                configs.add(new ExtractorConfig(key, (List<String>) ret.get(key)));
+            }
         }
-        if (new File(graphDir).exists() && !increment){
+        if (!increment){
             String nodeCypher = "MATCH (n) DETACH DELETE n";
             QueryRunner runner = neo4jClient.getQueryRunner();
             runner.run(nodeCypher);
         }
         KnowledgeExtractor.execute(configs);
+    }
+
+    public static void main(String[] args) {
+        Yaml yaml = new Yaml();
+        try {
+            Map<String, Object> ret = yaml.load(FileUtils.readFileToString(new File("/Users/chang/Documents/projects/config.yml"), "utf-8"));
+            for (String key : ret.keySet()) {
+                Object value = ret.get(key);
+                if(value instanceof String) {
+                    System.out.println((String) value);
+                } else if(value instanceof List) {
+                    System.out.println((List<String>) value);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -76,16 +76,16 @@ http.host: 0.0.0.0
 
 config.yml 示例
 ```yaml
-# 占位，实际不需要
-graphDir: /Users/chang/Documents/projects/neo4j_data
 
 # 依次执行以下插件
 
 # 开源组件库 Ant Design 文档解析
-org.example.lowcodekg.extraction.component.AntMDExtractor: /Users/chang/Documents/projects/ant-design/components
+org.example.lowcodekg.extraction.component.AntMDExtractor: 
+  - /Users/chang/Documents/projects/ant-design/components
 # Java 项目代码解析
-org.example.lowcodekg.extraction.java.JavaExtractor: /Users/chang/Documents/projects/NBlog/blog-api
-
+org.example.lowcodekg.extraction.java.JavaExtractor:
+  - /Users/chang/Documents/projects/data_projects/aurora/aurora-springboot
+  - /Users/chang/Documents/projects/data_projects/NBlog/blog-api
 ```
 
 ## 知识图谱 Schema

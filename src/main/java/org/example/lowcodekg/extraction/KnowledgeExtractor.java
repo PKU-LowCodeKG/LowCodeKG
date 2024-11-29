@@ -38,11 +38,7 @@ public abstract class KnowledgeExtractor {
 
     @Getter
     @Setter
-    private String graphDir;
-
-    @Getter
-    @Setter
-    private String dataDir;
+    private List<String> dataDir;
 
     public static void execute(List<ExtractorConfig> extractorConfigList) {
         for (ExtractorConfig config : extractorConfigList) {
@@ -53,7 +49,6 @@ public abstract class KnowledgeExtractor {
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
-            extractor.setGraphDir(config.getGraphDir());
             extractor.setDataDir(config.getDataDir());
             try {
                 extractor.execute();
