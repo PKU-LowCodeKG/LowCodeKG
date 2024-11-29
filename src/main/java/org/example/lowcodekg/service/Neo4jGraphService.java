@@ -11,5 +11,9 @@ public interface Neo4jGraphService {
 
     List<Neo4jRelation> getRelationList(long id);
 
-    Neo4jSubGraph codeSearch(String query);
+//    Neo4jSubGraph codeSearch(String query);
+
+    Neo4jSubGraph findAddTags(String query);
+
+    Neo4jSubGraph searchRelevantGraph(String query);
 }

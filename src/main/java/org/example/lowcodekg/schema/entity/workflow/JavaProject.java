@@ -22,7 +22,7 @@ import java.util.*;
 public class JavaProject {
 
     @Value("${json.path}")
-    private final String jsonFilePath = "/Users/chang/Documents/projects/LowCodeKG/src/main/resources/data/javaInfo.json";
+    private final String jsonFilePath = "/Users/xianlin/Desktop/workspaces/software_reuse/LowCodeKG/src/main/resources/data/javaInfo.json";
 
     @Setter
     private ElasticSearchService elasticSearchService;

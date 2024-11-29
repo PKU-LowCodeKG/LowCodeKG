@@ -37,9 +37,15 @@ public class Controller {
         return neo4jGraphService.getRelationList(id);
     }
 
+//    @PostMapping("/codeSearch")
+//    synchronized public Neo4jSubGraph codeSearch(@RequestParam("query") String query) {
+//        return neo4jGraphService.codeSearch(query);
+//    }
+
     @PostMapping("/codeSearch")
     synchronized public Neo4jSubGraph codeSearch(@RequestParam("query") String query) {
-        return neo4jGraphService.codeSearch(query);
+        return neo4jGraphService.searchRelevantGraph(query);
+//        return neo4jGraphService.findAddTags(query);
     }
 
 }
