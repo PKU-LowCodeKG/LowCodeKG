@@ -77,7 +77,7 @@ http.host: 0.0.0.0
 config.yml 示例
 ```yaml
 
-# 依次执行以下插件
+# 依次执行以下插件(执行时数据位置需要替换为本地路径)
 
 # 开源组件库 Ant Design 文档解析
 org.example.lowcodekg.extraction.component.AntMDExtractor: 
@@ -96,4 +96,8 @@ org.example.lowcodekg.extraction.java.JavaExtractor:
 
 ## 数据源
 - [蚂蚁开源组件库](https://github.com/ant-design/ant-design)
-- [博客系统](https://github.com/Naccl/NBlog)
+- 博客系统
+  - https://github.com/linhaojun857/aurora
+  - https://github.com/Naccl/NBlog
+  - https://github.com/martin-chips/DimpleBlog
+  - https://github.com/moxi624/mogu_blog_v2

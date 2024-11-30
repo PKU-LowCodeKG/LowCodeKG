@@ -1,5 +1,6 @@
 package org.example.lowcodekg.extraction.java;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
@@ -12,7 +13,9 @@ import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.schema.entity.workflow.JavaClass;
 import org.example.lowcodekg.schema.entity.workflow.JavaProject;
+import org.example.lowcodekg.util.JSONUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -90,7 +93,10 @@ public class JavaExtractor extends KnowledgeExtractor {
 
 
     public static void main(String[] args) {
-        String path = "usr/chang/projects/LowCodeKG";
-        System.out.println(path.split("/")[path.split("/").length - 1]);
+        String relativePath = "src/main/resources/data/javaInfo.json";
+        File file = new File(relativePath);
+        System.out.println(file.getAbsolutePath());
+        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile(file.getAbsolutePath());
+        System.out.println(jsonMap.size());
     }
 }

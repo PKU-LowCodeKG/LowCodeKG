@@ -12,17 +12,20 @@ import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.util.JSONUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Component
 public class JavaProject {
 
-    @Value("${json.path}")
-    private final String jsonFilePath = "/Users/xianlin/Desktop/workspaces/software_reuse/LowCodeKG/src/main/resources/data/javaInfo.json";
+    private final String jsonFilePath = "/src/main/resources/data/javaInfo.json";
 
     @Setter
     private ElasticSearchService elasticSearchService;
@@ -60,7 +63,14 @@ public class JavaProject {
      */
     public void parseRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
         // load local json file
-        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile(jsonFilePath);
+//        File file = new File(jsonFilePath);
+        String projectDir = System.getProperty("user.dir");
+        File file = new File(projectDir + "/" + jsonFilePath);
+        if(!file.exists()) {
+            System.out.println("json file not found");
+            throw new RuntimeException("json file not found");
+        }
+        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile(file.getAbsolutePath());
         System.out.println("jsonObject number:" + jsonMap.size());
 
         methodMap.values().forEach(info -> methodBindingMap.put(info.getMethodBiding(), info));

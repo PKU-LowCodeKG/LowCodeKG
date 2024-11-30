@@ -19,6 +19,7 @@ public class JSONUtils {
      */
     public static Map<String, JSONObject> loadJsonFile(String path) {
         File file = new File(path);
+
         StringBuilder jsonContent = new StringBuilder();
         try (FileReader reader = new FileReader(file)) {
             char[] buffer = new char[1024];
