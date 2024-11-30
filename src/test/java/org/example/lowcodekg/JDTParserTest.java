@@ -37,6 +37,7 @@ public class JDTParserTest {
     public void test() {
         String filePath = "/Users/chang/Documents/projects/data_projects/aurora/aurora-springboot";
         JavaProject javaProject = new JavaProject();
+        javaProject.init();
 
         String projectName = filePath.split("/")[filePath.split("/").length - 1];
         javaProject.setProjectName(projectName);

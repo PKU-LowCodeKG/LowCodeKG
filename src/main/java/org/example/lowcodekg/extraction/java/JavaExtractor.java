@@ -35,6 +35,7 @@ public class JavaExtractor extends KnowledgeExtractor {
     public void extraction() {
         for(String filePath: this.getDataDir()) {
             JavaProject javaProject = new JavaProject();
+            javaProject.init();
             javaProject.setElasticSearchService(elasticSearchService);
 
             String projectName = filePath.split("/")[filePath.split("/").length - 1];

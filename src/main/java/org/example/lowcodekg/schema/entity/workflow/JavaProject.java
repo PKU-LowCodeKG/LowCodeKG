@@ -47,7 +47,7 @@ public class JavaProject {
     private Map<IMethodBinding, JavaMethod> methodBindingMap = new HashMap<>();
 
 
-    public JavaProject() {
+    public void init() {
         // load local json file for description
         String projectDir = System.getProperty("user.dir");
         File file = new File(projectDir + "/" + jsonFilePath);
@@ -191,13 +191,6 @@ public class JavaProject {
                 classEntity.getFieldList().addAll(
                         classInfo.getContainFieldList().stream().map(field ->
                                 fieldEntityMap.get(field.getFullName())).toList());
-                if(classEntity.getFullName().contains("FriendLinkController")) {
-                    System.out.println(classEntity.getFieldList());
-                    javaFieldRepo.saveAll(classEntity.getFieldList());
-                }
-                if(classEntity.getFullName().contains("FriendLinkVO")) {
-                    System.out.println(classEntity.getFieldList());
-                }
             }
         });
         // method -[field_access]-> field
@@ -222,20 +215,41 @@ public class JavaProject {
 
     private void parseRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
         classEntityMap.values().forEach(classEntity -> {
-            javaClassRepo.saveAll(classEntity.getSuperClassList());
-            javaClassRepo.saveAll(classEntity.getSuperInterfaceList());
-            javaMethodRepo.saveAll(classEntity.getMethodList());
-            javaFieldRepo.saveAll(classEntity.getFieldList());
+            classEntity.getSuperClassList().forEach(superClass -> {
+                javaClassRepo.createRelationOfExtendClass(classEntity.getId(), superClass.getId());
+            });
+            classEntity.getSuperInterfaceList().forEach(superInterface -> {
+                javaClassRepo.createRelationOfInterface(classEntity.getId(), superInterface.getId());
+            });
+            classEntity.getMethodList().forEach(methodEntity -> {
+                javaClassRepo.createRelationOfMethod(classEntity.getId(), methodEntity.getId());
+            });
+            classEntity.getFieldList().forEach(fieldEntity -> {
+                javaClassRepo.createRelationOfField(classEntity.getId(), fieldEntity.getId());
+            });
+
         });
         methodEntityMap.values().forEach(methodEntity -> {
-            javaMethodRepo.saveAll(methodEntity.getMethodCallList());
-            javaFieldRepo.saveAll(methodEntity.getFieldAccessList());
-            javaClassRepo.saveAll(methodEntity.getParamTypeList());
-            javaClassRepo.saveAll(methodEntity.getReturnTypeList());
-            javaClassRepo.saveAll(methodEntity.getVariableTypeList());
+            methodEntity.getMethodCallList().forEach(call -> {
+                javaMethodRepo.createRelationOfMethodCall(methodEntity.getId(), call.getId());
+            });
+            methodEntity.getParamTypeList().forEach(param -> {
+                javaMethodRepo.createRelationOfParamType(methodEntity.getId(), param.getId());
+            });
+            methodEntity.getReturnTypeList().forEach(returnType -> {
+                javaMethodRepo.createRelationOfReturnType(methodEntity.getId(), returnType.getId());
+            });
+            methodEntity.getVariableTypeList().forEach(variable -> {
+                javaMethodRepo.createRelationOfVariableType(methodEntity.getId(), variable.getId());
+            });
+            methodEntity.getFieldAccessList().forEach(access -> {
+                javaMethodRepo.createRelationOfFieldAccess(methodEntity.getId(), access.getId());
+            });
         });
         fieldEntityMap.values().forEach(fieldEntity -> {
-            javaClassRepo.saveAll(fieldEntity.getTypeList());
+            fieldEntity.getTypeList().forEach(type -> {
+                javaFieldRepo.createRelationOfFieldType(fieldEntity.getId(), type.getId());
+            });
         });
     }
 
