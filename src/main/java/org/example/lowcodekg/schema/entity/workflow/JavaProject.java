@@ -26,6 +26,7 @@ import java.util.*;
 public class JavaProject {
 
     private final String jsonFilePath = "/src/main/resources/data/javaInfo.json";
+    private Map<String, JSONObject> jsonMap = new HashMap<>();
 
     @Setter
     private ElasticSearchService elasticSearchService;
@@ -45,6 +46,19 @@ public class JavaProject {
 
     private Map<IMethodBinding, JavaMethod> methodBindingMap = new HashMap<>();
 
+
+    public JavaProject() {
+        // load local json file for description
+        String projectDir = System.getProperty("user.dir");
+        File file = new File(projectDir + "/" + jsonFilePath);
+        if(!file.exists()) {
+            System.out.println("json file not found");
+            throw new RuntimeException("json file not found");
+        }
+        jsonMap = JSONUtils.loadJsonFile(file.getAbsolutePath());
+        System.out.println("jsonObject number:" + jsonMap.size());
+    }
+
     public void addClass(JavaClass javaClass) {
         classMap.put(javaClass.getFullName(), javaClass);
     }
@@ -61,23 +75,23 @@ public class JavaProject {
     /**
      * 创建实体及关系
      */
-    public void parseRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
-        // load local json file
-//        File file = new File(jsonFilePath);
-        String projectDir = System.getProperty("user.dir");
-        File file = new File(projectDir + "/" + jsonFilePath);
-        if(!file.exists()) {
-            System.out.println("json file not found");
-            throw new RuntimeException("json file not found");
-        }
-        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile(file.getAbsolutePath());
-        System.out.println("jsonObject number:" + jsonMap.size());
-
+    public void parse(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
         methodMap.values().forEach(info -> methodBindingMap.put(info.getMethodBiding(), info));
 
         /*
-         * create JavaClassEntity
+         * create entities
          */
+        parseClassEntity(javaClassRepo);
+        parseMethodEntity(javaMethodRepo);
+        parseFieldEntity(javaFieldRepo);
+
+        /*
+         * store relationships
+         */
+        parseRelations(javaClassRepo, javaMethodRepo, javaFieldRepo);
+    }
+
+    private void parseClassEntity(JavaClassRepo javaClassRepo) {
         classMap.values().forEach(classInfo -> {
             classInfo.setProjectName(projectName);
             classInfo.getSuperClassList().addAll(findJavaClassInfo(classInfo.getSuperClassType()));
@@ -88,7 +102,7 @@ public class JavaProject {
             // vector store
             classInfo.setVid(classEntity.getVid());
             classInfo.setDescription(classEntity.getDescription());
-            elasticSearchService.storeJavaClassEmbedding(classInfo);
+//            elasticSearchService.storeJavaClassEmbedding(classInfo);
         });
         // class -[extend | implement]-> class
         classMap.values().forEach(classInfo -> {
@@ -102,30 +116,29 @@ public class JavaProject {
                                 classEntityMap.get(cls.getFullName())).toList());
             }
         });
+    }
 
-        /*
-         * create JavaMethodEntity
-         */
+    private void parseMethodEntity(JavaMethodRepo javaMethodRepo) {
         methodMap.values().forEach(methodInfo -> {
             methodInfo.setProjectName(projectName);
-           findJavaClassInfo(methodInfo.getBelongTo()).forEach(owner -> owner.getContainMethodList().add(methodInfo));
-           findJavaClassInfo(methodInfo.getFullParams()).forEach(param -> methodInfo.getParamTypeList().add(param));
-           findJavaClassInfo(methodInfo.getFullReturnType()).forEach(returnType -> methodInfo.getReturnTypeList().add(returnType));
-           findJavaClassInfo(methodInfo.getFullVariables()).forEach(variable -> methodInfo.getVariableTypeList().add(variable));
-           methodInfo.getMethodCalls().forEach(call -> {
-               if (methodBindingMap.containsKey(call)) {
-                   methodInfo.getMethodCallList().add(methodBindingMap.get(call));
-               }
-           });
-           findJavaFieldInfo(methodInfo.getFieldAccesses()).forEach(access -> methodInfo.getFieldAccessList().add(access));
+            findJavaClassInfo(methodInfo.getBelongTo()).forEach(owner -> owner.getContainMethodList().add(methodInfo));
+            findJavaClassInfo(methodInfo.getFullParams()).forEach(param -> methodInfo.getParamTypeList().add(param));
+            findJavaClassInfo(methodInfo.getFullReturnType()).forEach(returnType -> methodInfo.getReturnTypeList().add(returnType));
+            findJavaClassInfo(methodInfo.getFullVariables()).forEach(variable -> methodInfo.getVariableTypeList().add(variable));
+            methodInfo.getMethodCalls().forEach(call -> {
+                if (methodBindingMap.containsKey(call)) {
+                    methodInfo.getMethodCallList().add(methodBindingMap.get(call));
+                }
+            });
+            findJavaFieldInfo(methodInfo.getFieldAccesses()).forEach(access -> methodInfo.getFieldAccessList().add(access));
 
-           JavaMethodEntity methodEntity = methodInfo.storeInNeo4j(javaMethodRepo, jsonMap.get(methodInfo.getFullName()));
-           methodEntityMap.put(methodInfo.getFullName(), methodEntity);
+            JavaMethodEntity methodEntity = methodInfo.storeInNeo4j(javaMethodRepo, jsonMap.get(methodInfo.getFullName()));
+            methodEntityMap.put(methodInfo.getFullName(), methodEntity);
 
-           // vector store
-           methodInfo.setVid(methodEntity.getVid());
-           methodInfo.setDescription(methodEntity.getDescription());
-           elasticSearchService.storeJavaMethodEmbedding(methodInfo);
+            // vector store
+            methodInfo.setVid(methodEntity.getVid());
+            methodInfo.setDescription(methodEntity.getDescription());
+//           elasticSearchService.storeJavaMethodEmbedding(methodInfo);
         });
         // class -[have_method]-> method
         classMap.values().forEach(classInfo -> {
@@ -155,10 +168,9 @@ public class JavaProject {
                                 methodEntityMap.get(call.getFullName())).toList());
             }
         });
+    }
 
-        /*
-         * create JavaFieldEntity
-         */
+    private void parseFieldEntity(JavaFieldRepo javaFieldRepo) {
         fieldMap.values().forEach(fieldInfo -> {
             fieldInfo.setProjectName(projectName);
             findJavaClassInfo(fieldInfo.getBelongTo()).forEach(owner -> owner.getContainFieldList().add(fieldInfo));
@@ -170,7 +182,7 @@ public class JavaProject {
             // vector store
             fieldInfo.setVid(fieldEntity.getVid());
             fieldInfo.setDescription(fieldEntity.getDescription());
-            elasticSearchService.storeJavaFieldEmbedding(fieldInfo);
+//            elasticSearchService.storeJavaFieldEmbedding(fieldInfo);
         });
         // class -[have_field]-> field
         classMap.values().forEach(classInfo -> {
@@ -179,6 +191,13 @@ public class JavaProject {
                 classEntity.getFieldList().addAll(
                         classInfo.getContainFieldList().stream().map(field ->
                                 fieldEntityMap.get(field.getFullName())).toList());
+                if(classEntity.getFullName().contains("FriendLinkController")) {
+                    System.out.println(classEntity.getFieldList());
+                    javaFieldRepo.saveAll(classEntity.getFieldList());
+                }
+                if(classEntity.getFullName().contains("FriendLinkVO")) {
+                    System.out.println(classEntity.getFieldList());
+                }
             }
         });
         // method -[field_access]-> field
@@ -201,15 +220,13 @@ public class JavaProject {
         });
     }
 
-    public void storeRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
-        // class outgoing relations
+    private void parseRelations(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
         classEntityMap.values().forEach(classEntity -> {
             javaClassRepo.saveAll(classEntity.getSuperClassList());
             javaClassRepo.saveAll(classEntity.getSuperInterfaceList());
             javaMethodRepo.saveAll(classEntity.getMethodList());
             javaFieldRepo.saveAll(classEntity.getFieldList());
         });
-        // method outgoing relations
         methodEntityMap.values().forEach(methodEntity -> {
             javaMethodRepo.saveAll(methodEntity.getMethodCallList());
             javaFieldRepo.saveAll(methodEntity.getFieldAccessList());
@@ -217,7 +234,6 @@ public class JavaProject {
             javaClassRepo.saveAll(methodEntity.getReturnTypeList());
             javaClassRepo.saveAll(methodEntity.getVariableTypeList());
         });
-        // field outgoing relations
         fieldEntityMap.values().forEach(fieldEntity -> {
             javaClassRepo.saveAll(fieldEntity.getTypeList());
         });

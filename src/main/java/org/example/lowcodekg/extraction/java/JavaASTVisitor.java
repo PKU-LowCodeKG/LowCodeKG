@@ -28,16 +28,19 @@ public class JavaASTVisitor extends ASTVisitor {
         MethodDeclaration[] methodDeclarations = node.getMethods();
         for (MethodDeclaration methodDeclaration : methodDeclarations) {
             JavaMethod javaMethodInfo = createJavaMethodInfo(methodDeclaration, javaClassInfo.getFullName());
-            if (javaMethodInfo != null)
+            if (javaMethodInfo != null) {
                 javaProject.addMethod(javaMethodInfo);
+            }
         }
 
         FieldDeclaration[] fieldDeclarations = node.getFields();
         for (FieldDeclaration fieldDeclaration : fieldDeclarations) {
             List<JavaField> javaFieldInfos = createJavaFieldInfos(fieldDeclaration, javaClassInfo.getFullName());
-            for (JavaField javaFieldInfo : javaFieldInfos)
+            for (JavaField javaFieldInfo : javaFieldInfos) {
                 javaProject.addField(javaFieldInfo);
+            }
         }
+
         return false;
     }
 

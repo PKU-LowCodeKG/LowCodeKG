@@ -1,6 +1,8 @@
 package org.example.lowcodekg.dao.neo4j.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.ArrayList;
@@ -8,6 +10,8 @@ import java.util.List;
 
 @Node("JavaClass")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class JavaClassEntity {
 
     @Id
@@ -53,15 +57,4 @@ public class JavaClassEntity {
     @Relationship(type = "HAVE_FIELD", direction = Relationship.Direction.OUTGOING)
     private List<JavaFieldEntity> fieldList = new ArrayList<>();
 
-    public JavaClassEntity() {}
-
-    public JavaClassEntity(String name, String fullName, String comment, String content, String description, String superClassType, String superInterfaceType) {
-        this.name = name;
-        this.fullName = fullName;
-        this.comment =comment;
-        this.content = content;
-        this.description = description;
-        this.superClassType = superClassType;
-        this.superInterfaceType = superInterfaceType;
-    }
 }

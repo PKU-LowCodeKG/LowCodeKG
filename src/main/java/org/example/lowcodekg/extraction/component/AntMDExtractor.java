@@ -57,7 +57,7 @@ public class AntMDExtractor extends KnowledgeExtractor {
                     continue;
                 } else {
                     RawData data = new RawData();
-                    WorkDir = this.getDataDir() + "/" + folders[i].getName();
+                    WorkDir = filePath + "/" + folders[i].getName();
                     parseComponent(WorkDir + "/index.zh-CN.md", data);
                     dataList.add(data);
                 }

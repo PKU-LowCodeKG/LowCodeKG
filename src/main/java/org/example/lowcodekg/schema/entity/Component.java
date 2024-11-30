@@ -70,15 +70,9 @@ public class Component {
             // 组件关联的配置型列表
             List<ConfigItemEntity> configItemEntities = new ArrayList<>();
             for(ConfigItem configItem: containedConfigItems) {
-                // 设置配置项实体属性
-                ConfigItemEntity configEntity = new ConfigItemEntity();
-                configEntity.setCode(configItem.getCode());
-                configEntity.setType(configItem.getType());
-                configEntity.setDefaultValue(configItem.getDefaultValue());
-                configEntity.setDescription(configItem.getDescription());
-                configItemEntities.add(configEntity);
                 // 存储配置项节点
-                configItem.storeInNeo4j(configItemRepo);
+                ConfigItemEntity configEntity = configItem.storeInNeo4j(configItemRepo);
+                configItemEntities.add(configEntity);
             }
             entity.getContainedConfigItemEntities().addAll(configItemEntities);
 

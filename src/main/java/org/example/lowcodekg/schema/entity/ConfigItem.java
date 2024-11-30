@@ -41,18 +41,12 @@ public class ConfigItem {
         this.description = entity.getDescription();
     }
 
-    public void storeInNeo4j(ConfigItemRepo configItemRepo) {
-        try {
-            ConfigItemEntity configEntity = new ConfigItemEntity();
-            configEntity.setCode(code);
-            configEntity.setType(type);
-            configEntity.setDefaultValue(defaultValue);
-            configEntity.setDescription(description);
-            // 存储配置项节点
-            configItemRepo.save(configEntity);
-        } catch (Exception e) {
-            System.err.println("Error in storeInNeo4j: " + e.getMessage());
-            e.printStackTrace();
-        }
+    public ConfigItemEntity storeInNeo4j(ConfigItemRepo configItemRepo) {
+        ConfigItemEntity configEntity = new ConfigItemEntity();
+        configEntity.setCode(code);
+        configEntity.setType(type);
+        configEntity.setDefaultValue(defaultValue);
+        configEntity.setDescription(description);
+        return configItemRepo.save(configEntity);
     }
 }
