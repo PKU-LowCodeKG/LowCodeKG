@@ -4,6 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * 组件所属的特定领域
+ */
 @AllArgsConstructor
 public enum SceneLabel {
 
@@ -15,6 +21,8 @@ public enum SceneLabel {
 
     ENTERTAINMENT("娱乐", "entertainment"),
 
+    BLOG("博客", "blog"),
+
     GENERAL("通用", "general");
 
     @Getter
@@ -24,8 +32,8 @@ public enum SceneLabel {
     @Setter
     private String code;
 
-    public static SceneLabel setByCode(String code) {
+    public static List<SceneLabel> setByCode(String code) {
         // TODO:场景标注
-        return GENERAL;
+        return Collections.singletonList(GENERAL);
     }
 }

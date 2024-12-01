@@ -4,6 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * 组件的功能类别，包含通用的功能类别以及面向特定领域的功能类别
+ */
 @AllArgsConstructor
 public enum FunctionalityCategory {
 
@@ -28,8 +34,8 @@ public enum FunctionalityCategory {
     @Setter
     private String code;
 
-    public static FunctionalityCategory setByCode(String code) {
+    public static List<FunctionalityCategory> setByCode(String code) {
         // TODO:功能分类
-        return GENERAL;
+        return Collections.singletonList(GENERAL);
     }
 }

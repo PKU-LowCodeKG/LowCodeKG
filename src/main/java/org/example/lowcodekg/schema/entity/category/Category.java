@@ -25,6 +25,10 @@ public class Category {
     private List<SceneLabel> sceneLabels;
 
     /**
+     * 以下分类信息预先指定，暂不需要执行分类逻辑
+     */
+
+    /**
      * 框架类别
      */
     private List<FrameworkType> frameWorkTypes;
@@ -37,13 +41,12 @@ public class Category {
 
     public static Category setCategoryBy(String str) {
         Category category = new Category();
-        category.setFunctionalityCategories(CollectionUtils.asList(FunctionalityCategory.setByCode(str)));
-        category.setSceneLabels(CollectionUtils.asList(SceneLabel.setByCode(str)));
+        category.setFunctionalityCategories(FunctionalityCategory.setByCode(str));
+        category.setSceneLabels(SceneLabel.setByCode(str));
         return category;
     }
 
     public String toString() {
-        // TODO: 判空的处理
         JSONObject json = new JSONObject();
         if(!CollectionUtils.isEmpty(functionalityCategories)) {
             List<String> codes = functionalityCategories.stream().map(FunctionalityCategory::getCode).collect(Collectors.toList());
