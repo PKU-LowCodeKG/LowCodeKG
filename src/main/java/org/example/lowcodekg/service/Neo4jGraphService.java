@@ -1,5 +1,7 @@
 package org.example.lowcodekg.service;
 
+import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
+import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
 import org.example.lowcodekg.dto.Neo4jNode;
 import org.example.lowcodekg.dto.Neo4jRelation;
 import org.example.lowcodekg.dto.Neo4jSubGraph;
@@ -16,4 +18,8 @@ public interface Neo4jGraphService {
     Neo4jSubGraph findAddTags(String query);
 
     Neo4jSubGraph searchRelevantGraph(String query);
+
+    List<JavaClassEntity> findAllJavaClass();
+
+    List<JavaMethodEntity> findAllJavaMethod();
 }

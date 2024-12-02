@@ -15,7 +15,7 @@ public class IndexingController {
     private IndexingService indexingService;
 
     @GetMapping("/exportToJson")
-    synchronized public String exportToJson(@RequestParam String jsonPath) throws JSONException {
+    synchronized public String exportToJson(@RequestParam("jsonPath") String jsonPath) {
         indexingService.exportJavaClassMethodToJson(jsonPath);
         return "export success!";
     }
