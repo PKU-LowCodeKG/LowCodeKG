@@ -8,6 +8,7 @@ import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.service.IndexingService;
+import org.example.lowcodekg.service.Neo4jGraphService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -32,16 +33,21 @@ public class IndexingServiceImpl implements IndexingService {
     private JavaMethodRepo javaMethodRepo;
     @Autowired
     private ChatClient chatClient;
+    @Autowired
+    private Neo4jGraphService neo4jGraphService;
 
     @Override
     public void exportJavaClassMethodToJson(String jsonPath) {
         JSONArray jsonArray = new JSONArray();
-        List<JavaClassEntity> javaClasses = javaClassRepo.findAll();
+//        List<JavaClassEntity> javaClasses = javaClassRepo.findAll();
+        List<JavaClassEntity> javaClasses = neo4jGraphService.findAllJavaClass();
+        System.out.println("JavaClass实体数量：" + javaClasses.size());
         for (JavaClassEntity javaClass : javaClasses) {
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("id", javaClass.getId());
                 jsonObject.put("fullName", javaClass.getFullName());
+                jsonObject.put("projectName", javaClass.getProjectName());
                 jsonObject.put("comment", javaClass.getComment());
                 jsonObject.put("content", javaClass.getContent());
                 jsonObject.put("description", "");
@@ -51,14 +57,16 @@ public class IndexingServiceImpl implements IndexingService {
                 e.printStackTrace();
             }
         }
-        System.out.println("Number of JavaClass: " + javaClasses.size());
 
-        List<JavaMethodEntity> javaMethods = javaMethodRepo.findAll();
+//        List<JavaMethodEntity> javaMethods = javaMethodRepo.findAll();
+        List<JavaMethodEntity> javaMethods = neo4jGraphService.findAllJavaMethod();
+        System.out.println("JavaMethod实体数量：" + javaMethods.size());
         for (JavaMethodEntity javaMethod : javaMethods) {
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("id", javaMethod.getId());
                 jsonObject.put("fullName", javaMethod.getFullName());
+                jsonObject.put("projectName", javaMethod.getProjectName());
                 jsonObject.put("comment", javaMethod.getComment());
                 jsonObject.put("content", javaMethod.getContent());
                 jsonObject.put("description", "");
@@ -68,7 +76,6 @@ public class IndexingServiceImpl implements IndexingService {
                 e.printStackTrace();
             }
         }
-        System.out.println("Number of JavaMethod: " + javaMethods.size());
 
         try (FileWriter file = new FileWriter(jsonPath)) {
             file.write(jsonArray.toString(4));

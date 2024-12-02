@@ -1,5 +1,7 @@
 package org.example.lowcodekg.service.impl;
 
+import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
+import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
 import org.example.lowcodekg.dto.Neo4jNode;
 import org.example.lowcodekg.dto.Neo4jRelation;
 import org.example.lowcodekg.dto.Neo4jSubGraph;
@@ -228,5 +230,55 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 
         subGraph.setGeneratedCode(llmAnswer);
         return subGraph;
+    }
+
+    @Override
+    public List<JavaClassEntity> findAllJavaClass() {
+        List<JavaClassEntity> javaClassEntityList = new ArrayList<>();
+        String javaClassCypher = """
+                MATCH (n:JavaClass)
+                RETURN n
+                """;
+
+        QueryRunner runner = neo4jClient.getQueryRunner();
+        Result result = runner.run(javaClassCypher);
+        while (result.hasNext()) {
+            Node node = result.next().get("n").asNode();
+            Map<String, Object> propsMap  = node.asMap();
+            JavaClassEntity javaClass = new JavaClassEntity();
+            javaClass.setId(node.id());
+            javaClass.setName((String) propsMap.get("name"));
+            javaClass.setFullName((String) propsMap.get("fullName"));
+            javaClass.setProjectName((String) propsMap.get("projectName"));
+            javaClass.setComment((String) propsMap.get("comment"));
+            javaClass.setContent((String) propsMap.get("content"));
+            javaClassEntityList.add(javaClass);
+        }
+        return javaClassEntityList;
+    }
+
+    @Override
+    public List<JavaMethodEntity> findAllJavaMethod() {
+        List<JavaMethodEntity> javaMethodEntityList = new ArrayList<>();
+        String javaMethodCypher = """
+                MATCH (n:JavaMethod)
+                RETURN n
+                """;
+
+        QueryRunner runner = neo4jClient.getQueryRunner();
+        Result result = runner.run(javaMethodCypher);
+        while (result.hasNext()) {
+            Node node = result.next().get("n").asNode();
+            Map<String, Object> propsMap  = node.asMap();
+            JavaMethodEntity javaMethod = new JavaMethodEntity();
+            javaMethod.setId(node.id());
+            javaMethod.setName((String) propsMap.get("name"));
+            javaMethod.setFullName((String) propsMap.get("fullName"));
+            javaMethod.setProjectName((String) propsMap.get("projectName"));
+            javaMethod.setComment((String) propsMap.get("comment"));
+            javaMethod.setContent((String) propsMap.get("content"));
+            javaMethodEntityList.add(javaMethod);
+        }
+        return javaMethodEntityList;
     }
 }
