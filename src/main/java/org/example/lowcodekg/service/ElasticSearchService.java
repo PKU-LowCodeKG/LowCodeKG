@@ -2,7 +2,8 @@ package org.example.lowcodekg.service;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;
+import dev.langchain4j.model.embedding.onnx.bgesmallzhv15q.BgeSmallZhV15QuantizedEmbeddingModel;
+import dev.langchain4j.store.embedding.elasticsearch.ElasticsearchConfigurationKnn;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
@@ -21,6 +22,8 @@ import java.util.List;
 import org.example.lowcodekg.schema.entity.workflow.JavaClass;
 import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
 import org.example.lowcodekg.schema.entity.workflow.JavaField;
+
+
 @Service
 public class ElasticSearchService {
 
@@ -31,68 +34,42 @@ public class ElasticSearchService {
     @Autowired
     public ElasticSearchService(RestClient client) {
         this.client = client;
-        this.embeddingStore = ElasticsearchEmbeddingStore.builder().restClient(client).build();
-        this.embeddingModel = new AllMiniLmL6V2EmbeddingModel();
+        this.embeddingStore = ElasticsearchEmbeddingStore.builder().restClient(client).configuration(ElasticsearchConfigurationKnn.builder().build()).build();
+        this.embeddingModel = new BgeSmallZhV15QuantizedEmbeddingModel();
     }
-//    public void storeEmbedding(Object obj) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-//        String description;
-//        String vid;
-//
-//        if (obj instanceof JavaClass javaClass) {
-//            description = javaClass.getDescription();
-//            vid = String.valueOf(javaClass.getVid());
-//        } else if (obj instanceof JavaMethod javaMethod) {
-//            description = javaMethod.getDescription();
-//            vid = String.valueOf(javaMethod.getVid());
-//        } else if (obj instanceof JavaField javaField) {
-//            description = javaField.getDescription();
-//            vid = String.valueOf(javaField.getVid());
-//        } else {
-//            throw new IllegalArgumentException("Unsupported object type: " + obj.getClass().getName());
-//        }
-//
-//        if (description != null && !description.isEmpty()) {
-//            TextSegment descriptionSegment = TextSegment.from(description);
-//            TextSegment vidSegment = TextSegment.from(vid);
-//            Embedding embedding = embeddingModel.embed(descriptionSegment).content();
-//            embeddingStore.add(embedding, vidSegment);
-//        } else {
-//            throw new IllegalArgumentException("Description must be non-null and non-empty");
-//        }
-//    }
-    //
-    public void storeJavaClassEmbedding(JavaClass javaClass) throws IOException {
+
+    public void storeJavaClassEmbedding(JavaClass javaClass) {
         if (javaClass.getDescription() != null && !javaClass.getDescription().isEmpty()) {
             TextSegment descriptionSegment = TextSegment.from(javaClass.getDescription());
-            TextSegment vidSegment = TextSegment.from(javaClass.getVid());
+            TextSegment vidSegment = TextSegment.from(String.valueOf(javaClass.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
 
             embeddingStore.add(embedding, vidSegment);
         } else {
-            throw new IllegalArgumentException("Description must be non-null and non-empty");
+            System.out.println(javaClass.getFullName() + " description is null or empty");
         }
     }
 
-    public void storeJavaMethodEmbedding(JavaMethod javaMethod) throws IOException {
+    public void storeJavaMethodEmbedding(JavaMethod javaMethod) {
         if (javaMethod.getDescription() != null && !javaMethod.getDescription().isEmpty()) {
             TextSegment descriptionSegment = TextSegment.from(javaMethod.getDescription());
-            TextSegment vidSegment = TextSegment.from(javaMethod.getVid());
+            TextSegment vidSegment = TextSegment.from(String.valueOf(javaMethod.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
 
             embeddingStore.add(embedding, vidSegment);
         } else {
-            throw new IllegalArgumentException("Description must be non-null and non-empty");
+            System.out.println(javaMethod.getFullName() + " description is null or empty");
         }
     }
-    public void storeJavaFieldEmbedding(JavaField javaField) throws IOException {
+    public void storeJavaFieldEmbedding(JavaField javaField) {
         if (javaField.getDescription() != null && !javaField.getDescription().isEmpty()) {
             TextSegment descriptionSegment = TextSegment.from(javaField.getDescription());
-            TextSegment vidSegment = TextSegment.from(javaField.getVid());
+            TextSegment vidSegment = TextSegment.from(String.valueOf(javaField.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
 
             embeddingStore.add(embedding, vidSegment);
         } else {
-            throw new IllegalArgumentException("Description must be non-null and non-empty");
+//            System.out.println(javaField.getFullName() + " description is null or empty");
         }
     }
     // 查询嵌入数据
