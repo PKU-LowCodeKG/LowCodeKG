@@ -2,7 +2,8 @@ package org.example.lowcodekg.service;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;
+import dev.langchain4j.model.embedding.onnx.bgesmallzhv15q.BgeSmallZhV15QuantizedEmbeddingModel;
+import dev.langchain4j.store.embedding.elasticsearch.ElasticsearchConfigurationKnn;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
@@ -13,6 +14,8 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,8 +36,8 @@ public class ElasticSearchService {
     @Autowired
     public ElasticSearchService(RestClient client) {
         this.client = client;
-        this.embeddingStore = ElasticsearchEmbeddingStore.builder().restClient(client).build();
-        this.embeddingModel = new AllMiniLmL6V2EmbeddingModel();
+        this.embeddingStore = ElasticsearchEmbeddingStore.builder().restClient(client).configuration(ElasticsearchConfigurationKnn.builder().build()).build();
+        this.embeddingModel = new BgeSmallZhV15QuantizedEmbeddingModel();
     }
 
     public void storeJavaClassEmbedding(JavaClass javaClass) {
