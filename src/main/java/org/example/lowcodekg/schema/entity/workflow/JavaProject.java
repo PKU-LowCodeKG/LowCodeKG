@@ -12,14 +12,9 @@ import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.util.JSONUtils;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Component
@@ -102,7 +97,7 @@ public class JavaProject {
             // vector store
             classInfo.setVid(classEntity.getVid());
             classInfo.setDescription(classEntity.getDescription());
-//            elasticSearchService.storeJavaClassEmbedding(classInfo);
+            elasticSearchService.storeJavaClassEmbedding(classInfo);
         });
         // class -[extend | implement]-> class
         classMap.values().forEach(classInfo -> {
@@ -138,7 +133,7 @@ public class JavaProject {
             // vector store
             methodInfo.setVid(methodEntity.getVid());
             methodInfo.setDescription(methodEntity.getDescription());
-//           elasticSearchService.storeJavaMethodEmbedding(methodInfo);
+           elasticSearchService.storeJavaMethodEmbedding(methodInfo);
         });
         // class -[have_method]-> method
         classMap.values().forEach(classInfo -> {
@@ -182,7 +177,7 @@ public class JavaProject {
             // vector store
             fieldInfo.setVid(fieldEntity.getVid());
             fieldInfo.setDescription(fieldEntity.getDescription());
-//            elasticSearchService.storeJavaFieldEmbedding(fieldInfo);
+            elasticSearchService.storeJavaFieldEmbedding(fieldInfo);
         });
         // class -[have_field]-> field
         classMap.values().forEach(classInfo -> {
