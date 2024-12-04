@@ -127,8 +127,8 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
     @Override
     public Neo4jSubGraph findAddTags(String query) {
         List<Long> queryResultIdList = new ArrayList<>();
-        queryResultIdList.add(1526L);
-        queryResultIdList.add(1641L);
+        queryResultIdList.add(6361L);
+        queryResultIdList.add(6476L);
 
         QueryRunner runner = neo4jClient.getQueryRunner();
         Neo4jSubGraph subGraph = new Neo4jSubGraph();
@@ -138,7 +138,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             String formattedId = String.format("%d", queryResultId);
             String oneHopCypher = MessageFormat.format("""
                     MATCH (n)-[r]->(m)
-                    WHERE n.vid = {0}
+                    WHERE id(n) = {0}
                     RETURN n, m, r
                     """, formattedId);
             Result result = runner.run(oneHopCypher);
