@@ -20,7 +20,7 @@ import java.util.*;
 @Component
 public class JavaProject {
 
-    private final String jsonFilePath = "/src/main/resources/data/javaInfo.json";
+    private final String jsonFilePath = "/src/main/resources/data/javaInfo_1202.json";
     private Map<String, JSONObject> jsonMap = new HashMap<>();
 
     @Setter

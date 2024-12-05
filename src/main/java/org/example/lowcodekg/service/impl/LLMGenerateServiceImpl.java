@@ -1,5 +1,9 @@
 package org.example.lowcodekg.service.impl;
 
+import cn.hutool.core.util.StrUtil;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.example.lowcodekg.dto.Neo4jNode;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.ai.chat.client.ChatClient;
@@ -17,8 +21,11 @@ import java.util.Map;
 @Service
 public class LLMGenerateServiceImpl implements LLMGenerateService {
 
+//    @Autowired
+//    private ChatClient chatClient;
+
     @Autowired
-    private ChatClient chatClient;
+    private OllamaChatModel ollamaChatModel;
 
     @Override
     public String graphPromptToCode(String query, List<Neo4jNode> nodes) {
@@ -34,7 +41,7 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
                 
                 你编写的代码：
                 """;
-        PromptTemplate promptTemplate = new PromptTemplate(template);
+
         Map<String, Object> argumentMap = new HashMap<>();
         StringBuilder codeSamples = new StringBuilder();
         for (Neo4jNode neo4jNode : nodes) {
@@ -43,13 +50,13 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
         }
         argumentMap.put("query", query);
         argumentMap.put("codeSamples", codeSamples.toString());
-        Prompt prompt = promptTemplate.create(argumentMap);
+        String prompt = StrUtil.format(template, argumentMap);
 
-        System.out.println(prompt.toString());
+        System.out.println(prompt);
 
-        ChatResponse chatResponse = chatClient.prompt(prompt).call().chatResponse();
-        AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
-        String answer = assistantMessage.getContent();
+        UserMessage userMessage = UserMessage.from(prompt);
+        AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
+        String answer = aiMessage.text();
         System.out.println(answer);
         return answer;
     }

@@ -41,7 +41,7 @@ public class ElasticSearchService {
     }
 
     public void storeJavaClassEmbedding(JavaClass javaClass) {
-        if (!Objects.isNull(javaClass.getDescription())) {
+        if (!Objects.isNull(javaClass.getDescription()) && !javaClass.getDescription().isEmpty()) {
             TextSegment descriptionSegment = TextSegment.from(javaClass.getDescription());
             TextSegment vidSegment = TextSegment.from(String.valueOf(javaClass.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
@@ -53,7 +53,7 @@ public class ElasticSearchService {
     }
 
     public void storeJavaMethodEmbedding(JavaMethod javaMethod) {
-        if (!Objects.isNull(javaMethod.getDescription())) {
+        if (!Objects.isNull(javaMethod.getDescription()) && !javaMethod.getDescription().isEmpty()) {
             TextSegment descriptionSegment = TextSegment.from(javaMethod.getDescription());
             TextSegment vidSegment = TextSegment.from(String.valueOf(javaMethod.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
@@ -64,7 +64,7 @@ public class ElasticSearchService {
         }
     }
     public void storeJavaFieldEmbedding(JavaField javaField) {
-        if (!Objects.isNull(javaField.getDescription())) {
+        if (!Objects.isNull(javaField.getDescription()) && !javaField.getDescription().isEmpty()) {
             TextSegment descriptionSegment = TextSegment.from(javaField.getDescription());
             TextSegment vidSegment = TextSegment.from(String.valueOf(javaField.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
