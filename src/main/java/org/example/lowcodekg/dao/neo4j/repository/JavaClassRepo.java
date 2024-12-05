@@ -30,4 +30,13 @@ public interface JavaClassRepo extends Neo4jRepository<JavaClassEntity, Long> {
             "MATCH (e:JavaClass) WHERE id(e)=$eid " +
             "CREATE (s)-[:IMPLEMENT]->(e)")
     void createRelationOfInterface(Long sid, Long eid);
+
+    /**
+     * 数据实体类，添加数据实体标签
+     * @param id 节点 id
+     */
+    @Query("Match (n:JavaClass) WHERE id(n)=$id " +
+            "SET n:DataObject " +
+            "return n")
+    void setDataObjectLabel(Long id);
 }
