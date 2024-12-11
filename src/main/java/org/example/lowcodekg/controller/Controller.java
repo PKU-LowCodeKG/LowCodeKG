@@ -1,8 +1,6 @@
 package org.example.lowcodekg.controller;
 
-import org.example.lowcodekg.dto.Neo4jNode;
-import org.example.lowcodekg.dto.Neo4jRelation;
-import org.example.lowcodekg.dto.Neo4jSubGraph;
+import org.example.lowcodekg.dto.*;
 import org.example.lowcodekg.schema.entity.Component;
 import org.example.lowcodekg.service.Neo4jGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,4 +46,11 @@ public class Controller {
 //        return neo4jGraphService.findAddTags(query);
     }
 
+    @PostMapping("/codeGeneration")
+    synchronized public LLMCodeResult codeGeneration(@RequestBody QuerySubGraph querySubGraph) {
+        System.out.println("query: " + querySubGraph.getQuery());
+        System.out.println("remain node ids: " + querySubGraph.getRemainNodeIds());
+        LLMCodeResult llmCodeResult = new LLMCodeResult("hello world");
+        return llmCodeResult;
+    }
 }
