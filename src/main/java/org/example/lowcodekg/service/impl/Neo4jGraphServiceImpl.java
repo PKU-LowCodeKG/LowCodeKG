@@ -190,8 +190,8 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         Set<Long> addedNodeIds = new HashSet<>();
         Set<Long> addedRelationIds = new HashSet<>();
 
-        int top = Math.min(3, relevantNodeVids.size());  // 找top-3最相关的节点
-        int maxExtendNum = 5;  // 目前限定每个查询出的节点最多扩展出5个节点
+        int top = Math.min(2, relevantNodeVids.size());  // 找top-3最相关的节点
+        int maxExtendNum = 4;  // 目前限定每个查询出的节点最多扩展出4个节点
         for (int i = 0; i < top; i++) {
             String vid = relevantNodeVids.get(i);
             String oneHopCypher = MessageFormat.format("""
