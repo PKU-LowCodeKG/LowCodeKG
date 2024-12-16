@@ -2,6 +2,7 @@ package org.example.lowcodekg.service.impl;
 
 import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
 import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
+import org.example.lowcodekg.dto.CodeGenerationResult;
 import org.example.lowcodekg.dto.Neo4jNode;
 import org.example.lowcodekg.dto.Neo4jRelation;
 import org.example.lowcodekg.dto.Neo4jSubGraph;
@@ -230,6 +231,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 //
 //        subGraph.setGeneratedCode(llmAnswer);
         subGraph.setGeneratedCode("");
+
         return subGraph;
     }
 
@@ -281,5 +283,34 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             javaMethodEntityList.add(javaMethod);
         }
         return javaMethodEntityList;
+    }
+
+    @Override
+    public CodeGenerationResult codeGeneration(String query,
+                                               Neo4jSubGraph oriSubGraph,
+                                               List<Long> remainNodeIds) {
+        Neo4jSubGraph filteredSubGraph = new Neo4jSubGraph();
+        Set<Long> remainIdSet = new HashSet<>(remainNodeIds);
+
+        for (Neo4jNode neo4jNode : oriSubGraph.getNodes()) {
+            if (remainIdSet.contains(neo4jNode.getId())) {
+                filteredSubGraph.addNeo4jNode(neo4jNode);
+            }
+        }
+
+        for (Neo4jRelation neo4jRelation : oriSubGraph.getRelationships()) {
+            if (remainIdSet.contains(neo4jRelation.getStartNode()) &&
+                    remainIdSet.contains(neo4jRelation.getEndNode())) {
+                filteredSubGraph.addNeo4jRelation(neo4jRelation);
+            }
+        }
+
+        // debug：过滤后的子图
+        System.out.println(filteredSubGraph.getNodes().size());
+        System.out.println(filteredSubGraph.getRelationships());
+
+        String llmAnswer = llmGenerateService.graphPromptToCode(query, filteredSubGraph.getNodes());
+        CodeGenerationResult generationResult = new CodeGenerationResult(llmAnswer);
+        return generationResult;
     }
 }
