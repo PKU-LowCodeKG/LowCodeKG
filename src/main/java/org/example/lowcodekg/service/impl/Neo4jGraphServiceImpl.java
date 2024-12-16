@@ -226,9 +226,10 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             }
         }
 
-        String llmAnswer = llmGenerateService.graphPromptToCode(query, subGraph.getNodes());
-
-        subGraph.setGeneratedCode(llmAnswer);
+//        String llmAnswer = llmGenerateService.graphPromptToCode(query, subGraph.getNodes());
+//
+//        subGraph.setGeneratedCode(llmAnswer);
+        subGraph.setGeneratedCode("");
         return subGraph;
     }
 

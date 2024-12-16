@@ -1,12 +1,12 @@
 package org.example.lowcodekg.controller;
 
+import com.alibaba.fastjson.JSON;
 import org.example.lowcodekg.dto.*;
 import org.example.lowcodekg.schema.entity.Component;
 import org.example.lowcodekg.service.Neo4jGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,10 +47,11 @@ public class Controller {
     }
 
     @PostMapping("/codeGeneration")
-    synchronized public LLMCodeResult codeGeneration(@RequestBody QuerySubGraph querySubGraph) {
-        System.out.println("query: " + querySubGraph.getQuery());
-        System.out.println("remain node ids: " + querySubGraph.getRemainNodeIds());
-        LLMCodeResult llmCodeResult = new LLMCodeResult("hello world");
-        return llmCodeResult;
+    synchronized public CodeGenerationResult codeGeneration(@RequestParam("ids") String ids) {
+        System.out.println(JSON.parseArray(ids, Long.class));
+        CodeGenerationResult generationResult = new CodeGenerationResult();
+        String generatedCode = "hello world";
+        generationResult.setGeneratedCode(generatedCode);
+        return generationResult;
     }
 }
