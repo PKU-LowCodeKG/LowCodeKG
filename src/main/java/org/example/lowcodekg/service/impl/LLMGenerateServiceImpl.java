@@ -23,6 +23,12 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
     @Autowired
     private OllamaChatModel ollamaChatModel;
 
+    private String generateAnswer(String prompt) {
+        UserMessage userMessage = UserMessage.from(prompt);
+        AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
+        return aiMessage.text();
+    }
+
     @Override
     public String graphPromptToCode(String query, List<Neo4jNode> nodes) {
 
@@ -86,21 +92,11 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
         String prompt = StrUtil.format(template, argumentMap);
 
         System.out.println(prompt);
+        String answer = generateAnswer(prompt);
 
-        UserMessage userMessage = UserMessage.from(prompt);
-        AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
-        String answer = aiMessage.text();
-
-//        // 正则表达式匹配Markdown格式的代码块
-//        String regex = "```.*?\\n(.*?)\\n```";
-//
-//        // 创建正则表达式的Pattern对象
-//        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
-//        Matcher matcher = pattern.matcher(answer);
-//        if (matcher.find()) {
-//            answer = matcher.group(1);
-//        }
-        System.out.println(answer);
-        return answer;
+        String regex = "```[a-zA-Z0-9]+\\s*(.*?)```";
+        Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(answer);
+        return matcher.replaceAll("$1");
     }
 }
