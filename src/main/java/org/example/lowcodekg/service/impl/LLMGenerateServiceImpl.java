@@ -7,10 +7,12 @@ import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.example.lowcodekg.dto.Neo4jNode;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.example.lowcodekg.util.FileUtils;
+import org.example.lowcodekg.util.FormatParseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,5 +100,109 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
         Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(answer);
         return matcher.replaceAll("$1");
+    }
+
+    @Override
+    public List<Map<String, Object>> selectInitialNodes(String query,
+                                                        List<Map<String, Object>> initialNodeProps) {
+        String template = """
+                你是一名程序员，现在正在使用springboot框架开发一个个人博客系统的后端。
+                当前，你要实现的功能为【{query}】。
+                
+                在编写代码之前，你在网络上搜索到了一些可能与该功能相关的代码片段，都来自其他的博客系统。
+                这些代码片段可能有实现业务逻辑用到的method，也可能有数据实体的class。
+                但是这些代码片段不一定都对你有帮助，所以事先需要进行判断，仅保留与【{query}】功能相关的代码。
+                
+                输入包括每个代码片段的编号、所在路径，以及它实现功能的描述。
+                【注意】：你需要判断这些代码与【{query}】功能是否相关，只输出相关的代码片段的编号！
+                【注意】：你需要严格遵守输出格式，输出一个列表，例如：[1, 4, 5]
+                【注意】：请勿输出任何解释性文字，务必遵守输出格式！
+                
+                可能的代码片段:
+                {codeSamples}
+                
+                """;
+
+        Map<String, Object> argumentMap = new HashMap<>();
+        StringBuilder codeSamples = new StringBuilder();
+        for (int i = 0; i < initialNodeProps.size(); i++) {
+            Map<String, Object> nodeProps = initialNodeProps.get(i);
+            codeSamples.append("代码片段编号：").append(i).append("\n");
+            codeSamples.append("代码所在路径：").append(nodeProps.get("fullName")).append("\n");
+            codeSamples.append("代码功能：");
+            if (nodeProps.get("description") != null) {
+                codeSamples.append(nodeProps.get("description")).append("\n");
+            } else {
+                codeSamples.append(nodeProps.get("name")).append("\n");
+            }
+            codeSamples.append("\n");
+        }
+
+        argumentMap.put("query", query);
+        argumentMap.put("codeSamples", codeSamples.toString());
+        String prompt = StrUtil.format(template, argumentMap);
+
+        System.out.println("初始节点集合过滤：");
+        System.out.println(prompt);
+        String answer = generateAnswer(prompt);
+        System.out.println(answer);
+        List<Integer> remainIdx = FormatParseUtil.parseIntList(answer);
+        System.out.println("初始解析保留：" + remainIdx);
+
+        List<Map<String, Object> > remainNodeProps = new ArrayList<>();
+        for (int idx : remainIdx) {
+            remainNodeProps.add(initialNodeProps.get(idx));
+        }
+        return remainNodeProps;
+    }
+
+    @Override
+    public List<Integer> selectExtendNode(String query,
+                                      List<Map<String, Object>> extendNodeProps) {
+        String template = """
+                你是一名程序员，现在正在使用springboot框架开发一个个人博客系统的后端。
+                当前，你要实现的功能为【{query}】。
+                
+                在编写代码之前，你在网络上搜索到了一些可能与该功能相关的代码片段，都来自其他的博客系统。
+                这些代码片段不一定是直接实现业务逻辑的method，也不必须是数据实体的class，但很可能是实现该功能所需要的。
+                请你判断哪些代码是实现【{query}】功能所需要的。
+                
+                输入包括每个代码片段的编号、所在路径，以及它实现功能的描述。
+                【注意】：你需要判断这些代码与【{query}】功能是否相关，只输出相关的代码片段的编号！
+                【注意】：你需要严格遵守输出格式，输出一个列表，例如：[1, 4, 5]
+                【注意】：请勿输出任何解释性文字，务必遵守输出格式！
+                
+                可能的代码片段:
+                {codeSamples}
+                
+                """;
+
+        Map<String, Object> argumentMap = new HashMap<>();
+        StringBuilder codeSamples = new StringBuilder();
+        for (int i = 0; i < extendNodeProps.size(); i++) {
+            Map<String, Object> nodeProps = extendNodeProps.get(i);
+            codeSamples.append("代码片段编号：").append(i).append("\n");
+            codeSamples.append("代码所在路径：").append(nodeProps.get("fullName")).append("\n");
+            codeSamples.append("代码功能：");
+            if (nodeProps.get("description") != null) {
+                codeSamples.append(nodeProps.get("description")).append("\n");
+            } else {
+                codeSamples.append(nodeProps.get("name")).append("\n");
+            }
+            codeSamples.append("\n");
+        }
+
+        argumentMap.put("query", query);
+        argumentMap.put("codeSamples", codeSamples.toString());
+        String prompt = StrUtil.format(template, argumentMap);
+
+        System.out.println("扩展节点集合过滤：");
+        System.out.println(prompt);
+        String answer = generateAnswer(prompt);
+        System.out.println(answer);
+        List<Integer> remainIdx = FormatParseUtil.parseIntList(answer);
+        System.out.println("扩展解析保留：" + remainIdx);
+
+        return remainIdx;
     }
 }
