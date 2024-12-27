@@ -2,6 +2,7 @@ package org.example.lowcodekg.service;
 
 import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
 import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
+import org.example.lowcodekg.dto.CodeGenerationResult;
 import org.example.lowcodekg.dto.Neo4jNode;
 import org.example.lowcodekg.dto.Neo4jRelation;
 import org.example.lowcodekg.dto.Neo4jSubGraph;
@@ -22,4 +23,6 @@ public interface Neo4jGraphService {
     List<JavaClassEntity> findAllJavaClass();
 
     List<JavaMethodEntity> findAllJavaMethod();
+
+    CodeGenerationResult codeGeneration(String query, Neo4jSubGraph oriSubGraph, List<Long> remainNodeIds);
 }
