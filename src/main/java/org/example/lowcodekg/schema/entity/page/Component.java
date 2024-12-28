@@ -1,4 +1,4 @@
-package org.example.lowcodekg.schema.entity;
+package org.example.lowcodekg.schema.entity.page;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

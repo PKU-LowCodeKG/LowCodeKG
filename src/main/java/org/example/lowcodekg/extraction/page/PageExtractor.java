@@ -2,19 +2,17 @@ package org.example.lowcodekg.extraction.page;
 
 import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.schema.entity.Component;
-import org.example.lowcodekg.schema.entity.ConfigItem;
-import org.example.lowcodekg.schema.entity.PageTemplate;
+import org.example.lowcodekg.schema.entity.page.Component;
+import org.example.lowcodekg.schema.entity.page.ConfigItem;
+import org.example.lowcodekg.schema.entity.page.PageTemplate;
 import org.example.lowcodekg.util.FileUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,31 +90,47 @@ public class PageExtractor extends KnowledgeExtractor {
 
     public static void main(String[] args) {
         String content = """
-                <template>
-                  <div class="login-container">
-                    <div class="login-card">
-                      <el-form status-icon :model="loginForm" :rules="rules" ref="ruleForm" class="login-form">
-                        <el-form-item prop="username">
-                          <el-input
-                            v-model="loginForm.username"
-                            prefix-icon="el-icon-user-solid"
-                            placeholder="用户名"
-                            @keyup.enter.native="login" />
-                        </el-form-item>
-                        <el-form-item prop="password">
-                          <el-input
-                            v-model="loginForm.password"
-                            prefix-icon="iconfont el-icon-mymima"
-                            show-password
-                            placeholder="密码"
-                            @keyup.enter.native="login" />
-                        </el-form-item>
-                      </el-form>
-                      <el-button type="primary" @click="login">登录</el-button>
-                    </div>
-                  </div>
-                  <div class="login-title">管理员登录</div>
-                </template>
+                <script>
+                import { generaMenu } from '@/assets/js/menu'
+                export default {
+                  data: function () {
+                    return {
+                      loginForm: {
+                        username: '',
+                        password: ''
+                      },
+                      rules: {
+                        username: [{ required: true, message: '用户名不能为空', trigger: 'blur' }],
+                        password: [{ required: true, message: '密码不能为空', trigger: 'blur' }]
+                      }
+                    }
+                  },
+                  methods: {
+                    login() {
+                      this.$refs.ruleForm.validate((valid) => {
+                        if (valid) {
+                          const that = this
+                          let param = new URLSearchParams()
+                          param.append('username', that.loginForm.username)
+                          param.append('password', that.loginForm.password)
+                          that.axios.post('/api/users/login', param).then(({ data }) => {
+                            if (data.flag) {
+                              that.$store.commit('login', data.data)
+                              generaMenu()
+                              that.$message.success('登录成功')
+                              that.$router.push({ path: '/' })
+                            } else {
+                              that.$message.error(data.message)
+                            }
+                          })
+                        } else {
+                          return false
+                        }
+                      })
+                    }
+                  }
+                }
+                </script>
                 """;
         Document document = Jsoup.parse((content));
         Element divElement = document.selectFirst("template");

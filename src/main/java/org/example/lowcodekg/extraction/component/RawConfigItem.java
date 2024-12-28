@@ -2,8 +2,7 @@ package org.example.lowcodekg.extraction.component;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.lowcodekg.schema.entity.ConfigItem;
-import org.glassfish.hk2.utilities.reflection.ScopeInfo;
+import org.example.lowcodekg.schema.entity.page.ConfigItem;
 
 public class RawConfigItem {
     @Getter

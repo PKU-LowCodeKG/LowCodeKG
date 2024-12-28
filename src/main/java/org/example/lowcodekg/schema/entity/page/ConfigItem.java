@@ -1,10 +1,8 @@
-package org.example.lowcodekg.schema.entity;
+package org.example.lowcodekg.schema.entity.page;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
-import org.neo4j.graphdb.Label;
 
 /**
  * 组件配置

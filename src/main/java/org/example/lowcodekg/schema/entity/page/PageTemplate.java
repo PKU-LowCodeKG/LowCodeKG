@@ -1,4 +1,4 @@
-package org.example.lowcodekg.schema.entity;
+package org.example.lowcodekg.schema.entity.page;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,7 +41,7 @@ public class PageTemplate {
     /**
      * 页面脚本
      */
-
+    private Script script;
 
 
     public PageEntity storeInNeo4j(PageRepo pageRepo) {
