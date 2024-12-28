@@ -1,6 +1,8 @@
 package org.example.lowcodekg.schema.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.example.lowcodekg.dao.neo4j.entity.ComponentEntity;
 import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
@@ -14,6 +16,8 @@ import java.util.List;
  * 低代码组件实体类
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Component {
 
     /**
@@ -25,6 +29,11 @@ public class Component {
      * 组件中文名称
      */
     private String cnName;
+
+    /**
+     * 文本元素内容
+     */
+    private String text;
 
     /**
      * 组件类别，包括场景标签、功能分类等
@@ -46,8 +55,6 @@ public class Component {
      */
     private List<Component> relatedComponents;
 
-
-    public Component() {}
 
     public Component(ComponentEntity entity) {
         this.name = entity.getName();

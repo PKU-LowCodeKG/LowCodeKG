@@ -11,7 +11,7 @@ import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.service.ElasticSearchService;
-import org.example.lowcodekg.util.JSONUtils;
+import org.example.lowcodekg.util.JsonUtil;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -50,7 +50,7 @@ public class JavaProject {
             System.out.println("json file not found");
             throw new RuntimeException("json file not found");
         }
-        jsonMap = JSONUtils.loadJsonFile(file.getAbsolutePath());
+        jsonMap = JsonUtil.loadJsonFile(file.getAbsolutePath());
         System.out.println("jsonObject number:" + jsonMap.size());
     }
 

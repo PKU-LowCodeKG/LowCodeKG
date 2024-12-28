@@ -25,7 +25,7 @@ public class ConfigItem {
     /**
      * 默认值
      */
-    private String defaultValue;
+    private String value
 
     /**
      * 配置项描述
@@ -34,10 +34,15 @@ public class ConfigItem {
 
     public ConfigItem() {}
 
+    public ConfigItem(String code, String value) {
+        this.code = code;
+        this.value = value;
+    }
+
     public ConfigItem(ConfigItemEntity entity) {
         this.code = entity.getCode();
         this.type = entity.getType();
-        this.defaultValue = entity.getDefaultValue();
+        this.value = entity.getDefaultValue();
         this.description = entity.getDescription();
     }
 
@@ -45,7 +50,7 @@ public class ConfigItem {
         ConfigItemEntity configEntity = new ConfigItemEntity();
         configEntity.setCode(code);
         configEntity.setType(type);
-        configEntity.setDefaultValue(defaultValue);
+        configEntity.setDefaultValue(value);
         configEntity.setDescription(description);
         return configItemRepo.save(configEntity);
     }

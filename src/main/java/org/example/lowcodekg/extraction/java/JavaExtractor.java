@@ -7,15 +7,9 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
-import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
-import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
-import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.schema.entity.workflow.JavaClass;
 import org.example.lowcodekg.schema.entity.workflow.JavaProject;
-import org.example.lowcodekg.util.JSONUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.example.lowcodekg.util.JsonUtil;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -96,7 +90,7 @@ public class JavaExtractor extends KnowledgeExtractor {
         String relativePath = "src/main/resources/data/javaInfo.json";
         File file = new File(relativePath);
         System.out.println(file.getAbsolutePath());
-        Map<String, JSONObject> jsonMap = JSONUtils.loadJsonFile(file.getAbsolutePath());
+        Map<String, JSONObject> jsonMap = JsonUtil.loadJsonFile(file.getAbsolutePath());
         System.out.println(jsonMap.size());
     }
 }

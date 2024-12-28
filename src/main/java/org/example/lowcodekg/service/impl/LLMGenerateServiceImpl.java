@@ -6,7 +6,7 @@ import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.example.lowcodekg.dto.Neo4jNode;
 import org.example.lowcodekg.service.LLMGenerateService;
-import org.example.lowcodekg.util.FileUtils;
+import org.example.lowcodekg.util.FileUtil;
 import org.example.lowcodekg.util.FormatParseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,7 +87,7 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
         String contextFilename = "/src/main/resources/data/code_context_examples/" + query + ".txt";
         String projectDir = System.getProperty("user.dir");
         File contextFile = new File(projectDir + "/" + contextFilename);
-        String context = FileUtils.readFile(contextFile.getAbsolutePath());
+        String context = FileUtil.readFile(contextFile.getAbsolutePath());
         argumentMap.put("query", query);
         argumentMap.put("codeSamples", codeSamples.toString());
         argumentMap.put("context", context);
