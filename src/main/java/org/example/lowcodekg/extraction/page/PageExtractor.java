@@ -81,7 +81,7 @@ public class PageExtractor extends KnowledgeExtractor {
         component.setSourceCode(element.toString());
         element.attributes().forEach(attr -> {
             ConfigItem config = new ConfigItem(attr.getKey(), attr.getValue());
-            component.getContainedConfigItems().add(config);
+            component.getConfigItemList().add(config);
         });
         for (Element child : element.children()) {
             Component childComponent = parseTemplate(child, element);

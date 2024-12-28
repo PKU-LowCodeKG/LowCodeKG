@@ -58,19 +58,19 @@ public class Component {
     /**
      * 组件关联的配置型
      */
-    private List<ConfigItem> containedConfigItems = new ArrayList<>();
+    private List<ConfigItem> configItemList = new ArrayList<>();
 
     /**
      * 组件依赖的其他组件（outgoing）
      */
-    private List<Component> relatedComponents = new ArrayList<>();
+    private List<Component> relatedComponentList = new ArrayList<>();
 
 
     public Component(ComponentEntity entity) {
         this.name = entity.getName();
         this.category = Category.setCategoryBy(entity.getCategory());
         this.description = entity.getDescription();
-        this.containedConfigItems = entity.getContainedConfigItemEntities().stream().map(e -> new ConfigItem(e)).toList();
+        this.configItemList = entity.getContainedConfigItemEntities().stream().map(e -> new ConfigItem(e)).toList();
     }
 
     /**
@@ -86,7 +86,7 @@ public class Component {
 
             // 组件关联的配置型列表
             List<ConfigItemEntity> configItemEntities = new ArrayList<>();
-            for(ConfigItem configItem: containedConfigItems) {
+            for(ConfigItem configItem: configItemList) {
                 // 存储配置项节点
                 ConfigItemEntity configEntity = configItem.storeInNeo4j(configItemRepo);
                 configItemEntities.add(configEntity);
