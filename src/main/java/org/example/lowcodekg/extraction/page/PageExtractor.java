@@ -2,6 +2,8 @@ package org.example.lowcodekg.extraction.page;
 
 import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
+import org.example.lowcodekg.schema.entity.Component;
+import org.example.lowcodekg.schema.entity.ConfigItem;
 import org.example.lowcodekg.schema.entity.PageTemplate;
 import org.example.lowcodekg.util.FileUtil;
 
@@ -27,23 +29,32 @@ public class PageExtractor extends KnowledgeExtractor {
         for(String filePath: this.getDataDir()) {
             Collection<File> vueFiles = FileUtils.listFiles(new File(filePath), new String[]{"vue"}, true);
             for(File vueFile: vueFiles) {
+                // 每个.vue文件解析为一个 PageTemplate 实体
                 PageTemplate pageTemplate = new PageTemplate();
                 pageTemplate.setName(vueFile.getName());
-
-                // read file content
                 String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
-                // template parse
+                // parse template
                 String templateContent = getTemplateContent(fileContent);
+                Document document = Jsoup.parse(templateContent);
+                Element divElement = document.selectFirst("Template");
+                divElement.children().forEach(element -> {
+                    Component component = parseTemplate(element, null);
+                    pageTemplate.getComponentList().add(component);
+                });
 
-                // script parse
+                // parse script
                 String scriptContent = getScriptContent(fileContent);
+
+
+                // neo4j store
+
 
             }
         }
     }
 
-    private static String getTemplateContent(String fileContent) {
+    private String getTemplateContent(String fileContent) {
         Pattern pattern = Pattern.compile("<template>(.*?)</template>", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(fileContent);
         if (matcher.find()) {
@@ -53,7 +64,7 @@ public class PageExtractor extends KnowledgeExtractor {
         }
     }
 
-    private static String getScriptContent(String fileContent) {
+    private String getScriptContent(String fileContent) {
         Pattern pattern = Pattern.compile("<script>(.*?)</script>", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(fileContent);
         if (matcher.find()) {
@@ -63,17 +74,20 @@ public class PageExtractor extends KnowledgeExtractor {
         }
     }
 
-    private static void parseTemplate(Element element, Element parent) {
-        System.out.println("元素标签: " + element.tagName());
-        System.out.println("元素类名: " + element.className());
-        System.out.println("元素文本: " + element.text());
+    private static Component parseTemplate(Element element, Element parent) {
+        Component component = new Component();
+        component.setName(element.tagName());
+        component.setText(element.text());
+        component.setSourceCode(element.toString());
         element.attributes().forEach(attr -> {
-            System.out.println("属性名: " + attr.getKey() + ", 属性值: " + attr.getValue());
+            ConfigItem config = new ConfigItem(attr.getKey(), attr.getValue());
+            component.getContainedConfigItems().add(config);
         });
-        System.out.println("-----------------------------");
         for (Element child : element.children()) {
-            parseTemplate(child, element);
+            Component childComponent = parseTemplate(child, element);
+            component.getChildren().add(childComponent);
         }
+        return component;
     }
 
     public static void main(String[] args) {
@@ -81,7 +95,6 @@ public class PageExtractor extends KnowledgeExtractor {
                 <template>
                   <div class="login-container">
                     <div class="login-card">
-                      <div class="login-title">管理员登录</div>
                       <el-form status-icon :model="loginForm" :rules="rules" ref="ruleForm" class="login-form">
                         <el-form-item prop="username">
                           <el-input
@@ -102,17 +115,18 @@ public class PageExtractor extends KnowledgeExtractor {
                       <el-button type="primary" @click="login">登录</el-button>
                     </div>
                   </div>
+                  <div class="login-title">管理员登录</div>
                 </template>
-                
                 """;
-        Document document = Jsoup.parse(getTemplateContent(content));
-        Elements divElement = document.select("*");
-        divElement.forEach(element -> {
-            System.out.println(element.tagName());
-            if (Objects.equals(element.tagName(), "div")) {
-                parseTemplate(element, null);
-            }
+        Document document = Jsoup.parse((content));
+        Element divElement = document.selectFirst("template");
+        PageTemplate pageTemplate = new PageTemplate();
+        divElement.children().forEach(element -> {
+            pageTemplate.getComponentList().add(parseTemplate(element, null));
+//            System.out.println(element.toString());
+//            System.out.println("-----------------------------");
         });
+        System.out.println(pageTemplate.getComponentList().size());
     }
 
 }

@@ -39,7 +39,7 @@ public class RawConfigItem {
         ConfigItem configItem = new ConfigItem();
         configItem.setCode(name);
         configItem.setType(type);
-        configItem.setDefaultValue(defaultValue);
+        configItem.setValue(defaultValue);
         configItem.setDescription(description);
         return configItem;
     }

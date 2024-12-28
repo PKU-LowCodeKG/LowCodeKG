@@ -36,6 +36,11 @@ public class Component {
     private String text;
 
     /**
+     * 组件源代码
+     */
+    private String sourceCode;
+
+    /**
      * 组件类别，包括场景标签、功能分类等
      */
     private Category category;
@@ -46,14 +51,19 @@ public class Component {
     private String description;
 
     /**
+     * 组件子项(体现为template中的层级嵌套关系)
+     */
+    private List<Component> children = new ArrayList<>();
+
+    /**
      * 组件关联的配置型
      */
-    private List<ConfigItem> containedConfigItems;
+    private List<ConfigItem> containedConfigItems = new ArrayList<>();
 
     /**
      * 组件依赖的其他组件（outgoing）
      */
-    private List<Component> relatedComponents;
+    private List<Component> relatedComponents = new ArrayList<>();
 
 
     public Component(ComponentEntity entity) {

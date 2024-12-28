@@ -25,7 +25,7 @@ public class ConfigItem {
     /**
      * 默认值
      */
-    private String value
+    private String value;
 
     /**
      * 配置项描述
