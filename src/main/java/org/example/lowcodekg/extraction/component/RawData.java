@@ -66,7 +66,7 @@ public class RawData {
         for(RawConfigItem configItem: configItems) {
             configItemList.add(configItem.convertToConfigItem());
         }
-        component.setContainedConfigItems(configItemList);
+        component.setConfigItemList(configItemList);
         return component;
     }
 }

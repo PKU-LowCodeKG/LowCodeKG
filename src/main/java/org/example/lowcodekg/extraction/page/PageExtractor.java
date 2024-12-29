@@ -1,18 +1,24 @@
 package org.example.lowcodekg.extraction.page;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.schema.entity.page.Component;
-import org.example.lowcodekg.schema.entity.page.ConfigItem;
-import org.example.lowcodekg.schema.entity.page.PageTemplate;
+import org.example.lowcodekg.schema.entity.page.*;
+import org.example.lowcodekg.service.LLMGenerateService;
 import org.example.lowcodekg.util.FileUtil;
 
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.query.ScriptData;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.Collection;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +26,7 @@ import java.util.regex.Pattern;
  * 前端页面抽取
  * 目前只实现对Vue框架的解析
  */
+@Service
 public class PageExtractor extends KnowledgeExtractor {
 
     @Override
@@ -43,7 +50,9 @@ public class PageExtractor extends KnowledgeExtractor {
 
                 // parse script
                 String scriptContent = getScriptContent(fileContent);
-
+                Script script = parseScript(scriptContent);
+                script.setName(vueFile.getName());
+                pageTemplate.setScript(script);
 
                 // neo4j store
 
@@ -52,7 +61,7 @@ public class PageExtractor extends KnowledgeExtractor {
         }
     }
 
-    private String getTemplateContent(String fileContent) {
+    public static String getTemplateContent(String fileContent) {
         Pattern pattern = Pattern.compile("<template>(.*?)</template>", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(fileContent);
         if (matcher.find()) {
@@ -62,7 +71,7 @@ public class PageExtractor extends KnowledgeExtractor {
         }
     }
 
-    private String getScriptContent(String fileContent) {
+    public static String getScriptContent(String fileContent) {
         Pattern pattern = Pattern.compile("<script>(.*?)</script>", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(fileContent);
         if (matcher.find()) {
@@ -72,7 +81,7 @@ public class PageExtractor extends KnowledgeExtractor {
         }
     }
 
-    private static Component parseTemplate(Element element, Element parent) {
+    public static Component parseTemplate(Element element, Element parent) {
         Component component = new Component();
         component.setName(element.tagName());
         component.setText(element.text());
@@ -88,59 +97,137 @@ public class PageExtractor extends KnowledgeExtractor {
         return component;
     }
 
-    public static void main(String[] args) {
-        String content = """
-                <script>
-                import { generaMenu } from '@/assets/js/menu'
-                export default {
-                  data: function () {
-                    return {
-                      loginForm: {
-                        username: '',
-                        password: ''
-                      },
-                      rules: {
-                        username: [{ required: true, message: '用户名不能为空', trigger: 'blur' }],
-                        password: [{ required: true, message: '密码不能为空', trigger: 'blur' }]
-                      }
-                    }
-                  },
-                  methods: {
-                    login() {
-                      this.$refs.ruleForm.validate((valid) => {
-                        if (valid) {
-                          const that = this
-                          let param = new URLSearchParams()
-                          param.append('username', that.loginForm.username)
-                          param.append('password', that.loginForm.password)
-                          that.axios.post('/api/users/login', param).then(({ data }) => {
-                            if (data.flag) {
-                              that.$store.commit('login', data.data)
-                              generaMenu()
-                              that.$message.success('登录成功')
-                              that.$router.push({ path: '/' })
-                            } else {
-                              that.$message.error(data.message)
-                            }
-                          })
-                        } else {
-                          return false
-                        }
-                      })
-                    }
-                  }
+    public static Script parseScript(String content) {
+        Script script = new Script();
+        script.setContent(content);
+
+        // parse import components
+        List<Script.ImportsComponent> importsList = parseImportsComponent(content);
+        script.setImportsComponentList(importsList);
+
+        // parse data
+        JSONObject data = parseScriptData(content);
+        script.setDataList(data);
+
+        // parse methods
+        List<Script.ScriptMethod> methodList = parseScriptMethod(content);
+        script.setMethodList(methodList);
+
+        return script;
+    }
+
+    public static List<Script.ImportsComponent> parseImportsComponent(String content) {
+        List<Script.ImportsComponent> importsList = new ArrayList<>();
+        String importPattern = "import\\s*\\{?\\s*([\\w,\\s]+)\\s*\\}?\\s*from\\s*['\"]([^'\"]+)['\"]";
+        Pattern pattern = Pattern.compile(importPattern);
+        Matcher matcher = pattern.matcher(content);
+
+        while (matcher.find()) {
+            String names = matcher.group(1).trim();
+            String path = matcher.group(2).trim();
+
+            String[] nameArray = names.split("\\s*,\\s*");
+            for (String name : nameArray) {
+                Script.ImportsComponent importsComponent = new Script.ImportsComponent(name, path);
+                importsList.add(importsComponent);
+            }
+        }
+        return importsList;
+    }
+
+    public static JSONObject parseScriptData(String content) {
+        // get data block
+        String[] lines = content.split("\n");
+        List<String> lineList = new ArrayList<>(Arrays.asList(lines));
+        StringBuilder dataBlock = new StringBuilder();
+        for(int i = 0;i < lineList.size();i++) {
+            if(lineList.get(i).contains("data") && i+1 < lineList.size() && lineList.get(i+1).contains("return")) {
+                int j = i + 2;
+                while(j < lineList.size()) {
+                    dataBlock.append(lineList.get(j));
+                    j++;
+                    if(lineList.get(j).equals("  },")) break;
                 }
-                </script>
+                break;
+            }
+        }
+        if(dataBlock.length() == 0) {
+            return null;
+        }
+
+        // json format
+        JSONObject jsonObject = new JSONObject();
+        try {
+            dataBlock.insert(0, "{ ");
+           jsonObject = JSONObject.parseObject(dataBlock.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("script data json format error:\n" + dataBlock);
+        }
+        return jsonObject;
+    }
+
+    public static List<Script.ScriptMethod> parseScriptMethod(String content) {
+        // get method content
+        String methodContent = getScriptMethod(content);
+        if(methodContent.length() == 0) {
+            return null;
+        }
+
+        // extract methods
+        List<Script.ScriptMethod> methodList = new ArrayList<>();
+        String ans = extractMethod(methodContent);
+        JSONArray jsonArray = JSONObject.parseArray(ans);
+        for(int i = 0;i < jsonArray.size();i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            methodList.add(new Script.ScriptMethod(jsonObject.getString("name"), jsonObject.getJSONArray("params").toJavaList(String.class), jsonObject.getString("content")));
+        }
+        return methodList;
+    }
+
+    private static String extractMethod(String content) {
+        String prompt = """
+                给定下面的代码内容，你的任务是对其进行解析返回一个Method的列表。Method是一个类，属性包含：name, params, content
+                例如对于以下代码片段：
+                averageChange(cnt, res) {
+                      if (this.radioValue == '4') {
+                        this.$emit('update', 'year', this.averageTotal)
+                      }
+                    },
+                解析得到的method对象属性为：
+                    name：averageChange
+                    参数列表：[cnt, res]
+                    content：if (this.radioValue == '4') { this.$emit('update', 'year', this.averageTotal) }
+                      
+                下面是给出的代码片段:
+                {content}
+                
+                请你返回一个json格式表示的Method对象列表
                 """;
-        Document document = Jsoup.parse((content));
-        Element divElement = document.selectFirst("template");
-        PageTemplate pageTemplate = new PageTemplate();
-        divElement.children().forEach(element -> {
-            pageTemplate.getComponentList().add(parseTemplate(element, null));
-//            System.out.println(element.toString());
-//            System.out.println("-----------------------------");
-        });
-        System.out.println(pageTemplate.getComponentList().size());
+        prompt = prompt.replace("{content}", getScriptMethod(content));
+        return llmGenerateService.generateAnswer(prompt);
+
+    }
+
+    private static String getScriptMethod(String content) {
+        String[] lines = content.split("\n");
+        List<String> lineList = new ArrayList<>(Arrays.asList(lines));
+        StringBuilder dataBlock = new StringBuilder();
+        for(int i = 0;i < lineList.size();i++) {
+            if(lineList.get(i).contains("  methods:")) {
+                int j = i + 1;
+                while(j < lineList.size()) {
+                    dataBlock.append(lineList.get(j));
+                    j++;
+                    if(lineList.get(j).equals("  },") || lineList.get(j).equals("  }")) break;
+                }
+                break;
+            }
+        }
+        return dataBlock.toString();
+    }
+
+    public static void main(String[] args) {
     }
 
 }

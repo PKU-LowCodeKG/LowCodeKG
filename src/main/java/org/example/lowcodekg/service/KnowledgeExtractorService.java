@@ -35,6 +35,8 @@ public class KnowledgeExtractorService {
     private Neo4jClient neo4jClient;
     @Autowired
     private ElasticSearchService elasticSearchService;
+    @Autowired
+    private LLMGenerateService llmGenerateService;
 
     public void execute(String yamlStr)
     {
@@ -45,6 +47,7 @@ public class KnowledgeExtractorService {
         KnowledgeExtractor.setJavaFieldRepo(javaFieldRepo);
 
         KnowledgeExtractor.setElasticSearchService(elasticSearchService);
+        KnowledgeExtractor.setLlmGenerateService(llmGenerateService);
 
 //        KnowledgeExtractor.executeFromYaml(yamlStr);
         Yaml yaml = new Yaml();

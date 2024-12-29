@@ -12,33 +12,33 @@ import java.util.List;
 @NoArgsConstructor
 public class Script {
 
+    @Data
+    @AllArgsConstructor
+    public static class ScriptMethod {
+        private String name;
+        private List<String> params;
+        private String content;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class ImportsComponent {
+        private String name;
+        private String path;
+    }
+
     private String name;
 
     private String description;
 
     private String content;
 
-    private List<ScriptData> dataList;
+    private JSONObject dataList;
 
     private List<ScriptMethod> methodList;
 
-    private List<ImportsComponent> importsCompoentList;
+    private List<ImportsComponent> importsComponentList;
 
 }
 
-class ScriptData {
-    private String name;
-    private String value;
-    private List<String> rules;
-}
 
-class ScriptMethod {
-    private String name;
-    private List<String> params;
-    private String content;
-}
-
-class ImportsComponent {
-    private String name;
-    private String path;
-}

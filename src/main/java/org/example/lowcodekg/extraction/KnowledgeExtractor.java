@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.repository.*;
 import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
 import org.example.lowcodekg.service.ElasticSearchService;
+import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
@@ -35,6 +36,8 @@ public abstract class KnowledgeExtractor {
 
     @Setter
     protected static ElasticSearchService elasticSearchService;
+    @Setter
+    protected static LLMGenerateService llmGenerateService;
 
     @Getter
     @Setter
@@ -59,13 +62,6 @@ public abstract class KnowledgeExtractor {
         }
     }
 
-//    public static void main(String[] args) {
-//        try {
-//            KnowledgeExtractor.executeFromYaml(FileUtils.readFileToString(new File("/Users/chang/Documents/projects/LowCodeKG/config.yml"), "utf-8"));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public abstract void extraction();
 

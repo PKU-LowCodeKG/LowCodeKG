@@ -25,7 +25,8 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
     @Autowired
     private OllamaChatModel ollamaChatModel;
 
-    private String generateAnswer(String prompt) {
+    @Override
+    public String generateAnswer(String prompt) {
         UserMessage userMessage = UserMessage.from(prompt);
         AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
         return aiMessage.text();
