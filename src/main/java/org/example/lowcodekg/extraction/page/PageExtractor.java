@@ -34,25 +34,32 @@ public class PageExtractor extends KnowledgeExtractor {
         for(String filePath: this.getDataDir()) {
             Collection<File> vueFiles = FileUtils.listFiles(new File(filePath), new String[]{"vue"}, true);
             for(File vueFile: vueFiles) {
+
+                System.out.println("---parse file: " + vueFile.getAbsolutePath());
                 // 每个.vue文件解析为一个 PageTemplate 实体
                 PageTemplate pageTemplate = new PageTemplate();
-                pageTemplate.setName(vueFile.getName());
+                String name = vueFile.getName().substring(0, vueFile.getName().length()-5);
+                pageTemplate.setName(name);
                 String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
                 // parse template
                 String templateContent = getTemplateContent(fileContent);
-                Document document = Jsoup.parse(templateContent);
-                Element divElement = document.selectFirst("Template");
-                divElement.children().forEach(element -> {
-                    Component component = parseTemplate(element, null);
-                    pageTemplate.getComponentList().add(component);
-                });
+                if(!Objects.isNull(templateContent)) {
+                    Document document = Jsoup.parse(templateContent);
+                    Element divElement = document.selectFirst("Template");
+                    divElement.children().forEach(element -> {
+                        Component component = parseTemplate(element, null);
+                        pageTemplate.getComponentList().add(component);
+                    });
+                }
 
                 // parse script
                 String scriptContent = getScriptContent(fileContent);
-                Script script = parseScript(scriptContent);
-                script.setName(vueFile.getName());
-                pageTemplate.setScript(script);
+                if(scriptContent.length() != 0) {
+                    Script script = parseScript(scriptContent);
+                    script.setName(name);
+                    pageTemplate.setScript(script);
+                }
 
                 // neo4j store
 
@@ -72,13 +79,19 @@ public class PageExtractor extends KnowledgeExtractor {
     }
 
     public static String getScriptContent(String fileContent) {
-        Pattern pattern = Pattern.compile("<script>(.*?)</script>", Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(fileContent);
-        if (matcher.find()) {
-            return matcher.group(1).trim(); // 返回去除前后空白的脚本内容
-        } else {
-            return null;
+        StringBuilder scriptContent = new StringBuilder();
+        List<String> lines = Arrays.asList(fileContent.split("\n"));
+        for(int i = 0;i < lines.size();i++) {
+            if(lines.get(i).contains("<script")) {
+                int j = i + 1;
+                while(j < lines.size() && !lines.get(j).contains("</script>")) {
+                    scriptContent.append(lines.get(j)).append("\n");
+                    j++;
+                }
+                break;
+            }
         }
+        return scriptContent.toString();
     }
 
     public static Component parseTemplate(Element element, Element parent) {
@@ -117,22 +130,27 @@ public class PageExtractor extends KnowledgeExtractor {
     }
 
     public static List<Script.ImportsComponent> parseImportsComponent(String content) {
-        List<Script.ImportsComponent> importsList = new ArrayList<>();
-        String importPattern = "import\\s*\\{?\\s*([\\w,\\s]+)\\s*\\}?\\s*from\\s*['\"]([^'\"]+)['\"]";
-        Pattern pattern = Pattern.compile(importPattern);
-        Matcher matcher = pattern.matcher(content);
+        try {
+            List<Script.ImportsComponent> importsList = new ArrayList<>();
+            String importPattern = "import\\s*\\{?\\s*([\\w,\\s]+)\\s*\\}?\\s*from\\s*['\"]([^'\"]+)['\"]";
+            Pattern pattern = Pattern.compile(importPattern);
+            Matcher matcher = pattern.matcher(content);
 
-        while (matcher.find()) {
-            String names = matcher.group(1).trim();
-            String path = matcher.group(2).trim();
+            while (matcher.find()) {
+                String names = matcher.group(1).trim();
+                String path = matcher.group(2).trim();
 
-            String[] nameArray = names.split("\\s*,\\s*");
-            for (String name : nameArray) {
-                Script.ImportsComponent importsComponent = new Script.ImportsComponent(name, path);
-                importsList.add(importsComponent);
+                String[] nameArray = names.split("\\s*,\\s*");
+                for (String name : nameArray) {
+                    Script.ImportsComponent importsComponent = new Script.ImportsComponent(name, path);
+                    importsList.add(importsComponent);
+                }
             }
+            return importsList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return importsList;
     }
 
     public static JSONObject parseScriptData(String content) {
