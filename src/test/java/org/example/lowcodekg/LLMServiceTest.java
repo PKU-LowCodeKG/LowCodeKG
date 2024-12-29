@@ -37,6 +37,8 @@ public class LLMServiceTest {
         AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
         String answer = aiMessage.text();
         System.out.println(answer);
+
+        System.out.println(llmGenerateService.generateAnswer(prompt));
     }
 
     @Test
