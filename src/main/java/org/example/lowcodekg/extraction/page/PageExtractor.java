@@ -226,8 +226,8 @@ public class PageExtractor extends KnowledgeExtractor {
                 请你返回一个json格式表示的Method对象列表
                 """;
         prompt = prompt.replace("{content}", getScriptMethod(content));
-        return llmGenerateService.generateAnswer(prompt);
-
+        String answer = llmGenerateService.generateAnswer(prompt);
+        return answer;
     }
 
     private static String getScriptMethod(String content) {
