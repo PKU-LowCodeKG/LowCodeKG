@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.ollama.OllamaChatModel;
+import org.example.lowcodekg.extraction.page.PageExtractor;
 import org.example.lowcodekg.schema.entity.page.Component;
 import org.example.lowcodekg.schema.entity.page.PageTemplate;
 import org.example.lowcodekg.schema.entity.page.Script;
@@ -43,7 +44,7 @@ public class LLMServiceTest {
 
     @Test
     public void testVueParser() {
-        String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-vue/aurora-blog/src/components/Sticky.vue";
+        String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-vue/aurora-blog/src/views/Talk.vue";
         File vueFile = new File(path);
         System.out.println(vueFile.getName());
 
@@ -51,20 +52,21 @@ public class LLMServiceTest {
         pageTemplate.setName(vueFile.getName());
         String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
-        String templateContent = getTemplateContent(fileContent);
+        PageExtractor pageExtractor = new PageExtractor();
+        String templateContent = pageExtractor.getTemplateContent(fileContent);
         if(!Objects.isNull(templateContent)) {
             Document document = Jsoup.parse(templateContent);
             Element divElement = document.selectFirst("Template");
             divElement.children().forEach(element -> {
-                Component component = parseTemplate(element, null);
+                Component component = pageExtractor.parseTemplate(element, null);
                 pageTemplate.getComponentList().add(component);
             });
         }
 
         // parse script
-        String scriptContent = getScriptContent(fileContent);
+        String scriptContent = pageExtractor.getScriptContent(fileContent);
         if(scriptContent.length() != 0) {
-            Script script = parseScript(scriptContent);
+            Script script = pageExtractor.parseScript(scriptContent);
             pageTemplate.setScript(script);
         }
     }

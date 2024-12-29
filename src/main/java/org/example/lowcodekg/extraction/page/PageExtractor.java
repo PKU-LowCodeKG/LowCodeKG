@@ -22,6 +22,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.System.exit;
+
 /**
  * 前端页面抽取
  * 目前只实现对Vue框架的解析
@@ -68,7 +70,7 @@ public class PageExtractor extends KnowledgeExtractor {
         }
     }
 
-    public static String getTemplateContent(String fileContent) {
+    public String getTemplateContent(String fileContent) {
         Pattern pattern = Pattern.compile("<template>(.*?)</template>", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(fileContent);
         if (matcher.find()) {
@@ -78,7 +80,7 @@ public class PageExtractor extends KnowledgeExtractor {
         }
     }
 
-    public static String getScriptContent(String fileContent) {
+    public String getScriptContent(String fileContent) {
         StringBuilder scriptContent = new StringBuilder();
         List<String> lines = Arrays.asList(fileContent.split("\n"));
         for(int i = 0;i < lines.size();i++) {
@@ -94,7 +96,7 @@ public class PageExtractor extends KnowledgeExtractor {
         return scriptContent.toString();
     }
 
-    public static Component parseTemplate(Element element, Element parent) {
+    public Component parseTemplate(Element element, Element parent) {
         Component component = new Component();
         component.setName(element.tagName());
         component.setText(element.text());
@@ -110,7 +112,7 @@ public class PageExtractor extends KnowledgeExtractor {
         return component;
     }
 
-    public static Script parseScript(String content) {
+    public Script parseScript(String content) {
         Script script = new Script();
         script.setContent(content);
 
@@ -129,7 +131,7 @@ public class PageExtractor extends KnowledgeExtractor {
         return script;
     }
 
-    public static List<Script.ImportsComponent> parseImportsComponent(String content) {
+    public List<Script.ImportsComponent> parseImportsComponent(String content) {
         try {
             List<Script.ImportsComponent> importsList = new ArrayList<>();
             String importPattern = "import\\s*\\{?\\s*([\\w,\\s]+)\\s*\\}?\\s*from\\s*['\"]([^'\"]+)['\"]";
@@ -153,7 +155,7 @@ public class PageExtractor extends KnowledgeExtractor {
         }
     }
 
-    public static JSONObject parseScriptData(String content) {
+    public JSONObject parseScriptData(String content) {
         // get data block
         String[] lines = content.split("\n");
         List<String> lineList = new ArrayList<>(Arrays.asList(lines));
@@ -185,7 +187,7 @@ public class PageExtractor extends KnowledgeExtractor {
         return jsonObject;
     }
 
-    public static List<Script.ScriptMethod> parseScriptMethod(String content) {
+    public List<Script.ScriptMethod> parseScriptMethod(String content) {
         // get method content
         String methodContent = getScriptMethod(content);
         if(methodContent.length() == 0) {
@@ -195,9 +197,6 @@ public class PageExtractor extends KnowledgeExtractor {
         // extract methods
         List<Script.ScriptMethod> methodList = new ArrayList<>();
         String ans = extractMethod(methodContent);
-        if(ans.startsWith("```json")) {
-            ans = ans.substring(7, ans.length() - 3);
-        }
         JSONArray jsonArray = JSONObject.parseArray(ans);
         for(int i = 0;i < jsonArray.size();i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -206,7 +205,7 @@ public class PageExtractor extends KnowledgeExtractor {
         return methodList;
     }
 
-    private static String extractMethod(String content) {
+    private String extractMethod(String content) {
         String prompt = """
                 给定下面的代码内容，你的任务是对其进行解析返回一个Method的列表。Method是一个类，属性包含：name, params, content
                 例如对于以下代码片段：
@@ -227,10 +226,14 @@ public class PageExtractor extends KnowledgeExtractor {
                 """;
         prompt = prompt.replace("{content}", getScriptMethod(content));
         String answer = llmGenerateService.generateAnswer(prompt);
+        if(answer.contains("```json")) {
+            answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
+        }
+        System.out.println(answer);
         return answer;
     }
 
-    private static String getScriptMethod(String content) {
+    private String getScriptMethod(String content) {
         String[] lines = content.split("\n");
         List<String> lineList = new ArrayList<>(Arrays.asList(lines));
         StringBuilder dataBlock = new StringBuilder();
