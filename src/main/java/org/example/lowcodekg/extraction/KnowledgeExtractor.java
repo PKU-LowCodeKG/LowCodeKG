@@ -2,21 +2,12 @@ package org.example.lowcodekg.extraction;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.repository.*;
-import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
 import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.service.LLMGenerateService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.ApplicationScope;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 定义知识挖掘的抽象类

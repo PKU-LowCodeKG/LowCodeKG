@@ -177,6 +177,9 @@ public class PageExtractor extends KnowledgeExtractor {
         // extract methods
         List<Script.ScriptMethod> methodList = new ArrayList<>();
         String ans = extractMethod(methodContent);
+        if(ans.startsWith("```json")) {
+            ans = ans.substring(7, ans.length() - 3);
+        }
         JSONArray jsonArray = JSONObject.parseArray(ans);
         for(int i = 0;i < jsonArray.size();i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
