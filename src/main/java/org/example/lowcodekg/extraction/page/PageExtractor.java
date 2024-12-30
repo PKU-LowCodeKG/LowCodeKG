@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
 import org.example.lowcodekg.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.dao.neo4j.entity.page.ScriptEntity;
+import org.example.lowcodekg.dao.neo4j.repository.ScriptMethodRepo;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.schema.entity.page.*;
 import org.example.lowcodekg.service.LLMGenerateService;
@@ -89,7 +90,7 @@ public class PageExtractor extends KnowledgeExtractor {
             }
             // script entity
             if(!Objects.isNull(pageTemplate.getScript())) {
-                ScriptEntity scriptEntity = pageTemplate.getScript().createScriptEntity(scriptRepo);
+                ScriptEntity scriptEntity = pageTemplate.getScript().createScriptEntity(scriptRepo, scriptMethodRepo);
                 pageRepo.createRelationOfContainedScript(pageEntity.getId(), scriptEntity.getId());
             }
             return pageEntity;

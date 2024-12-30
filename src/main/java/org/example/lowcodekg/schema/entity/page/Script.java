@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.lowcodekg.dao.neo4j.entity.page.ScriptEntity;
+import org.example.lowcodekg.dao.neo4j.entity.page.ScriptMethodEntity;
+import org.example.lowcodekg.dao.neo4j.repository.ScriptMethodRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ScriptRepo;
 
 import java.util.List;
@@ -35,7 +37,7 @@ public class Script {
 
     private Map<String, String> importsComponentList;
 
-    public ScriptEntity createScriptEntity(ScriptRepo scriptRepo) {
+    public ScriptEntity createScriptEntity(ScriptRepo scriptRepo, ScriptMethodRepo scriptMethodRepo) {
         ScriptEntity scriptEntity = new ScriptEntity();
         scriptEntity.setName(name);
         scriptEntity.setDescription(description);
@@ -43,6 +45,15 @@ public class Script {
         scriptEntity.setDataList(dataList.toJSONString());
         scriptEntity.setImportsComponentList(importsComponentList);
         scriptEntity = scriptRepo.save(scriptEntity);
+        // 创建 ScriptMethod 实体
+        for (ScriptMethod method : methodList) {
+            ScriptMethodEntity methodEntity = new ScriptMethodEntity();
+            methodEntity.setName(method.getName());
+            methodEntity.setParams(method.getParams());
+            methodEntity.setContent(method.getContent());
+            methodEntity = scriptMethodRepo.save(methodEntity);
+            scriptRepo.createRelationOfContainedMethod(scriptEntity.getId(), methodEntity.getId());
+        }
         return scriptEntity;
     }
 
