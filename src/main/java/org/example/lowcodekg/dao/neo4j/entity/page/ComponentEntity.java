@@ -1,4 +1,4 @@
-package org.example.lowcodekg.dao.neo4j.entity;
+package org.example.lowcodekg.dao.neo4j.entity.page;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,24 +26,23 @@ public class ComponentEntity {
     @Property("category")
     private String category;
 
+    @Property("text")
+    private String text;
+
     @Property("description")
     private String description;
-
 
     /**
      * 组件对组件的依赖
      */
     @Relationship(type = "DEPENDENCY", direction = Relationship.Direction.OUTGOING)
     private List<ComponentEntity> relatedComponentEntities = new ArrayList<>();
-//    private Component relatedComponent;
+
+    @Relationship(type = "PARENT_OF", direction = Relationship.Direction.OUTGOING)
+    private List<ComponentEntity> childComponentList = new ArrayList<>();
 
     @Relationship(type = "CONTAIN", direction = Relationship.Direction.OUTGOING)
     private List<ConfigItemEntity> containedConfigItemEntities = new ArrayList<>();
 
-    public ComponentEntity(String name, String category, String description) {
-        this.name = name;
-        this.category = category;
-        this.description = description;
-    }
 
 }

@@ -1,7 +1,6 @@
 package org.example.lowcodekg.dao.neo4j.repository;
 
-import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
-import org.springframework.data.annotation.CreatedBy;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaClassEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;

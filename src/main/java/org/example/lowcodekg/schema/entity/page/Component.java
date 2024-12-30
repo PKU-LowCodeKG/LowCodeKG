@@ -3,8 +3,8 @@ package org.example.lowcodekg.schema.entity.page;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.lowcodekg.dao.neo4j.entity.ComponentEntity;
-import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
+import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
+import org.example.lowcodekg.dao.neo4j.entity.page.ConfigItemEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 import org.example.lowcodekg.schema.entity.category.Category;
@@ -71,6 +71,20 @@ public class Component {
         this.category = Category.setCategoryBy(entity.getCategory());
         this.description = entity.getDescription();
         this.configItemList = entity.getContainedConfigItemEntities().stream().map(e -> new ConfigItem(e)).toList();
+    }
+
+    public ComponentEntity createComponentEntity(ComponentRepo componentRepo) {
+        ComponentEntity entity = new ComponentEntity();
+        entity.setName(name);
+        entity.setText(text);
+        entity.setDescription(description);
+        entity = componentRepo.save(entity);
+        for(Component child: children) {
+            ComponentEntity childEntity = child.createComponentEntity(componentRepo);
+            entity.getChildComponentList().add(childEntity);
+            componentRepo.createRelationOfChildComponent(entity.getId(), childEntity.getId());
+        }
+        return entity;
     }
 
     /**

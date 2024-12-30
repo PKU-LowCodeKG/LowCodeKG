@@ -1,16 +1,14 @@
 package org.example.lowcodekg;
 
-import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
-import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaClassEntity;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @SpringBootTest
 public class Neo4jModifyTest {

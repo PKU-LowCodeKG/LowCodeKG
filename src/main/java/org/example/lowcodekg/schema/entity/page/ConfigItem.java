@@ -1,7 +1,7 @@
 package org.example.lowcodekg.schema.entity.page;
 
 import lombok.Data;
-import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
+import org.example.lowcodekg.dao.neo4j.entity.page.ConfigItemEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 
 /**
@@ -40,15 +40,23 @@ public class ConfigItem {
     public ConfigItem(ConfigItemEntity entity) {
         this.code = entity.getCode();
         this.type = entity.getType();
-        this.value = entity.getDefaultValue();
+        this.value = entity.getValue();
         this.description = entity.getDescription();
+    }
+
+    public ConfigItemEntity createConfigItemEntity(ConfigItemRepo configItemRepo) {
+        ConfigItemEntity entity = new ConfigItemEntity();
+        entity.setCode(code);
+        entity.setValue(value);
+        entity = configItemRepo.save(entity);
+        return entity;
     }
 
     public ConfigItemEntity storeInNeo4j(ConfigItemRepo configItemRepo) {
         ConfigItemEntity configEntity = new ConfigItemEntity();
         configEntity.setCode(code);
         configEntity.setType(type);
-        configEntity.setDefaultValue(value);
+        configEntity.setValue(value);
         configEntity.setDescription(description);
         return configItemRepo.save(configEntity);
     }

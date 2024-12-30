@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.lowcodekg.dao.neo4j.entity.page.ScriptEntity;
+import org.example.lowcodekg.dao.neo4j.repository.ScriptRepo;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -20,13 +23,6 @@ public class Script {
         private String content;
     }
 
-    @Data
-    @AllArgsConstructor
-    public static class ImportsComponent {
-        private String name;
-        private String path;
-    }
-
     private String name;
 
     private String description;
@@ -37,7 +33,18 @@ public class Script {
 
     private List<ScriptMethod> methodList;
 
-    private List<ImportsComponent> importsComponentList;
+    private Map<String, String> importsComponentList;
+
+    public ScriptEntity createScriptEntity(ScriptRepo scriptRepo) {
+        ScriptEntity scriptEntity = new ScriptEntity();
+        scriptEntity.setName(name);
+        scriptEntity.setDescription(description);
+        scriptEntity.setContent(content);
+        scriptEntity.setDataList(dataList.toJSONString());
+        scriptEntity.setImportsComponentList(importsComponentList);
+        scriptEntity = scriptRepo.save(scriptEntity);
+        return scriptEntity;
+    }
 
 }
 

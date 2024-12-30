@@ -1,8 +1,12 @@
 package org.example.lowcodekg.extraction.page;
 
+import cn.hutool.db.Page;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
+import org.example.lowcodekg.dao.neo4j.entity.page.PageEntity;
+import org.example.lowcodekg.dao.neo4j.entity.page.ScriptEntity;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.schema.entity.page.*;
 import org.example.lowcodekg.service.LLMGenerateService;
@@ -38,6 +42,7 @@ public class PageExtractor extends KnowledgeExtractor {
             for(File vueFile: vueFiles) {
 
                 System.out.println("---parse file: " + vueFile.getAbsolutePath());
+
                 // 每个.vue文件解析为一个 PageTemplate 实体
                 PageTemplate pageTemplate = new PageTemplate();
                 String name = vueFile.getName().substring(0, vueFile.getName().length()-5);
@@ -64,9 +69,34 @@ public class PageExtractor extends KnowledgeExtractor {
                 }
 
                 // neo4j store
-
+                storeNeo4j(pageTemplate);
 
             }
+        }
+    }
+
+    /**
+     * 存储页面相关实体和关系
+     */
+    private PageEntity storeNeo4j(PageTemplate pageTemplate) {
+        try {
+            PageEntity pageEntity = pageTemplate.createPageEntity(pageRepo);
+            // component entity
+            for(Component component: pageTemplate.getComponentList()) {
+                ComponentEntity componentEntity = component.createComponentEntity(componentRepo);
+                pageEntity.getComponentList().add(componentEntity);
+                pageRepo.createRelationOfContainedComponent(pageEntity.getId(), componentEntity.getId());
+            }
+            // script entity
+            if(!Objects.isNull(pageTemplate.getScript())) {
+                ScriptEntity scriptEntity = pageTemplate.getScript().createScriptEntity(scriptRepo);
+                pageRepo.createRelationOfContainedScript(pageEntity.getId(), scriptEntity.getId());
+            }
+            return pageEntity;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error in PageExtractor storeNeo4j: " + e.getMessage());
+            return null;
         }
     }
 
@@ -117,7 +147,7 @@ public class PageExtractor extends KnowledgeExtractor {
         script.setContent(content);
 
         // parse import components
-        List<Script.ImportsComponent> importsList = parseImportsComponent(content);
+        Map<String, String> importsList = parseImportsComponent(content);
         script.setImportsComponentList(importsList);
 
         // parse data
@@ -131,9 +161,9 @@ public class PageExtractor extends KnowledgeExtractor {
         return script;
     }
 
-    public List<Script.ImportsComponent> parseImportsComponent(String content) {
+    public Map<String, String> parseImportsComponent(String content) {
         try {
-            List<Script.ImportsComponent> importsList = new ArrayList<>();
+            Map<String, String> importsList = new HashMap<>();
             String importPattern = "import\\s*\\{?\\s*([\\w,\\s]+)\\s*\\}?\\s*from\\s*['\"]([^'\"]+)['\"]";
             Pattern pattern = Pattern.compile(importPattern);
             Matcher matcher = pattern.matcher(content);
@@ -144,8 +174,7 @@ public class PageExtractor extends KnowledgeExtractor {
 
                 String[] nameArray = names.split("\\s*,\\s*");
                 for (String name : nameArray) {
-                    Script.ImportsComponent importsComponent = new Script.ImportsComponent(name, path);
-                    importsList.add(importsComponent);
+                    importsList.put(name, path);
                 }
             }
             return importsList;

@@ -3,7 +3,7 @@ package org.example.lowcodekg.schema.entity.page;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.lowcodekg.dao.neo4j.entity.PageEntity;
+import org.example.lowcodekg.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.schema.entity.category.Category;
 
@@ -20,11 +20,9 @@ public class PageTemplate {
 
     private String name;
 
-    private String cnName;
-
     private String description;
 
-    private String sourceCode;
+    private String content;
 
     private Category category;
 
@@ -44,10 +42,11 @@ public class PageTemplate {
     private Script script;
 
 
-    public PageEntity storeInNeo4j(PageRepo pageRepo) {
+    public PageEntity createPageEntity(PageRepo pageRepo) {
         PageEntity pageEntity = new PageEntity();
-
-
+        pageEntity.setName(name);
+        pageEntity.setDescription(description);
+        pageEntity.setContent(content);
         pageEntity = pageRepo.save(pageEntity);
         return pageEntity;
     }
