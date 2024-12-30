@@ -157,34 +157,62 @@ public class PageExtractor extends KnowledgeExtractor {
 
     public JSONObject parseScriptData(String content) {
         // get data block
-        String[] lines = content.split("\n");
-        List<String> lineList = new ArrayList<>(Arrays.asList(lines));
-        StringBuilder dataBlock = new StringBuilder();
-        for(int i = 0;i < lineList.size();i++) {
-            if(lineList.get(i).contains("data") && i+1 < lineList.size() && lineList.get(i+1).contains("return")) {
-                int j = i + 2;
-                while(j < lineList.size()) {
-                    dataBlock.append(lineList.get(j));
-                    j++;
-                    if(lineList.get(j).equals("  },")) break;
-                }
-                break;
-            }
-        }
-        if(dataBlock.length() == 0) {
+        String dataBlock = getScriptData(content);
+        if(Objects.isNull(dataBlock)) {
             return null;
         }
-
         // json format
+        String prompt = """
+                给定下面的代码内容，你的任务是对其进行解析返回一个json对象。注意，如果key对应的value包含了表达式或函数调用，将其转为字符串格式
+                比如：对于
+                "headers": {
+                    "Authorization": "Bearer " + sessionStorage.getItem('token')
+               }，应该表示为：
+                "headers": {
+                    "Authorization": "'Bearer ' + sessionStorage.getItem('token')"
+                  }
+                
+                下面是给出的代码片段:
+                {content}
+                """;
         JSONObject jsonObject = new JSONObject();
         try {
-            dataBlock.insert(0, "{ ");
-           jsonObject = JSONObject.parseObject(dataBlock.toString());
+            prompt = prompt.replace("{content}", dataBlock);
+            String answer = llmGenerateService.generateAnswer(prompt);
+            if(answer.contains("```json")) {
+                answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
+            }
+            jsonObject = JSONObject.parseObject(answer);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("script data json format error:\n" + dataBlock);
         }
         return jsonObject;
+    }
+
+    public String getScriptData(String content) {
+        String[] lines = content.split("\n");
+        List<String> lineList = new ArrayList<>(Arrays.asList(lines));
+        StringBuilder dataBlock = new StringBuilder();
+        for(int i = 0;i < lineList.size();i++) {
+            if(lineList.get(i).contains("data")) {
+                if((lineList.get(i).contains("data()") || lineList.get(i).contains("function"))
+                        && i+1 < lineList.size() && lineList.get(i+1).contains("return {")) {
+                    int j = i + 2;
+                    while (j < lineList.size()) {
+                        dataBlock.append(lineList.get(j));
+                        j++;
+                        if (lineList.get(j).equals("  },")) break;
+                    }
+                    break;
+                }
+            }
+        }
+        if(dataBlock.length() == 0) {
+            return null;
+        }
+        dataBlock.insert(0, " { ");
+        return dataBlock.toString();
     }
 
     public List<Script.ScriptMethod> parseScriptMethod(String content) {
@@ -197,7 +225,13 @@ public class PageExtractor extends KnowledgeExtractor {
         // extract methods
         List<Script.ScriptMethod> methodList = new ArrayList<>();
         String ans = extractMethod(methodContent);
-        JSONArray jsonArray = JSONObject.parseArray(ans);
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray = JSONObject.parseArray(ans);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("script method json format error:\n" + ans);
+        }
         for(int i = 0;i < jsonArray.size();i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             methodList.add(new Script.ScriptMethod(jsonObject.getString("name"), jsonObject.getJSONArray("params").toJavaList(String.class), jsonObject.getString("content")));
@@ -207,29 +241,28 @@ public class PageExtractor extends KnowledgeExtractor {
 
     private String extractMethod(String content) {
         String prompt = """
-                给定下面的代码内容，你的任务是对其进行解析返回一个Method的列表。Method是一个类，属性包含：name, params, content
-                例如对于以下代码片段：
-                averageChange(cnt, res) {
-                      if (this.radioValue == '4') {
-                        this.$emit('update', 'year', this.averageTotal)
-                      }
-                    },
-                解析得到的method对象属性为：
-                    name：averageChange
-                    参数列表：[cnt, res]
-                    content：if (this.radioValue == '4') { this.$emit('update', 'year', this.averageTotal) }
-                      
+                给定下面的代码内容，你的任务是对其进行解析返回一个Method的列表。Method是一个类，属性包含：
+                    String类型的name,
+                    List<String>类型的params,
+                    String类型的content
+                
                 下面是给出的代码片段:
                 {content}
                 
-                请你返回一个json格式表示的Method对象列表
+                请你返回一个json格式表示的Method对象列表，格式如下所示：
+                [
+                    {
+                         "name": "",
+                        "params": [],
+                        "content": ""
+                    }
+                ]
                 """;
         prompt = prompt.replace("{content}", getScriptMethod(content));
         String answer = llmGenerateService.generateAnswer(prompt);
         if(answer.contains("```json")) {
             answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
         }
-        System.out.println(answer);
         return answer;
     }
 
@@ -252,6 +285,35 @@ public class PageExtractor extends KnowledgeExtractor {
     }
 
     public static void main(String[] args) {
+        String str = """
+                {
+                  "talk": {
+                    "id": null,
+                    "content": "",
+                    "isTop": 0,
+                    "status": 1,
+                    "images": ""
+                  },
+                  "statuses": [
+                    {
+                      "status": 1,
+                      "desc": "公开"
+                    },
+                    {
+                      "status": 2,
+                      "desc": "私密"
+                    }
+                  ],
+                  "ups": [],
+                  "headers": {
+                    "Authorization": "Bearer " + sessionStorage.getItem('token')
+                  }
+                }
+                """;
+        JSONObject jsonObject = JSONObject.parseObject(str);
+        jsonObject.forEach((k, v) -> {
+            System.out.println(k + ": " + v);
+        });
     }
 
 }

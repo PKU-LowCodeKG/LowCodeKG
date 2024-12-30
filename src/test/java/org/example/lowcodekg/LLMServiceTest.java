@@ -33,13 +33,40 @@ public class LLMServiceTest {
 
     @Test
     public void test() {
-        String prompt = "What is the capital of France?";
-        UserMessage userMessage = UserMessage.from(prompt);
-        AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
-        String answer = aiMessage.text();
-        System.out.println(answer);
-
-        System.out.println(llmGenerateService.generateAnswer(prompt));
+        String prompt = """
+                给定下面的代码内容，你的任务是对其进行解析返回一个json对象。注意，如果key对应的value包含了表达式或函数调用，将其转为字符串格式
+                比如：对于
+                "headers": {
+                    "Authorization": "Bearer " + sessionStorage.getItem('token')
+               }，应该表示为：
+                "headers": {
+                    "Authorization": "'Bearer ' + sessionStorage.getItem('token')"
+                  }
+                
+                下面是给出的代码片段，请返回json结果:
+                {content}
+                
+                """;
+        String content = """
+                {       talk: {        id: null,        content: '',        isTop: 0,        status: 1,        images: ''      },      statuses: [        { status: 1, desc: '公开' },        { status: 2, desc: '私密' }      ],      upads: [],      headers: { Authorization: 'Bearer ' + sessionStorage.getItem('token') }    }
+                
+                """;
+        prompt = prompt.replace("{content}", content);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            prompt = prompt.replace("{content}", content);
+            String answer = llmGenerateService.generateAnswer(prompt);
+            if(answer.contains("```json")) {
+                answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
+            }
+            System.out.println(answer);
+            jsonObject = JSONObject.parseObject(answer);
+            jsonObject.forEach((key, value) -> {
+                System.out.println(key + ": " + value);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

@@ -47,6 +47,8 @@ public class PageTemplate {
     public PageEntity storeInNeo4j(PageRepo pageRepo) {
         PageEntity pageEntity = new PageEntity();
 
+
+        pageEntity = pageRepo.save(pageEntity);
         return pageEntity;
     }
 }
