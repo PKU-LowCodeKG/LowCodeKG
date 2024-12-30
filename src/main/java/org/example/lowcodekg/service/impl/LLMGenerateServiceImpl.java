@@ -27,9 +27,22 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
 
     @Override
     public String generateAnswer(String prompt) {
-        UserMessage userMessage = UserMessage.from(prompt);
-        AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
-        return aiMessage.text();
+        int maxRetries = 1; // 设定最大重试次数
+        int retryCount = 0;
+        Exception lastException = null;
+
+        while (retryCount < maxRetries) {
+            try {
+                UserMessage userMessage = UserMessage.from(prompt);
+                AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
+                return aiMessage.text();
+            } catch (Exception e) {
+                lastException = e;
+                retryCount++;
+                System.out.println("generateAnswer failed, retrying...");
+            }
+        }
+        return null;
     }
 
     @Override

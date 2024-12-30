@@ -48,7 +48,7 @@ public class LLMServiceTest {
                 
                 """;
         String content = """
-                {       talk: {        id: null,        content: '',        isTop: 0,        status: 1,        images: ''      },      statuses: [        { status: 1, desc: '公开' },        { status: 2, desc: '私密' }      ],      upads: [],      headers: { Authorization: 'Bearer ' + sessionStorage.getItem('token') }    }
+                 {       radioValue: 1,      cycle01: 1,      cycle02: 2,      average01: 0,      average02: 1,      checkboxList: [],      checkNum: this.$options.propsData.check    }
                 
                 """;
         prompt = prompt.replace("{content}", content);
@@ -71,7 +71,7 @@ public class LLMServiceTest {
 
     @Test
     public void testVueParser() {
-        String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-vue/aurora-blog/src/views/Talk.vue";
+        String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-vue/aurora-admin/src/components/Crontab/day.vue";
         File vueFile = new File(path);
         System.out.println(vueFile.getName());
 

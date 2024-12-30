@@ -9,8 +9,7 @@ import org.example.lowcodekg.dao.neo4j.entity.page.ScriptMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ScriptMethodRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ScriptRepo;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -33,26 +32,31 @@ public class Script {
 
     private JSONObject dataList;
 
-    private List<ScriptMethod> methodList;
+    private List<ScriptMethod> methodList = new ArrayList<>();
 
-    private Map<String, String> importsComponentList;
+    private String importsComponentList;
 
     public ScriptEntity createScriptEntity(ScriptRepo scriptRepo, ScriptMethodRepo scriptMethodRepo) {
         ScriptEntity scriptEntity = new ScriptEntity();
         scriptEntity.setName(name);
         scriptEntity.setDescription(description);
         scriptEntity.setContent(content);
-        scriptEntity.setDataList(dataList.toJSONString());
-        scriptEntity.setImportsComponentList(importsComponentList);
         scriptEntity = scriptRepo.save(scriptEntity);
+
+        if(!Objects.isNull(dataList))
+            scriptEntity.setDataList(dataList.toJSONString());
+        if(!Objects.isNull(importsComponentList))
+            scriptEntity.setImportsComponentList(importsComponentList);
         // 创建 ScriptMethod 实体
-        for (ScriptMethod method : methodList) {
-            ScriptMethodEntity methodEntity = new ScriptMethodEntity();
-            methodEntity.setName(method.getName());
-            methodEntity.setParams(method.getParams());
-            methodEntity.setContent(method.getContent());
-            methodEntity = scriptMethodRepo.save(methodEntity);
-            scriptRepo.createRelationOfContainedMethod(scriptEntity.getId(), methodEntity.getId());
+        if(!Objects.isNull(methodList)) {
+            for (ScriptMethod method : methodList) {
+                ScriptMethodEntity methodEntity = new ScriptMethodEntity();
+                methodEntity.setName(method.getName());
+                methodEntity.setParams(method.getParams());
+                methodEntity.setContent(method.getContent());
+                methodEntity = scriptMethodRepo.save(methodEntity);
+                scriptRepo.createRelationOfContainedMethod(scriptEntity.getId(), methodEntity.getId());
+            }
         }
         return scriptEntity;
     }

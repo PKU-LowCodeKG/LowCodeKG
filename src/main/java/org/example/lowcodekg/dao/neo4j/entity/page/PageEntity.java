@@ -21,6 +21,9 @@ public class PageEntity {
     @Property("name")
     private String name;
 
+    @Property("fullName")
+    private String fullName;
+
     @Property("description")
     private String description;
 

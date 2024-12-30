@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "component", path = "component")
 public interface ComponentRepo extends Neo4jRepository<ComponentEntity, Long> {
 
     @RestResource(path = "name", rel = "name")

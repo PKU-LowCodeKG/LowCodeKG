@@ -20,6 +20,8 @@ public class PageTemplate {
 
     private String name;
 
+    private String fullName;
+
     private String description;
 
     private String content;
@@ -45,6 +47,7 @@ public class PageTemplate {
     public PageEntity createPageEntity(PageRepo pageRepo) {
         PageEntity pageEntity = new PageEntity();
         pageEntity.setName(name);
+        pageEntity.setFullName(fullName);
         pageEntity.setDescription(description);
         pageEntity.setContent(content);
         pageEntity = pageRepo.save(pageEntity);

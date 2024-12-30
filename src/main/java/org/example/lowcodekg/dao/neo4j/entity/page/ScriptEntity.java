@@ -28,8 +28,8 @@ public class ScriptEntity {
     @Property("dataList")
     private String dataList;
 
-    @Property("importsComponentList")
-    private Map<String, String> importsComponentList = new HashMap<>();
+    @Property("imports")
+    private String importsComponentList;
 
     @Relationship(type = "CONTAIN_METHOD", direction = Relationship.Direction.OUTGOING)
     private List<ScriptMethodEntity> methodList = new ArrayList<>();

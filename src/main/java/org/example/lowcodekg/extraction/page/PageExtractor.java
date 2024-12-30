@@ -46,8 +46,10 @@ public class PageExtractor extends KnowledgeExtractor {
 
                 // 每个.vue文件解析为一个 PageTemplate 实体
                 PageTemplate pageTemplate = new PageTemplate();
-                String name = vueFile.getName().substring(0, vueFile.getName().length()-5);
+                String name = vueFile.getName().substring(0, vueFile.getName().length()-4);
+                String fullName = vueFile.getAbsolutePath().replace(filePath, "");
                 pageTemplate.setName(name);
+                pageTemplate.setFullName(fullName);
                 String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
                 // parse template
@@ -71,7 +73,6 @@ public class PageExtractor extends KnowledgeExtractor {
 
                 // neo4j store
                 storeNeo4j(pageTemplate);
-
             }
         }
     }
@@ -148,8 +149,9 @@ public class PageExtractor extends KnowledgeExtractor {
         script.setContent(content);
 
         // parse import components
-        Map<String, String> importsList = parseImportsComponent(content);
-        script.setImportsComponentList(importsList);
+        JSONObject importsList = parseImportsComponent(content);
+        script.setImportsComponentList(importsList.toString());
+
 
         // parse data
         JSONObject data = parseScriptData(content);
@@ -162,9 +164,9 @@ public class PageExtractor extends KnowledgeExtractor {
         return script;
     }
 
-    public Map<String, String> parseImportsComponent(String content) {
+    public JSONObject parseImportsComponent(String content) {
         try {
-            Map<String, String> importsList = new HashMap<>();
+            JSONObject importsList = new JSONObject();
             String importPattern = "import\\s*\\{?\\s*([\\w,\\s]+)\\s*\\}?\\s*from\\s*['\"]([^'\"]+)['\"]";
             Pattern pattern = Pattern.compile(importPattern);
             Matcher matcher = pattern.matcher(content);
@@ -258,13 +260,13 @@ public class PageExtractor extends KnowledgeExtractor {
         JSONArray jsonArray = new JSONArray();
         try {
             jsonArray = JSONObject.parseArray(ans);
+            for(int i = 0;i < jsonArray.size();i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                methodList.add(new Script.ScriptMethod(jsonObject.getString("name"), jsonObject.getJSONArray("params").toJavaList(String.class), jsonObject.getString("content")));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("script method json format error:\n" + ans);
-        }
-        for(int i = 0;i < jsonArray.size();i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            methodList.add(new Script.ScriptMethod(jsonObject.getString("name"), jsonObject.getJSONArray("params").toJavaList(String.class), jsonObject.getString("content")));
         }
         return methodList;
     }
@@ -288,8 +290,11 @@ public class PageExtractor extends KnowledgeExtractor {
                     }
                 ]
                 """;
-        prompt = prompt.replace("{content}", getScriptMethod(content));
+        prompt = prompt.replace("{content}", content);
         String answer = llmGenerateService.generateAnswer(prompt);
+        if(Objects.isNull(answer)) {
+            return null;
+        }
         if(answer.contains("```json")) {
             answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
         }
@@ -340,10 +345,16 @@ public class PageExtractor extends KnowledgeExtractor {
                   }
                 }
                 """;
-        JSONObject jsonObject = JSONObject.parseObject(str);
-        jsonObject.forEach((k, v) -> {
-            System.out.println(k + ": " + v);
-        });
+//        JSONObject jsonObject = JSONObject.parseObject(str);
+//        jsonObject.forEach((k, v) -> {
+//            System.out.println(k + ": " + v);
+//        });
+        Map<String, String> m = new HashMap<>();
+        JSONObject jsonObject = new JSONObject();
+        m.put("a", "1"); jsonObject.put("a", "1");
+        m.put("b", "2"); jsonObject.put("b", "2");
+        System.out.println(m.toString());
+        System.out.println(jsonObject.toJSONString());
     }
 
 }

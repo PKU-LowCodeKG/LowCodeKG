@@ -7,7 +7,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "javaMethod", path = "javaMethod")
 public interface JavaMethodRepo extends Neo4jRepository<JavaMethodEntity, Long> {
 
     @Query("MATCH (s:JavaMethod) WHERE id(s)=$sid " +
