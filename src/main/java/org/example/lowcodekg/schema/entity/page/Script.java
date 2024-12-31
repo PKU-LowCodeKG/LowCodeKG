@@ -41,12 +41,12 @@ public class Script {
         scriptEntity.setName(name);
         scriptEntity.setDescription(description);
         scriptEntity.setContent(content);
-        scriptEntity = scriptRepo.save(scriptEntity);
-
         if(!Objects.isNull(dataList))
             scriptEntity.setDataList(dataList.toJSONString());
         if(!Objects.isNull(importsComponentList))
             scriptEntity.setImportsComponentList(importsComponentList);
+        scriptEntity = scriptRepo.save(scriptEntity);
+
         // 创建 ScriptMethod 实体
         if(!Objects.isNull(methodList)) {
             for (ScriptMethod method : methodList) {
@@ -62,5 +62,3 @@ public class Script {
     }
 
 }
-
-
