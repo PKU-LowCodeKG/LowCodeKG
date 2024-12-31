@@ -132,7 +132,8 @@ public class PageExtractor extends KnowledgeExtractor {
         Component component = new Component();
         component.setName(element.tagName());
         component.setText(element.text());
-        component.setSourceCode(element.toString());
+        component.setContent(element.toString());
+
         element.attributes().forEach(attr -> {
             ConfigItem config = new ConfigItem(attr.getKey(), attr.getValue());
             component.getConfigItemList().add(config);

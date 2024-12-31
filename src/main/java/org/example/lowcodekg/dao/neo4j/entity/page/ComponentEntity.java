@@ -29,6 +29,9 @@ public class ComponentEntity {
     @Property("text")
     private String text;
 
+    @Property("content")
+    private String content;
+
     @Property("description")
     private String description;
 

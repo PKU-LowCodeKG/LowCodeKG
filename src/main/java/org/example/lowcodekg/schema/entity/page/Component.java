@@ -35,10 +35,7 @@ public class Component {
      */
     private String text;
 
-    /**
-     * 组件源代码
-     */
-    private String sourceCode;
+    private String content;
 
     /**
      * 组件类别，包括场景标签、功能分类等
@@ -77,6 +74,7 @@ public class Component {
         ComponentEntity entity = new ComponentEntity();
         entity.setName(name);
         entity.setText(text);
+        entity.setContent(content);
         entity.setDescription(description);
         entity = componentRepo.save(entity);
         for(Component child: children) {
