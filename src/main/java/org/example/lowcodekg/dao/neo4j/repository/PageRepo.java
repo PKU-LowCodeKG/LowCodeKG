@@ -9,6 +9,11 @@ import org.springframework.stereotype.Repository;
 public interface PageRepo extends Neo4jRepository<PageEntity, Long> {
 
     @Query("MATCH (s:PageTemplate) WHERE id(s)=$sid " +
+            "MATCH (e:PageTemplate) WHERE id(e)=$eid " +
+            "CREATE (s)-[:DEPENDENCY]->(e)")
+    void createRelationOfDependedPage(Long sid, Long eid);
+
+    @Query("MATCH (s:PageTemplate) WHERE id(s)=$sid " +
             "MATCH (e:Component) WHERE id(e)=$eid " +
             "CREATE (s)-[:CONTAIN]->(e)")
     void createRelationOfContainedComponent(Long sid, Long eid);

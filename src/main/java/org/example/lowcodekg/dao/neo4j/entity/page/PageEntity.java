@@ -33,8 +33,8 @@ public class PageEntity {
     @Property("category")
     private String category;
 
-    @Relationship(type = "NESTING", direction = Relationship.Direction.OUTGOING)
-    private List<PageEntity> nestingPageList = new ArrayList<>();
+    @Relationship(type = "DEPENDENCY", direction = Relationship.Direction.OUTGOING)
+    private List<PageEntity> dependedPageList = new ArrayList<>();
 
     /**
      * 页面绑定的数据对象(Java类)

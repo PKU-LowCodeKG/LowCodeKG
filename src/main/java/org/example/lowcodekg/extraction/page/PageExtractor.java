@@ -36,15 +36,17 @@ import static java.lang.System.exit;
 @Service
 public class PageExtractor extends KnowledgeExtractor {
 
+    private Map<String, PageEntity> pageEntityMap = new HashMap<>();
+    private Map<String, PageTemplate> pageTemplateMap = new HashMap<>();
+
     @Override
     public void extraction() {
         for(String filePath: this.getDataDir()) {
             Collection<File> vueFiles = FileUtils.listFiles(new File(filePath), new String[]{"vue"}, true);
             for(File vueFile: vueFiles) {
-
                 System.out.println("---parse file: " + vueFile.getAbsolutePath());
 
-                // 每个.vue文件解析为一个 PageTemplate 实体
+                // each .vue file parsed as one PageTemplate entity
                 PageTemplate pageTemplate = new PageTemplate();
                 String name = vueFile.getName().substring(0, vueFile.getName().length()-4);
                 String fullName = vueFile.getAbsolutePath().replace(filePath, "");
@@ -62,7 +64,6 @@ public class PageExtractor extends KnowledgeExtractor {
                         pageTemplate.getComponentList().add(component);
                     });
                 }
-
                 // parse script
                 String scriptContent = getScriptContent(fileContent);
                 if(scriptContent.length() != 0) {
@@ -70,19 +71,30 @@ public class PageExtractor extends KnowledgeExtractor {
                     script.setName(name);
                     pageTemplate.setScript(script);
                 }
-
                 // neo4j store
                 storeNeo4j(pageTemplate);
             }
+            // create relationships among page entities
+            pageEntityMap.values().forEach(pageEntity -> {
+                PageTemplate pageTemplate = pageTemplateMap.get(pageEntity.getName());
+                pageTemplate.findDependedPage();
+                pageTemplate.getDependedPageList().forEach(dependedPageName -> {
+                   if(pageEntityMap.containsKey(dependedPageName)) {
+                       pageRepo.createRelationOfDependedPage(pageEntity.getId(), pageEntityMap.get(dependedPageName).getId());
+                   }
+                });
+            });
         }
     }
 
     /**
-     * 存储页面相关实体和关系
+     * store page-related entities and relationships in neo4j
      */
     private PageEntity storeNeo4j(PageTemplate pageTemplate) {
         try {
             PageEntity pageEntity = pageTemplate.createPageEntity(pageRepo);
+            pageEntityMap.put(pageEntity.getName(), pageEntity);
+            pageTemplateMap.put(pageEntity.getName(), pageTemplate);
             // component entity
             for(Component component: pageTemplate.getComponentList()) {
                 ComponentEntity componentEntity = component.createComponentEntity(componentRepo);

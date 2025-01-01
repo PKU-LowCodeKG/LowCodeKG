@@ -1,5 +1,6 @@
 package org.example.lowcodekg.schema.entity.page;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,8 @@ public class PageTemplate {
      */
     private List<Component> componentList = new ArrayList<>();
 
+    private List<String> dependedPageList = new ArrayList<>();
+
     /**
      * 页面配置项列表
      */
@@ -43,7 +46,6 @@ public class PageTemplate {
      */
     private Script script;
 
-
     public PageEntity createPageEntity(PageRepo pageRepo) {
         PageEntity pageEntity = new PageEntity();
         pageEntity.setName(name);
@@ -52,5 +54,17 @@ public class PageTemplate {
         pageEntity.setContent(content);
         pageEntity = pageRepo.save(pageEntity);
         return pageEntity;
+    }
+
+    public void findDependedPage() {
+        String imports = script.getImportsComponentList();
+        JSONObject importsList = JSONObject.parseObject(imports);
+        importsList.forEach((k, v) -> {
+            String component = (String) k;
+            String path = (String) v;
+            if(path.contains("@")) {
+                dependedPageList.add(component);
+            }
+        });
     }
 }
