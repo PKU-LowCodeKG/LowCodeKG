@@ -54,6 +54,10 @@ public class PageExtractor extends KnowledgeExtractor {
                 pageTemplate.setFullName(fullName);
                 String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
+//                if(!name.equals("TalkList")) {
+//                    continue;
+//                }
+
                 // parse template
                 String templateContent = getTemplateContent(fileContent);
                 if(!Objects.isNull(templateContent)) {
@@ -77,12 +81,14 @@ public class PageExtractor extends KnowledgeExtractor {
             // create relationships among page entities
             pageEntityMap.values().forEach(pageEntity -> {
                 PageTemplate pageTemplate = pageTemplateMap.get(pageEntity.getName());
-                pageTemplate.findDependedPage();
-                pageTemplate.getDependedPageList().forEach(dependedPageName -> {
-                   if(pageEntityMap.containsKey(dependedPageName)) {
-                       pageRepo.createRelationOfDependedPage(pageEntity.getId(), pageEntityMap.get(dependedPageName).getId());
-                   }
-                });
+                if(!Objects.isNull(pageTemplate.getScript())) {
+                    pageTemplate.findDependedPage();
+                    pageTemplate.getDependedPageList().forEach(dependedPageName -> {
+                       if(pageEntityMap.containsKey(dependedPageName)) {
+                           pageRepo.createRelationOfDependedPage(pageEntity.getId(), pageEntityMap.get(dependedPageName).getId());
+                       }
+                    });
+                }
             });
         }
     }
@@ -103,7 +109,8 @@ public class PageExtractor extends KnowledgeExtractor {
             }
             // script entity
             if(!Objects.isNull(pageTemplate.getScript())) {
-                ScriptEntity scriptEntity = pageTemplate.getScript().createScriptEntity(scriptRepo, scriptMethodRepo);
+                Script script = pageTemplate.getScript();
+                ScriptEntity scriptEntity = script.createScriptEntity(scriptRepo, scriptMethodRepo, scriptDataRepo);
                 pageRepo.createRelationOfContainedScript(pageEntity.getId(), scriptEntity.getId());
             }
             return pageEntity;
@@ -167,8 +174,8 @@ public class PageExtractor extends KnowledgeExtractor {
 
 
         // parse data
-        JSONObject data = parseScriptData(content);
-        script.setDataList(data);
+        List<Script.ScriptData> dataList = parseScriptData(content);
+        script.setDataList(dataList);
 
         // parse methods
         List<Script.ScriptMethod> methodList = parseScriptMethod(content);
@@ -200,7 +207,7 @@ public class PageExtractor extends KnowledgeExtractor {
         }
     }
 
-    public JSONObject parseScriptData(String content) {
+    public List<Script.ScriptData> parseScriptData(String content) {
         // get data block
         String dataBlock = getScriptData(content);
         if(Objects.isNull(dataBlock)) {
@@ -220,19 +227,25 @@ public class PageExtractor extends KnowledgeExtractor {
                 下面是给出的代码片段:
                 {content}
                 """;
-        JSONObject jsonObject = new JSONObject();
+        List<Script.ScriptData> dataList = new ArrayList<>();
         try {
             prompt = prompt.replace("{content}", dataBlock);
             String answer = llmGenerateService.generateAnswer(prompt);
             if(answer.contains("```json")) {
                 answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
             }
-            jsonObject = JSONObject.parseObject(answer);
+            JSONObject jsonObject = JSONObject.parseObject(answer);
+            jsonObject.forEach((k, v) -> {
+                Script.ScriptData data = new Script.ScriptData();
+                data.setName(k);
+                data.setValue(Objects.isNull(v) ? "null" : v.toString());
+                dataList.add(data);
+            });
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("script data json format error:\n" + dataBlock);
         }
-        return jsonObject;
+        return dataList;
     }
 
     public String getScriptData(String content) {
@@ -269,49 +282,33 @@ public class PageExtractor extends KnowledgeExtractor {
 
         // extract methods
         List<Script.ScriptMethod> methodList = new ArrayList<>();
-        String ans = extractMethod(methodContent);
-        JSONArray jsonArray = new JSONArray();
-        try {
-            jsonArray = JSONObject.parseArray(ans);
-            for(int i = 0;i < jsonArray.size();i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                methodList.add(new Script.ScriptMethod(jsonObject.getString("name"), jsonObject.getJSONArray("params").toJavaList(String.class), jsonObject.getString("content")));
+        List<String> lines = Arrays.asList(methodContent.split("\n"));
+        String name = "";
+        List<String> params = new ArrayList<>();
+        StringBuilder mContent = new StringBuilder();
+        int i = 0;
+        while(i < lines.size()) {
+            String line = lines.get(i);
+            Pattern p = Pattern.compile("(\\w*)\\(([\\w,:\\s]*)\\)\\s*\\{");
+            Matcher match = p.matcher(line);
+            if(match.find()) {
+                name = match.group(1);
+                params = Arrays.asList(match.group(2).split(", "));
+                int j = i + 1;
+                while(j < lines.size()) {
+                    if(lines.get(j).equals("    },") || lines.get(j).equals("    }")) {
+                        break;
+                    }
+                    mContent.append(lines.get(j));
+                    j++;
+                }
+                i = j;
+                methodList.add(new Script.ScriptMethod(name, params, mContent.toString()));
+                mContent = new StringBuilder();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("script method json format error:\n" + ans);
+            i++;
         }
         return methodList;
-    }
-
-    private String extractMethod(String content) {
-        String prompt = """
-                给定下面的代码内容，你的任务是对其进行解析返回一个Method的列表。Method是一个类，属性包含：
-                    String类型的name,
-                    List<String>类型的params,
-                    String类型的content
-                
-                下面是给出的代码片段:
-                {content}
-                
-                请你返回一个json格式表示的Method对象列表，格式如下所示：
-                [
-                    {
-                         "name": "",
-                        "params": [],
-                        "content": ""
-                    }
-                ]
-                """;
-        prompt = prompt.replace("{content}", content);
-        String answer = llmGenerateService.generateAnswer(prompt);
-        if(Objects.isNull(answer)) {
-            return null;
-        }
-        if(answer.contains("```json")) {
-            answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
-        }
-        return answer;
     }
 
     private String getScriptMethod(String content) {
@@ -322,7 +319,7 @@ public class PageExtractor extends KnowledgeExtractor {
             if(lineList.get(i).contains("  methods:")) {
                 int j = i + 1;
                 while(j < lineList.size()) {
-                    dataBlock.append(lineList.get(j));
+                    dataBlock.append(lineList.get(j) + "\n");
                     j++;
                     if(lineList.get(j).equals("  },") || lineList.get(j).equals("  }")) break;
                 }

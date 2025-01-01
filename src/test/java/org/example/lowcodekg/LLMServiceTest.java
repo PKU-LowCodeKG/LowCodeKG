@@ -71,7 +71,7 @@ public class LLMServiceTest {
 
     @Test
     public void testVueParser() {
-        String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-vue/aurora-admin/src/components/Crontab/day.vue";
+        String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-vue/aurora-admin/src/views/talk/TalkList.vue";
         File vueFile = new File(path);
         System.out.println(vueFile.getName());
 
@@ -80,20 +80,24 @@ public class LLMServiceTest {
         String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
         PageExtractor pageExtractor = new PageExtractor();
-        String templateContent = pageExtractor.getTemplateContent(fileContent);
-        if(!Objects.isNull(templateContent)) {
-            Document document = Jsoup.parse(templateContent);
-            Element divElement = document.selectFirst("Template");
-            divElement.children().forEach(element -> {
-                Component component = pageExtractor.parseTemplate(element, null);
-                pageTemplate.getComponentList().add(component);
-            });
-        }
 
         // parse script
-        String scriptContent = pageExtractor.getScriptContent(fileContent);
-        if(scriptContent.length() != 0) {
-            Script script = pageExtractor.parseScript(scriptContent);
+        String content = pageExtractor.getScriptContent(fileContent);
+        if(content.length() != 0) {
+            Script script = new Script();
+            script.setContent(content);
+
+            // parse import components
+            JSONObject importsList = pageExtractor.parseImportsComponent(content);
+            script.setImportsComponentList(importsList.toString());
+
+            // parse data
+//            JSONObject data = pageExtractor.parseScriptData(content);
+//            script.setDataList(data);
+
+            // parse methods
+            List<Script.ScriptMethod> methodList = pageExtractor.parseScriptMethod(content);
+            script.setMethodList(methodList);
             pageTemplate.setScript(script);
         }
     }

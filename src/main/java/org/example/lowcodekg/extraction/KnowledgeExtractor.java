@@ -21,6 +21,8 @@ public abstract class KnowledgeExtractor {
     @Setter
     protected static ScriptMethodRepo scriptMethodRepo;
     @Setter
+    protected static ScriptDataRepo scriptDataRepo;
+    @Setter
     protected static ComponentRepo componentRepo;
     @Setter
     protected static ConfigItemRepo configItemRepo;

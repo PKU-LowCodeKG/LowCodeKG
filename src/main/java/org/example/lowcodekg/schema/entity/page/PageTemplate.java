@@ -10,6 +10,7 @@ import org.example.lowcodekg.schema.entity.category.Category;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 前端页面模板
@@ -57,7 +58,10 @@ public class PageTemplate {
     }
 
     public void findDependedPage() {
-        String imports = script.getImportsComponentList();
+        String imports = this.script.getImportsComponentList();
+        if(Objects.isNull(imports)) {
+            return;
+        }
         JSONObject importsList = JSONObject.parseObject(imports);
         importsList.forEach((k, v) -> {
             String component = (String) k;

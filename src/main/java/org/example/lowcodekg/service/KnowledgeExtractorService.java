@@ -29,6 +29,8 @@ public class KnowledgeExtractorService {
     @Autowired
     private ScriptMethodRepo scriptMethodRepo;
     @Autowired
+    private ScriptDataRepo scriptDataRepo;
+    @Autowired
     private ComponentRepo componentRepo;
     @Autowired
     private ConfigItemRepo configItemRepo;
@@ -49,18 +51,7 @@ public class KnowledgeExtractorService {
 
     public void execute(String yamlStr)
     {
-        KnowledgeExtractor.setPageRepo(pageRepo);
-        KnowledgeExtractor.setScriptRepo(scriptRepo);
-        KnowledgeExtractor.setScriptMethodRepo(scriptMethodRepo);
-        KnowledgeExtractor.setComponentRepo(componentRepo);
-        KnowledgeExtractor.setConfigItemRepo(configItemRepo);
-        KnowledgeExtractor.setJavaClassRepo(javaClassRepo);
-        KnowledgeExtractor.setJavaMethodRepo(javaMethodRepo);
-        KnowledgeExtractor.setJavaFieldRepo(javaFieldRepo);
-
-        KnowledgeExtractor.setElasticSearchService(elasticSearchService);
-        KnowledgeExtractor.setLlmGenerateService(llmGenerateService);
-
+        initExtractorBean();
 //        KnowledgeExtractor.executeFromYaml(yamlStr);
         Yaml yaml = new Yaml();
         Map<String, Object> ret = yaml.load(yamlStr);
@@ -84,6 +75,21 @@ public class KnowledgeExtractorService {
             runner.run(nodeCypher);
         }
         KnowledgeExtractor.execute(configs);
+    }
+
+    private void initExtractorBean() {
+        KnowledgeExtractor.setPageRepo(pageRepo);
+        KnowledgeExtractor.setScriptRepo(scriptRepo);
+        KnowledgeExtractor.setScriptMethodRepo(scriptMethodRepo);
+        KnowledgeExtractor.setScriptDataRepo(scriptDataRepo);
+        KnowledgeExtractor.setComponentRepo(componentRepo);
+        KnowledgeExtractor.setConfigItemRepo(configItemRepo);
+        KnowledgeExtractor.setJavaClassRepo(javaClassRepo);
+        KnowledgeExtractor.setJavaMethodRepo(javaMethodRepo);
+        KnowledgeExtractor.setJavaFieldRepo(javaFieldRepo);
+
+        KnowledgeExtractor.setElasticSearchService(elasticSearchService);
+        KnowledgeExtractor.setLlmGenerateService(llmGenerateService);
     }
 
     public static void main(String[] args) {

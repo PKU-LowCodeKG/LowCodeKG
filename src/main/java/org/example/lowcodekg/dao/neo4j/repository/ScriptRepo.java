@@ -12,4 +12,9 @@ public interface ScriptRepo extends Neo4jRepository<ScriptEntity, Long> {
             "MATCH (e:ScriptMethod) WHERE id(e)=$eid " +
             "CREATE (s)-[:CONTAIN]->(e)")
     void createRelationOfContainedMethod(Long sid, Long eid);
+
+    @Query("MATCH (s:Script) WHERE id(s)=$sid " +
+            "MATCH (e:ScriptData) WHERE id(e)=$eid " +
+            "CREATE (s)-[:CONTAIN]->(e)")
+    void createRelationOfContainedData(Long sid, Long eid);
 }
