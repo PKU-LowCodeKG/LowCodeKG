@@ -72,6 +72,7 @@ public class LLMServiceTest {
     @Test
     public void testVueParser() {
         String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-vue/aurora-admin/src/views/talk/TalkList.vue";
+        path = "/Users/chang/Documents/projects/data_projects/NBlog/blog-view/src/views/blog/Blog.vue";
         File vueFile = new File(path);
         System.out.println(vueFile.getName());
 
@@ -101,4 +102,6 @@ public class LLMServiceTest {
             pageTemplate.setScript(script);
         }
     }
+
+
 }

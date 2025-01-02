@@ -257,10 +257,11 @@ public class PageExtractor extends KnowledgeExtractor {
                 if((lineList.get(i).contains("data()") || lineList.get(i).contains("function"))
                         && i+1 < lineList.size() && lineList.get(i+1).contains("return {")) {
                     int j = i + 2;
+                    String intent = getScriptIndent(lineList.get(i));
                     while (j < lineList.size()) {
                         dataBlock.append(lineList.get(j));
                         j++;
-                        if (lineList.get(j).equals("  },")) break;
+                        if (lineList.get(j).equals(intent + "},")) break;
                     }
                     break;
                 }
@@ -284,19 +285,21 @@ public class PageExtractor extends KnowledgeExtractor {
         List<Script.ScriptMethod> methodList = new ArrayList<>();
         List<String> lines = Arrays.asList(methodContent.split("\n"));
         String name = "";
-        List<String> params = new ArrayList<>();
+        List<String> params;
         StringBuilder mContent = new StringBuilder();
         int i = 0;
         while(i < lines.size()) {
             String line = lines.get(i);
-            Pattern p = Pattern.compile("(\\w*)\\(([\\w,:\\s]*)\\)\\s*\\{");
+            Pattern p = Pattern.compile("(\\w+)\\(([\\w,:\\s=\\.]*)\\)\\s*\\{");
             Matcher match = p.matcher(line);
             if(match.find()) {
                 name = match.group(1);
                 params = Arrays.asList(match.group(2).split(", "));
+                String intent = getScriptIndent(line);
                 int j = i + 1;
                 while(j < lines.size()) {
-                    if(lines.get(j).equals("    },") || lines.get(j).equals("    }")) {
+                    if(lines.get(j).equals(intent + "},")
+                            || lines.get(j).equals(intent + "}")) {
                         break;
                     }
                     mContent.append(lines.get(j));
@@ -316,12 +319,16 @@ public class PageExtractor extends KnowledgeExtractor {
         List<String> lineList = new ArrayList<>(Arrays.asList(lines));
         StringBuilder dataBlock = new StringBuilder();
         for(int i = 0;i < lineList.size();i++) {
-            if(lineList.get(i).contains("  methods:")) {
+            if(lineList.get(i).contains("methods: {")) {
                 int j = i + 1;
+                String intent = getScriptIndent(lineList.get(i));
                 while(j < lineList.size()) {
                     dataBlock.append(lineList.get(j) + "\n");
                     j++;
-                    if(lineList.get(j).equals("  },") || lineList.get(j).equals("  }")) break;
+                    if(j >= lineList.size()
+                            || lineList.get(j).equals(intent + "},")
+                            || lineList.get(j).equals(intent + "}"))
+                        break;
                 }
                 break;
             }
@@ -329,42 +336,22 @@ public class PageExtractor extends KnowledgeExtractor {
         return dataBlock.toString();
     }
 
+    private String getScriptIndent(String line) {
+        StringBuilder indentation = new StringBuilder();
+        for (char c : line.toCharArray()) {
+            if (c == ' ') {
+                indentation.append(" ");
+            } else if (c == '\t') {
+                indentation.append('\t');
+            } else {
+                break;
+            }
+        }
+        return indentation.toString();
+    }
+
     public static void main(String[] args) {
-        String str = """
-                {
-                  "talk": {
-                    "id": null,
-                    "content": "",
-                    "isTop": 0,
-                    "status": 1,
-                    "images": ""
-                  },
-                  "statuses": [
-                    {
-                      "status": 1,
-                      "desc": "公开"
-                    },
-                    {
-                      "status": 2,
-                      "desc": "私密"
-                    }
-                  ],
-                  "ups": [],
-                  "headers": {
-                    "Authorization": "Bearer " + sessionStorage.getItem('token')
-                  }
-                }
-                """;
-//        JSONObject jsonObject = JSONObject.parseObject(str);
-//        jsonObject.forEach((k, v) -> {
-//            System.out.println(k + ": " + v);
-//        });
-        Map<String, String> m = new HashMap<>();
-        JSONObject jsonObject = new JSONObject();
-        m.put("a", "1"); jsonObject.put("a", "1");
-        m.put("b", "2"); jsonObject.put("b", "2");
-        System.out.println(m.toString());
-        System.out.println(jsonObject.toJSONString());
+
     }
 
 }
