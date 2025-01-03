@@ -79,18 +79,25 @@ public class PageExtractor extends KnowledgeExtractor {
                 storeNeo4j(pageTemplate);
             }
             // create relationships among page entities
-            pageEntityMap.values().forEach(pageEntity -> {
-                PageTemplate pageTemplate = pageTemplateMap.get(pageEntity.getName());
-                if(!Objects.isNull(pageTemplate.getScript())) {
-                    pageTemplate.findDependedPage();
-                    pageTemplate.getDependedPageList().forEach(dependedPageName -> {
-                       if(pageEntityMap.containsKey(dependedPageName)) {
-                           pageRepo.createRelationOfDependedPage(pageEntity.getId(), pageEntityMap.get(dependedPageName).getId());
-                       }
-                    });
-                }
-            });
+            parseRelations();
         }
+    }
+
+    /**
+     * parse relationships between page entities
+     */
+    private void parseRelations() {
+        pageEntityMap.values().forEach(pageEntity -> {
+            PageTemplate pageTemplate = pageTemplateMap.get(pageEntity.getName());
+            if(!Objects.isNull(pageTemplate.getScript())) {
+                pageTemplate.findDependedPage();
+                pageTemplate.getDependedPageList().forEach(dependedPageName -> {
+                    if(pageEntityMap.containsKey(dependedPageName)) {
+                        pageRepo.createRelationOfDependedPage(pageEntity.getId(), pageEntityMap.get(dependedPageName).getId());
+                    }
+                });
+            }
+        });
     }
 
     /**
