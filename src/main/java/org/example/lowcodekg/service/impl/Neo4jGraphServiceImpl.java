@@ -277,7 +277,6 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             if (result.hasNext()) {
                 Node node = result.next().get("n").asNode();
                 Map<String, Object> propsMap  = node.asMap();
-                System.out.println(propsMap);
                 Map<String, Object> fullPropsMap = new HashMap<>(propsMap);
                 fullPropsMap.put("id", node.id());
                 fullPropsMap.put("label", node.labels());
@@ -289,7 +288,6 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         // 对于最初根据语义相似度选出的节点，让LLM判断哪几个是真正与功能相关的
         List<Map<String, Object> > realInitialNodeProps =
                 llmGenerateService.selectInitialNodes(query, initialNodeProps);
-        System.out.println(realInitialNodeProps);
         for (Map<String, Object> nodeProps : realInitialNodeProps) {
             Long nodeId = (Long) nodeProps.get("id");
             addedNodeIds.add(nodeId);
