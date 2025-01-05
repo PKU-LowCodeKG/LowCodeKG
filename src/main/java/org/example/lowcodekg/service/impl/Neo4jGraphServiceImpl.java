@@ -93,91 +93,6 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         return relationList;
     }
 
-//    @Override
-//    public Neo4jSubGraph codeSearch(String query) {
-//        String componentConfigCypher = MessageFormat.format("""
-//                MATCH p = (c:Component)-[r:CONTAIN]->()
-//                WHERE c.name CONTAINS "{0}"
-//                RETURN p
-//                """, query);
-//        QueryRunner runner = neo4jClient.getQueryRunner();
-//        Result result = runner.run(componentConfigCypher);
-//        Set<Long> addedNodeIds = new HashSet<>();
-//
-//        Neo4jSubGraph subGraph = new Neo4jSubGraph();
-//        while (result.hasNext()) {
-//            Record record = result.next();
-//            Path path = record.get("p").asPath();
-//            for (Node node : path.nodes()) {
-//                if (!addedNodeIds.contains(node.id())) {
-//                    subGraph.addNeo4jNode(getNodeDetail(node.id()));
-//                    addedNodeIds.add(node.id());
-//                }
-//            }
-//            for (Relationship relationship : path.relationships()) {
-//                subGraph.addNeo4jRelation(getRelationDetail(relationship));
-//            }
-//        }
-//        subGraph.setCypher(componentConfigCypher);
-//        return subGraph;
-//    }
-
-    @Override
-    public Neo4jSubGraph findAddTags(String query) {
-        List<Long> queryResultIdList = new ArrayList<>();
-        queryResultIdList.add(6361L);
-        queryResultIdList.add(6476L);
-
-        QueryRunner runner = neo4jClient.getQueryRunner();
-        Neo4jSubGraph subGraph = new Neo4jSubGraph();
-        Set<Long> addedNodeIds = new HashSet<>();
-        Set<Long> addedRelationIds = new HashSet<>();
-        for (Long queryResultId : queryResultIdList) {
-            String formattedId = String.format("%d", queryResultId);
-            String oneHopCypher = MessageFormat.format("""
-                    MATCH (n)-[r]->(m)
-                    WHERE id(n) = {0}
-                    RETURN n, m, r
-                    """, formattedId);
-            Result result = runner.run(oneHopCypher);
-            while (result.hasNext()) {
-                Record record = result.next();
-                Node n = record.get("n").asNode();
-                Node m = record.get("m").asNode();
-                Relationship r = record.get("r").asRelationship();
-                if (!addedNodeIds.contains(n.id())) {
-                    subGraph.addNeo4jNode(getNodeDetail(n.id()));
-                    addedNodeIds.add(n.id());
-                }
-                if (!addedNodeIds.contains(m.id())) {
-                    subGraph.addNeo4jNode(getNodeDetail(m.id()));
-                    addedNodeIds.add(m.id());
-                }
-                if (!addedRelationIds.contains(r.id())) {
-                    subGraph.addNeo4jRelation(getRelationDetail(r));
-                    addedRelationIds.add(r.id());
-                }
-            }
-        }
-
-        String llmAnswer = llmGenerateService.graphPromptToCode(query, subGraph.getNodes());
-
-        subGraph.setGeneratedCode(llmAnswer);
-
-//        String generatedCode = """
-//                @OptLog(optType = SAVE_OR_UPDATE)
-//                @ApiOperation(value = "保存或更新角色")
-//                @PostMapping("/admin/role")
-//                public ResultVO<?> saveOrUpdateRole(@RequestBody @Valid RoleVO roleVO) {
-//                    roleService.saveOrUpdateRole(roleVO);
-//                    return ResultVO.ok();
-//                }
-//                """;
-//
-//        subGraph.setGeneratedCode(generatedCode);
-
-        return subGraph;
-    }
 
 //    @Override
 //    public Neo4jSubGraph searchRelevantGraph(String query) {
@@ -229,30 +144,6 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 //        return subGraph;
 //    }
 //
-//    @Override
-//    public List<JavaClassEntity> findAllJavaClass() {
-//        List<JavaClassEntity> javaClassEntityList = new ArrayList<>();
-//        String javaClassCypher = """
-//                MATCH (n:JavaClass)
-//                RETURN n
-//                """;
-//
-//        QueryRunner runner = neo4jClient.getQueryRunner();
-//        Result result = runner.run(javaClassCypher);
-//        while (result.hasNext()) {
-//            Node node = result.next().get("n").asNode();
-//            Map<String, Object> propsMap  = node.asMap();
-//            JavaClassEntity javaClass = new JavaClassEntity();
-//            javaClass.setId(node.id());
-//            javaClass.setName((String) propsMap.get("name"));
-//            javaClass.setFullName((String) propsMap.get("fullName"));
-//            javaClass.setProjectName((String) propsMap.get("projectName"));
-//            javaClass.setComment((String) propsMap.get("comment"));
-//            javaClass.setContent((String) propsMap.get("content"));
-//            javaClassEntityList.add(javaClass);
-//        }
-//        return javaClassEntityList;
-//    }
 
     @Override
     public Neo4jSubGraph searchRelevantGraph(String query) {

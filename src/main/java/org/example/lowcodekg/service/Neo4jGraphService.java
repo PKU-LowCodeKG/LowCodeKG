@@ -16,8 +16,6 @@ public interface Neo4jGraphService {
 
 //    Neo4jSubGraph codeSearch(String query);
 
-    Neo4jSubGraph findAddTags(String query);
-
     Neo4jSubGraph searchRelevantGraph(String query);
 
     List<JavaClassEntity> findAllJavaClass();
