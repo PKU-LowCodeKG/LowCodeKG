@@ -35,6 +35,40 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
     @Autowired
     private LLMGenerateService llmGenerateService;
 
+
+    private List<Map<String, Object>> fetchInitialNodeProperties(QueryRunner runner, List<String> relevantNodeVids) {
+        List<Map<String, Object>> initialNodeProps = new ArrayList<>();
+        int top = Math.min(5, relevantNodeVids.size());
+        for (int i = 0; i < top; i++) {
+            String initialNodeVid = relevantNodeVids.get(i);
+            String nodeVidCypher = MessageFormat.format("""
+            MATCH (n)
+            WHERE n.vid = {0}
+            RETURN n
+            """, initialNodeVid);
+            Result result = runner.run(nodeVidCypher);
+            if (result.hasNext()) {
+                Node node = result.next().get("n").asNode();
+                Map<String, Object> propsMap = node.asMap();
+                Map<String, Object> fullPropsMap = new HashMap<>(propsMap);
+                fullPropsMap.put("id", node.id());
+                fullPropsMap.put("label", node.labels());
+                initialNodeProps.add(fullPropsMap);
+            }
+        }
+        return initialNodeProps;
+    }
+
+    private void addInitialNodesToGraph(List<Map<String, Object>> realInitialNodeProps,
+                                 Set<Long> addedNodeIds,
+                                 Neo4jSubGraph subGraph) {
+        for (Map<String, Object> nodeProps : realInitialNodeProps) {
+            Long nodeId = (Long) nodeProps.get("id");
+            addedNodeIds.add(nodeId);
+            subGraph.addNeo4jNode(getNodeDetail(nodeId));
+        }
+    }
+
     @Override
     public Neo4jNode getNodeDetail(long id) {
         String formattedId = String.format("%d", id);
@@ -154,36 +188,13 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         Set<Long> addedNodeIds = new HashSet<>();
         Set<Long> addedRelationIds = new HashSet<>();
 
+        // 根据es搜索结果的vid属性，从neo4j中获得相应节点的信息
+        List<Map<String, Object>> initialNodeProps = fetchInitialNodeProperties(runner, relevantNodeVids);
 
-        int top = Math.min(5, relevantNodeVids.size());  // 最初根据语义相似度，保留前5个节点
-        List<Map<String, Object> > initialNodeProps = new ArrayList<>();
-        for (int i = 0; i < top; i++) {
-            String initialNodeVid = relevantNodeVids.get(i);
-            String nodeVidCypher = MessageFormat.format("""
-                MATCH (n)
-                WHERE n.vid = {0}
-                RETURN n
-                """, initialNodeVid);
-            Result result = runner.run(nodeVidCypher);
-            if (result.hasNext()) {
-                Node node = result.next().get("n").asNode();
-                Map<String, Object> propsMap  = node.asMap();
-                Map<String, Object> fullPropsMap = new HashMap<>(propsMap);
-                fullPropsMap.put("id", node.id());
-                fullPropsMap.put("label", node.labels());
-                initialNodeProps.add(fullPropsMap);
-            }
-        }
-
-
-        // 对于最初根据语义相似度选出的节点，让LLM判断哪几个是真正与功能相关的
+        // 对于最初根据语义相似度选出的节点，让LLM判断哪几个是真正与功能相关的,把相关的节点加入子图
         List<Map<String, Object> > realInitialNodeProps =
                 llmGenerateService.selectInitialNodes(query, initialNodeProps);
-        for (Map<String, Object> nodeProps : realInitialNodeProps) {
-            Long nodeId = (Long) nodeProps.get("id");
-            addedNodeIds.add(nodeId);
-            subGraph.addNeo4jNode(getNodeDetail(nodeId));
-        }
+        addInitialNodesToGraph(realInitialNodeProps, addedNodeIds, subGraph);
 
 
         // 从每个初始节点出发，扩展1-hop关系。关系数量可能较多，让LLM判断扩展哪些节点
