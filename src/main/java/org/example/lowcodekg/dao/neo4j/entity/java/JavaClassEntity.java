@@ -45,6 +45,9 @@ public class JavaClassEntity {
     @Property("superInterfaceType")
     private String superInterfaceType;
 
+    @Property("isData")
+    private Boolean isData;
+
     @Relationship(type = "EXTEND", direction = Relationship.Direction.OUTGOING)
     private List<JavaClassEntity> superClassList = new ArrayList<>();
 

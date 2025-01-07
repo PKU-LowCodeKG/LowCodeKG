@@ -51,7 +51,19 @@ public class JavaASTVisitor extends ASTVisitor {
         String content = sourceContent.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());
         String superClassType = node.getSuperclassType() == null ? "java.lang.Object" : NameResolver.getFullName(node.getSuperclassType());
         String superInterfaceTypes = String.join(", ", (List<String>) node.superInterfaceTypes().stream().map(n -> NameResolver.getFullName((Type) n)).collect(Collectors.toList()));
-        return new JavaClass(name, fullName, comment, content, superClassType, superInterfaceTypes);
+        JavaClass classInfo = new JavaClass(name, fullName, comment, content, superClassType, superInterfaceTypes);
+        // 是否是数据实体类
+        List<IExtendedModifier> annotations = node.modifiers();
+        for(IExtendedModifier modifier : annotations) {
+            if(modifier instanceof Annotation) {
+                Annotation annotation = (Annotation) modifier;
+                String annotationName = annotation.getTypeName().toString();
+                if (annotationName.equals("Data")) {
+                    classInfo.setIsData(true);
+                }
+            }
+        }
+        return classInfo;
 
     }
 

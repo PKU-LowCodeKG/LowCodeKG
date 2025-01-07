@@ -39,7 +39,7 @@ public class JavaClass {
 
     private String superInterfaceType;
 
-    private Boolean isData; // 是否为数据实体类
+    private Boolean isData = false; // 是否为数据实体类
 
     /**
      * 记录实体间关系
@@ -65,10 +65,16 @@ public class JavaClass {
         classEntity.setComment(this.comment);
         classEntity.setContent(this.content);
         classEntity.setProjectName(this.projectName);
+        classEntity.setIsData(this.isData);
         if(!Objects.isNull(jsonContent)) {
             classEntity.setVid(jsonContent.getLong("id"));
             classEntity.setDescription(jsonContent.getString("description"));
         }
-        return javaClassRepo.save(classEntity);
+        classEntity = javaClassRepo.save(classEntity);
+        // 数据实体类添加标签
+        if(isData) {
+            javaClassRepo.setDataObjectLabel(classEntity.getId());
+        }
+        return classEntity;
     }
 }
