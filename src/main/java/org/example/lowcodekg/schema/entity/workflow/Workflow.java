@@ -2,6 +2,7 @@ package org.example.lowcodekg.schema.entity.workflow;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,17 +16,13 @@ public class Workflow {
     private String description;
 
     /**
-     * 前端脚本
+     * 调用链中方法体内容拼接
      */
-    private List<Script> scriptList;
+    private String content;
 
     /**
-     * 后端类
+     * 请求响应方法调用链
      */
-    private List<JavaClass> classList;
+    private List<JavaMethod> methodList = new ArrayList<>();
 
-    /**
-     * 三方服务
-     */
-    private List<APIService> apiServiceList;
 }

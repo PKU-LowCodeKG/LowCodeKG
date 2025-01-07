@@ -39,6 +39,8 @@ public class JavaClass {
 
     private String superInterfaceType;
 
+    private Boolean isData; // 是否为数据实体类
+
     /**
      * 记录实体间关系
      */

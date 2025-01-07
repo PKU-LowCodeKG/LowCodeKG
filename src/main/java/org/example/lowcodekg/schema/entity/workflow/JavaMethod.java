@@ -36,6 +36,11 @@ public class JavaMethod {
      */
     private String modifier;
 
+    /**
+     * 请求路径（Controller类）
+     */
+    private String mappingUrl;
+
     private String content;
 
     private String comment;
