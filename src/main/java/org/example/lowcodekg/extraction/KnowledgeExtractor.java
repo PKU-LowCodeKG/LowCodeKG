@@ -27,6 +27,8 @@ public abstract class KnowledgeExtractor {
     @Setter
     protected static ConfigItemRepo configItemRepo;
     @Setter
+    protected static WorkflowRepo workflowRepo;
+    @Setter
     protected static JavaClassRepo javaClassRepo;
     @Setter
     protected static JavaMethodRepo javaMethodRepo;

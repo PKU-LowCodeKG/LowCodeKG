@@ -107,5 +107,11 @@ public class JavaMethod {
         return javaMethodRepo.save(methodEntity);
     }
 
+    /**
+     * 判断方法是否属于工作流
+     */
+    public boolean belongToWorkflow() {
+        return (!Objects.isNull(mappingUrl) && !"".equals(mappingUrl));
+    }
 
 }

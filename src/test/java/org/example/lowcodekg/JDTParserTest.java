@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
+import org.example.lowcodekg.dao.neo4j.repository.WorkflowRepo;
 import org.example.lowcodekg.extraction.java.JavaASTVisitor;
 import org.example.lowcodekg.schema.entity.workflow.JavaProject;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,8 @@ public class JDTParserTest {
     private JavaMethodRepo javaMethodRepo;
     @Autowired
     private JavaFieldRepo javaFieldRepo;
+    @Autowired
+    private WorkflowRepo workflowRepo;
 
 
     @Test
@@ -78,7 +81,7 @@ public class JDTParserTest {
                 }
             }
         }, null);
-        javaProject.parse(javaClassRepo, javaMethodRepo, javaFieldRepo);
+        javaProject.parse(workflowRepo, javaClassRepo, javaMethodRepo, javaFieldRepo);
     }
 
     @Test

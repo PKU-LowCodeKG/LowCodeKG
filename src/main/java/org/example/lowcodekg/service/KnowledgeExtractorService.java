@@ -35,6 +35,8 @@ public class KnowledgeExtractorService {
     @Autowired
     private ConfigItemRepo configItemRepo;
     @Autowired
+    private WorkflowRepo workflowRepo;
+    @Autowired
     private JavaClassRepo javaClassRepo;
     @Autowired
     private JavaMethodRepo javaMethodRepo;
@@ -84,6 +86,7 @@ public class KnowledgeExtractorService {
         KnowledgeExtractor.setScriptDataRepo(scriptDataRepo);
         KnowledgeExtractor.setComponentRepo(componentRepo);
         KnowledgeExtractor.setConfigItemRepo(configItemRepo);
+        KnowledgeExtractor.setWorkflowRepo(workflowRepo);
         KnowledgeExtractor.setJavaClassRepo(javaClassRepo);
         KnowledgeExtractor.setJavaMethodRepo(javaMethodRepo);
         KnowledgeExtractor.setJavaFieldRepo(javaFieldRepo);

@@ -73,7 +73,7 @@ public class JavaExtractor extends KnowledgeExtractor {
                 }
             }, null);
             // 调用 dao 接口存储到 neo4j
-            javaProject.parse(javaClassRepo, javaMethodRepo, javaFieldRepo);
+            javaProject.parse(workflowRepo, javaClassRepo, javaMethodRepo, javaFieldRepo);
         }
     }
 
