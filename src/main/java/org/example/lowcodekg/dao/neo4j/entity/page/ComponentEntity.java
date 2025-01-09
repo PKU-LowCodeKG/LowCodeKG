@@ -15,7 +15,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class ComponentEntity {
-
     @Id
     @GeneratedValue
     private Long id;

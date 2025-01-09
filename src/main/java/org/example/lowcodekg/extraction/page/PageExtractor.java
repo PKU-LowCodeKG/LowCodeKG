@@ -268,7 +268,7 @@ public class PageExtractor extends KnowledgeExtractor {
                     while (j < lineList.size()) {
                         dataBlock.append(lineList.get(j));
                         j++;
-                        if (lineList.get(j).equals(intent + "},")) break;
+                        if (j == lineList.size() || lineList.get(j).equals(intent + "},") || lineList.get(j).equals(intent + "}")) break;
                     }
                     break;
                 }

@@ -38,7 +38,7 @@ public class ConfigItem {
     }
 
     public ConfigItem(ConfigItemEntity entity) {
-        this.code = entity.getCode();
+        this.code = entity.getName();
         this.type = entity.getType();
         this.value = entity.getValue();
         this.description = entity.getDescription();
@@ -46,7 +46,7 @@ public class ConfigItem {
 
     public ConfigItemEntity createConfigItemEntity(ConfigItemRepo configItemRepo) {
         ConfigItemEntity entity = new ConfigItemEntity();
-        entity.setCode(code);
+        entity.setName(code);
         entity.setValue(value);
         entity = configItemRepo.save(entity);
         return entity;
@@ -54,7 +54,7 @@ public class ConfigItem {
 
     public ConfigItemEntity storeInNeo4j(ConfigItemRepo configItemRepo) {
         ConfigItemEntity configEntity = new ConfigItemEntity();
-        configEntity.setCode(code);
+        configEntity.setName(code);
         configEntity.setType(type);
         configEntity.setValue(value);
         configEntity.setDescription(description);

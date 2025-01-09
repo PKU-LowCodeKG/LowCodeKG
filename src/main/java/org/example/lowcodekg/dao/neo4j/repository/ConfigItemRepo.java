@@ -14,4 +14,8 @@ public interface ConfigItemRepo extends Neo4jRepository<ConfigItemEntity, Long> 
     @Query("MATCH (c:Component)-[:CONTAIN]->(ci:ConfigItem) WHERE c.name = $name RETURN ci")
     List<ConfigItemEntity> findConfigItemsByComponentName(String name);
 
+    @Query("MATCH (s:ConfigItem) WHERE id(s)=$sid " +
+            "MATCH (e:ScriptMethod) WHERE id(e)=$eid " +
+            "CREATE (s)-[:RELATED_TO]->(e)")
+    void createRelationOfRelatedMethod(Long sid, Long eid);
 }
