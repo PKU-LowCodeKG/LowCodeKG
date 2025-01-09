@@ -61,4 +61,8 @@ public class Neo4jModifyTest {
                 "}");
         javaMethodRepo.save(methodEntity);
     }
+
+     public void createBlogExample() {
+
+     }
 }
