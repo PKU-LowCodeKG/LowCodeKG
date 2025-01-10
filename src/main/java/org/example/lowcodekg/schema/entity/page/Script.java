@@ -42,6 +42,15 @@ public class Script {
         private String name;
         private List<String> params;
         private String content;
+
+        public ScriptMethodEntity createScriptMethodEntity(ScriptMethodRepo scriptMethodRepo) {
+            ScriptMethodEntity methodEntity = new ScriptMethodEntity();
+            methodEntity.setName(name);
+            methodEntity.setParams(params);
+            methodEntity.setContent(content);
+            methodEntity = scriptMethodRepo.save(methodEntity);
+            return methodEntity;
+        }
     }
 
     private String name;
@@ -50,13 +59,14 @@ public class Script {
 
     private String content;
 
-    private List<ScriptData> dataList;
+    private List<ScriptData> dataList = new ArrayList<>();
 
     private List<ScriptMethod> methodList = new ArrayList<>();
 
     private String importsComponentList;
 
-    public ScriptEntity createScriptEntity(ScriptRepo scriptRepo, ScriptMethodRepo scriptMethodRepo, ScriptDataRepo scriptDataRepo) {
+
+    public ScriptEntity createScriptEntity(ScriptRepo scriptRepo) {
         ScriptEntity scriptEntity = new ScriptEntity();
         scriptEntity.setName(name);
         scriptEntity.setDescription(description);
@@ -64,29 +74,29 @@ public class Script {
         if(!Objects.isNull(importsComponentList))
             scriptEntity.setImportsComponentList(importsComponentList);
         scriptEntity = scriptRepo.save(scriptEntity);
+        return scriptEntity;
+    }
 
-        // 创建 ScriptMethod 实体
+    public List<ScriptMethodEntity> createScriptMethodEntityList(ScriptMethodRepo scriptMethodRepo) {
+        List<ScriptMethodEntity> methodEntityList = new ArrayList<>();
         if(!Objects.isNull(methodList)) {
             for (ScriptMethod method : methodList) {
-                ScriptMethodEntity methodEntity = new ScriptMethodEntity();
-                methodEntity.setName(method.getName());
-                methodEntity.setParams(method.getParams());
-                methodEntity.setContent(method.getContent());
-                methodEntity = scriptMethodRepo.save(methodEntity);
-                scriptRepo.createRelationOfContainedMethod(scriptEntity.getId(), methodEntity.getId());
+                ScriptMethodEntity methodEntity = method.createScriptMethodEntity(scriptMethodRepo);
+                methodEntityList.add(methodEntity);
             }
         }
-        // 创建 ScriptData 实体
+        return methodEntityList;
+    }
+
+    public List<ScriptDataEntity> createScriptDataEntityList(ScriptDataRepo scriptDataRepo) {
+        List<ScriptDataEntity> dataEntityList = new ArrayList<>();
         if(!Objects.isNull(dataList)) {
             for (ScriptData data : dataList) {
-                ScriptDataEntity dataEntity = new ScriptDataEntity();
-                dataEntity.setName(data.getName());
-                dataEntity.setValue(data.getValue());
-                dataEntity = scriptDataRepo.save(dataEntity);
-                scriptRepo.createRelationOfContainedData(scriptEntity.getId(), dataEntity.getId());
+                ScriptDataEntity dataEntity = data.createScriptDataEntity(scriptDataRepo);
+                dataEntityList.add(dataEntity);
             }
-       }
-        return scriptEntity;
+        }
+        return dataEntityList;
     }
 
 }

@@ -1,25 +1,16 @@
 package org.example.lowcodekg.extraction.page;
 
-import cn.hutool.db.Page;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
-import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
-import org.example.lowcodekg.dao.neo4j.entity.page.PageEntity;
-import org.example.lowcodekg.dao.neo4j.entity.page.ScriptEntity;
+import org.example.lowcodekg.dao.neo4j.entity.page.*;
 import org.example.lowcodekg.dao.neo4j.repository.ScriptMethodRepo;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.schema.entity.page.*;
-import org.example.lowcodekg.service.LLMGenerateService;
 import org.example.lowcodekg.util.FileUtil;
 
-import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.query.ScriptData;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -27,7 +18,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.System.exit;
 
 /**
  * 前端页面抽取
@@ -39,12 +29,21 @@ public class PageExtractor extends KnowledgeExtractor {
     private Map<String, PageEntity> pageEntityMap = new HashMap<>();
     private Map<String, PageTemplate> pageTemplateMap = new HashMap<>();
 
+    /**
+     * single file record data structure
+     */
+    private Map<String, ScriptMethodEntity> scriptMethodMap = new HashMap<>();
+    private Map<String, ConfigItemEntity> configItemMap = new HashMap<>();
+
     @Override
     public void extraction() {
         for(String filePath: this.getDataDir()) {
             Collection<File> vueFiles = FileUtils.listFiles(new File(filePath), new String[]{"vue"}, true);
             for(File vueFile: vueFiles) {
                 System.out.println("---parse file: " + vueFile.getAbsolutePath());
+                // initialize
+                scriptMethodMap.clear();
+                configItemMap.clear();
 
                 // each .vue file parsed as one PageTemplate entity
                 PageTemplate pageTemplate = new PageTemplate();
@@ -54,6 +53,7 @@ public class PageExtractor extends KnowledgeExtractor {
                 pageTemplate.setFullName(fullName);
                 String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
+                // for test
 //                if(!name.equals("TalkList")) {
 //                    continue;
 //                }
@@ -84,23 +84,6 @@ public class PageExtractor extends KnowledgeExtractor {
     }
 
     /**
-     * parse relationships between page entities
-     */
-    private void parseRelations() {
-        pageEntityMap.values().forEach(pageEntity -> {
-            PageTemplate pageTemplate = pageTemplateMap.get(pageEntity.getName());
-            if(!Objects.isNull(pageTemplate.getScript())) {
-                pageTemplate.findDependedPage();
-                pageTemplate.getDependedPageList().forEach(dependedPageName -> {
-                    if(pageEntityMap.containsKey(dependedPageName)) {
-                        pageRepo.createRelationOfDependedPage(pageEntity.getId(), pageEntityMap.get(dependedPageName).getId());
-                    }
-                });
-            }
-        });
-    }
-
-    /**
      * store page-related entities and relationships in neo4j
      */
     private PageEntity storeNeo4j(PageTemplate pageTemplate) {
@@ -113,12 +96,30 @@ public class PageExtractor extends KnowledgeExtractor {
                 ComponentEntity componentEntity = component.createComponentEntity(componentRepo);
                 pageEntity.getComponentList().add(componentEntity);
                 pageRepo.createRelationOfContainedComponent(pageEntity.getId(), componentEntity.getId());
+                // config item entity
+                for(ConfigItem configItem: component.getConfigItemList()) {
+                    ConfigItemEntity configItemEntity = configItem.createConfigItemEntity(configItemRepo);
+                    componentEntity.getContainedConfigItemEntities().add(configItemEntity);
+                    componentRepo.createRelationOfRelatedConfigItem(componentEntity.getId(), configItemEntity.getId());
+                    configItemMap.put(component.getName() + ":" + configItemEntity.getName(), configItemEntity);
+                }
             }
             // script entity
             if(!Objects.isNull(pageTemplate.getScript())) {
                 Script script = pageTemplate.getScript();
-                ScriptEntity scriptEntity = script.createScriptEntity(scriptRepo, scriptMethodRepo, scriptDataRepo);
+                ScriptEntity scriptEntity = script.createScriptEntity(scriptRepo);
                 pageRepo.createRelationOfContainedScript(pageEntity.getId(), scriptEntity.getId());
+                // script method
+                List<ScriptMethodEntity> scriptMethodEntityList = script.createScriptMethodEntityList(scriptMethodRepo);
+                for (ScriptMethodEntity scriptMethodEntity : scriptMethodEntityList) {
+                    scriptMethodMap.put(scriptMethodEntity.getName(), scriptMethodEntity);
+                    scriptRepo.createRelationOfContainedMethod(scriptEntity.getId(), scriptMethodEntity.getId());
+                }
+                // script data
+                List<ScriptDataEntity> scriptDataEntityList = script.createScriptDataEntityList(scriptDataRepo);
+                for (ScriptDataEntity scriptDataEntity : scriptDataEntityList) {
+                    scriptRepo.createRelationOfContainedData(scriptEntity.getId(), scriptDataEntity.getId());
+                }
             }
             return pageEntity;
         } catch (Exception e) {
@@ -126,6 +127,32 @@ public class PageExtractor extends KnowledgeExtractor {
             System.out.println("Error in PageExtractor storeNeo4j: " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * parse relationships between page entities
+     */
+    private void parseRelations() {
+        // page-[dependency]->page
+        pageEntityMap.values().forEach(pageEntity -> {
+            PageTemplate pageTemplate = pageTemplateMap.get(pageEntity.getName());
+            if(!Objects.isNull(pageTemplate.getScript())) {
+                pageTemplate.findDependedPage();
+                pageTemplate.getDependedPageList().forEach(dependedPageName -> {
+                    if(pageEntityMap.containsKey(dependedPageName)) {
+                        pageRepo.createRelationOfDependedPage(pageEntity.getId(), pageEntityMap.get(dependedPageName).getId());
+                    }
+                });
+            }
+        });
+        // configItem-[related_to]->scriptMethod
+        configItemMap.values().forEach(configItemEntity -> {
+           String value = configItemEntity.getValue();
+           if(scriptMethodMap.containsKey(value)) {
+               ScriptMethodEntity methodEntity = scriptMethodMap.get(value);
+               configItemRepo.createRelationOfRelatedMethod(configItemEntity.getId(), methodEntity.getId());
+           }
+        });
     }
 
     public String getTemplateContent(String fileContent) {
