@@ -89,7 +89,7 @@ org.example.lowcodekg.extraction.java.JavaExtractor:
 ```
 
 ## 知识图谱 Schema
-![img_v4.png](src/main/resources/static/schema_v4.png)
+![schema.png](src/main/resources/static/schema.png)
 
 ### 查询子图示例
 ![query_example.png](src/main/resources/static/query_example.png)
