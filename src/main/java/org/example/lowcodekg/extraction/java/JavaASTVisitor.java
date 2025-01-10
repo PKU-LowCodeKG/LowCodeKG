@@ -7,10 +7,7 @@ import org.example.lowcodekg.schema.entity.workflow.JavaField;
 import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
 import org.example.lowcodekg.schema.entity.workflow.JavaProject;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -54,7 +51,19 @@ public class JavaASTVisitor extends ASTVisitor {
         String content = sourceContent.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());
         String superClassType = node.getSuperclassType() == null ? "java.lang.Object" : NameResolver.getFullName(node.getSuperclassType());
         String superInterfaceTypes = String.join(", ", (List<String>) node.superInterfaceTypes().stream().map(n -> NameResolver.getFullName((Type) n)).collect(Collectors.toList()));
-        return new JavaClass(name, fullName, comment, content, superClassType, superInterfaceTypes);
+        JavaClass classInfo = new JavaClass(name, fullName, comment, content, superClassType, superInterfaceTypes);
+        // 是否是数据实体类
+        List<IExtendedModifier> annotations = node.modifiers();
+        for(IExtendedModifier modifier : annotations) {
+            if(modifier instanceof Annotation) {
+                Annotation annotation = (Annotation) modifier;
+                String annotationName = annotation.getTypeName().toString();
+                if (annotationName.equals("Data")) {
+                    classInfo.setIsData(true);
+                }
+            }
+        }
+        return classInfo;
 
     }
 
@@ -89,6 +98,46 @@ public class JavaASTVisitor extends ASTVisitor {
         parseMethodBody(methodCalls, fullVariables, fieldAccesses, node.getBody());
         JavaMethod info = new JavaMethod(name, fullName, returnType, content, comment, params, methodBinding,
                 fullReturnType, belongTo, fullParams, fullVariables.toString(), methodCalls, fieldAccesses.toString(), throwTypes);
+        // check annotation
+        List<IExtendedModifier> annotations = node.modifiers();
+        for(IExtendedModifier modifier : annotations) {
+            if(modifier instanceof Annotation) {
+                Annotation annotation = (Annotation) modifier;
+                String annotationName = annotation.getTypeName().toString();
+                if (annotationName.equals("GetMapping") || annotationName.equals("PostMapping")
+                        || annotationName.equals("PutMapping") || annotationName.equals("DeleteMapping")
+                        || annotationName.equals("RequestMapping")) {
+                    // 提取路由路径
+                    String mappingUrl = null;
+                    if (annotation instanceof NormalAnnotation) {
+                        NormalAnnotation normalAnnotation = (NormalAnnotation) annotation;
+                        for (Object obj : normalAnnotation.values()) { // 修改这里
+                            if (obj instanceof MemberValuePair) { // 添加类型检查
+                                MemberValuePair pair = (MemberValuePair) obj;
+                                if (pair.getName().toString().equals("value")) {
+                                    Expression expression = pair.getValue();
+                                    if (expression instanceof StringLiteral) {
+                                        StringLiteral literal = (StringLiteral) expression;
+                                        mappingUrl = literal.getLiteralValue();
+                                    }
+                                }
+                            }
+                        }
+                    } else if (annotation instanceof SingleMemberAnnotation) {
+                        SingleMemberAnnotation singleMemberAnnotation = (SingleMemberAnnotation) annotation;
+                        Expression expression = singleMemberAnnotation.getValue();
+                        if (expression instanceof StringLiteral) {
+                            StringLiteral literal = (StringLiteral) expression;
+                            mappingUrl = literal.getLiteralValue();
+                        }
+                    }
+                    if(!Objects.isNull(mappingUrl)) {
+                        mappingUrl = mappingUrl.substring(1).replaceAll("/", "_");
+                        info.setMappingUrl(mappingUrl);
+                    }
+                }
+            }
+        }
         return info;
     }
 

@@ -3,7 +3,7 @@ package org.example.lowcodekg.controller;
 import com.alibaba.fastjson.JSON;
 import jakarta.servlet.http.HttpSession;
 import org.example.lowcodekg.dto.*;
-import org.example.lowcodekg.schema.entity.Component;
+import org.example.lowcodekg.schema.entity.page.Component;
 import org.example.lowcodekg.service.Neo4jGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

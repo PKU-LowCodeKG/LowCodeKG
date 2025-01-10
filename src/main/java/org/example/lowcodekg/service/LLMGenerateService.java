@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface LLMGenerateService {
+
+    String generateAnswer(String prompt);
+
     String graphPromptToCode(String query, List<Neo4jNode> nodes);
 
     List<Map<String, Object>> selectInitialNodes(String query, List<Map<String, Object>> initialNodeProps);

@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
+import org.example.lowcodekg.dao.neo4j.repository.WorkflowRepo;
 import org.example.lowcodekg.extraction.java.JavaASTVisitor;
 import org.example.lowcodekg.schema.entity.workflow.JavaProject;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,8 @@ public class JDTParserTest {
     private JavaMethodRepo javaMethodRepo;
     @Autowired
     private JavaFieldRepo javaFieldRepo;
+    @Autowired
+    private WorkflowRepo workflowRepo;
 
 
     @Test
@@ -78,6 +81,54 @@ public class JDTParserTest {
                 }
             }
         }, null);
-        javaProject.parse(javaClassRepo, javaMethodRepo, javaFieldRepo);
+        javaProject.parse(workflowRepo, javaClassRepo, javaMethodRepo, javaFieldRepo);
+    }
+
+    @Test
+    public void testAnnotation() {
+        String filePath = "/Users/chang/Documents/projects/data_projects/aurora/aurora-springboot/src/main/java/com/aurora/controller/ArticleController.java";
+        try {
+            String content = FileUtils.readFileToString(new File(filePath), "utf-8");
+            JavaProject javaProject = new JavaProject();
+            ASTParser parser = ASTParser.newParser(AST.JLS10);
+            parser.setResolveBindings(true);
+            parser.setKind(ASTParser.K_COMPILATION_UNIT);
+            parser.setBindingsRecovery(true);
+            String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-springboot";
+            parser.setEnvironment(null, new String[]{path}, new String[]{"utf-8"}, true);
+            Map<String, String> options = JavaCore.getOptions();
+            options.put("org.eclipse.jdt.core.compiler.source", "1.17");
+            parser.setCompilerOptions(options);
+
+            Set<String> srcPathSet = new HashSet<>();
+            Set<String> srcFolderSet = new HashSet<>();
+            File javaFile = new File(filePath);
+            String srcPath = javaFile.getAbsolutePath();
+            String srcFolderPath = javaFile.getParentFile().getAbsolutePath();
+            srcPathSet.add(srcPath);
+            srcFolderSet.add(srcFolderPath);
+            String[] srcPaths = new String[srcPathSet.size()];
+            srcPathSet.toArray(srcPaths);
+
+            String[] srcFolderPaths = new String[srcFolderSet.size()];
+            srcFolderSet.toArray(srcFolderPaths);
+            String[] encodings = new String[srcPaths.length];
+            for (int i = 0; i < srcPaths.length; i++) {
+                encodings[i] = "utf-8";
+            }
+            parser.createASTs(srcPaths, encodings, new String[]{}, new FileASTRequestor() {
+                @Override
+                public void acceptAST(String sourceFilePath, CompilationUnit javaUnit) {
+                    try {
+                        System.out.println("AST parsing: " + sourceFilePath);
+                        javaUnit.accept(new JavaASTVisitor(javaProject, FileUtils.readFileToString(new File(sourceFilePath), "utf-8")));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -6,7 +6,7 @@ import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.example.lowcodekg.dto.Neo4jNode;
 import org.example.lowcodekg.service.LLMGenerateService;
-import org.example.lowcodekg.util.FileUtils;
+import org.example.lowcodekg.util.FileUtil;
 import org.example.lowcodekg.util.FormatParseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,10 +25,24 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
     @Autowired
     private OllamaChatModel ollamaChatModel;
 
-    private String generateAnswer(String prompt) {
-        UserMessage userMessage = UserMessage.from(prompt);
-        AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
-        return aiMessage.text();
+    @Override
+    public String generateAnswer(String prompt) {
+        int maxRetries = 1; // 设定最大重试次数
+        int retryCount = 0;
+        Exception lastException = null;
+
+        while (retryCount < maxRetries) {
+            try {
+                UserMessage userMessage = UserMessage.from(prompt);
+                AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
+                return aiMessage.text();
+            } catch (Exception e) {
+                lastException = e;
+                retryCount++;
+                System.out.println("generateAnswer failed, retrying...");
+            }
+        }
+        return null;
     }
 
     @Override
@@ -87,7 +101,7 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
         String contextFilename = "/src/main/resources/data/code_context_examples/" + query + ".txt";
         String projectDir = System.getProperty("user.dir");
         File contextFile = new File(projectDir + "/" + contextFilename);
-        String context = FileUtils.readFile(contextFile.getAbsolutePath());
+        String context = FileUtil.readFile(contextFile.getAbsolutePath());
         argumentMap.put("query", query);
         argumentMap.put("codeSamples", codeSamples.toString());
         argumentMap.put("context", context);

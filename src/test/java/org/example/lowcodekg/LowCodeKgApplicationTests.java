@@ -1,12 +1,7 @@
 package org.example.lowcodekg;
 
-import org.example.lowcodekg.dao.neo4j.entity.ComponentEntity;
-import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
-import org.example.lowcodekg.schema.entity.category.FunctionalityCategory;
-import org.example.lowcodekg.schema.entity.category.SceneLabel;
-import org.example.lowcodekg.schema.entity.category.Category;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -16,7 +11,6 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
 import java.util.Map;
 
 @SpringBootTest

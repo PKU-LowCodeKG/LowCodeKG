@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * 工具类，操作 JSON 格式数据
  */
-public class JSONUtils {
+public class JsonUtil {
 
     /**
      * 读取路径下的记录了描述信息的 JSON 文件，以 fullName 作为 key 返回 Map

@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * 工具类，操作文件
  */
-public class FileUtils {
+public class FileUtil {
 
     /**
      * 读取文件，返回字符串

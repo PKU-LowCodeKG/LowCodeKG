@@ -3,7 +3,7 @@ package org.example.lowcodekg.schema.entity.workflow;
 import com.alibaba.fastjson.JSONObject;
 import lombok.*;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
 
 import java.util.ArrayList;
@@ -35,6 +35,11 @@ public class JavaMethod {
      * 方法修饰符，如static、abstract、final、synchronized、native等
      */
     private String modifier;
+
+    /**
+     * 请求路径（Controller类）
+     */
+    private String mappingUrl;
 
     private String content;
 
@@ -102,5 +107,11 @@ public class JavaMethod {
         return javaMethodRepo.save(methodEntity);
     }
 
+    /**
+     * 判断方法是否属于工作流
+     */
+    public boolean belongToWorkflow() {
+        return (!Objects.isNull(mappingUrl) && !"".equals(mappingUrl));
+    }
 
 }

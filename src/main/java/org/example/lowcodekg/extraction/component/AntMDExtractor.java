@@ -7,12 +7,8 @@ import java.nio.file.Paths;
 
 import java.util.*;
 
-import lombok.Getter;
-import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
-import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.schema.entity.Component;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.lowcodekg.schema.entity.page.Component;
 import org.springframework.stereotype.Service;
 
 /**

@@ -4,10 +4,12 @@ import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.repository.*;
 import org.example.lowcodekg.extraction.ExtractorConfig;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
+import org.example.lowcodekg.schema.entity.page.Script;
 import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -21,9 +23,19 @@ import java.util.Map;
 public class KnowledgeExtractorService {
 
     @Autowired
+    private PageRepo pageRepo;
+    @Autowired
+    private ScriptRepo scriptRepo;
+    @Autowired
+    private ScriptMethodRepo scriptMethodRepo;
+    @Autowired
+    private ScriptDataRepo scriptDataRepo;
+    @Autowired
     private ComponentRepo componentRepo;
     @Autowired
     private ConfigItemRepo configItemRepo;
+    @Autowired
+    private WorkflowRepo workflowRepo;
     @Autowired
     private JavaClassRepo javaClassRepo;
     @Autowired
@@ -31,21 +43,17 @@ public class KnowledgeExtractorService {
     @Autowired
     private JavaFieldRepo javaFieldRepo;
 
+
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
     private ElasticSearchService elasticSearchService;
+    @Autowired
+    private LLMGenerateService llmGenerateService;
 
     public void execute(String yamlStr)
     {
-        KnowledgeExtractor.setComponentRepo(componentRepo);
-        KnowledgeExtractor.setConfigItemRepo(configItemRepo);
-        KnowledgeExtractor.setJavaClassRepo(javaClassRepo);
-        KnowledgeExtractor.setJavaMethodRepo(javaMethodRepo);
-        KnowledgeExtractor.setJavaFieldRepo(javaFieldRepo);
-
-        KnowledgeExtractor.setElasticSearchService(elasticSearchService);
-
+        initExtractorBean();
 //        KnowledgeExtractor.executeFromYaml(yamlStr);
         Yaml yaml = new Yaml();
         Map<String, Object> ret = yaml.load(yamlStr);
@@ -69,6 +77,22 @@ public class KnowledgeExtractorService {
             runner.run(nodeCypher);
         }
         KnowledgeExtractor.execute(configs);
+    }
+
+    private void initExtractorBean() {
+        KnowledgeExtractor.setPageRepo(pageRepo);
+        KnowledgeExtractor.setScriptRepo(scriptRepo);
+        KnowledgeExtractor.setScriptMethodRepo(scriptMethodRepo);
+        KnowledgeExtractor.setScriptDataRepo(scriptDataRepo);
+        KnowledgeExtractor.setComponentRepo(componentRepo);
+        KnowledgeExtractor.setConfigItemRepo(configItemRepo);
+        KnowledgeExtractor.setWorkflowRepo(workflowRepo);
+        KnowledgeExtractor.setJavaClassRepo(javaClassRepo);
+        KnowledgeExtractor.setJavaMethodRepo(javaMethodRepo);
+        KnowledgeExtractor.setJavaFieldRepo(javaFieldRepo);
+
+        KnowledgeExtractor.setElasticSearchService(elasticSearchService);
+        KnowledgeExtractor.setLlmGenerateService(llmGenerateService);
     }
 
     public static void main(String[] args) {

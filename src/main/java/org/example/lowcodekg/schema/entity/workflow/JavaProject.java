@@ -4,14 +4,16 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.example.lowcodekg.dao.neo4j.entity.JavaClassEntity;
-import org.example.lowcodekg.dao.neo4j.entity.JavaFieldEntity;
-import org.example.lowcodekg.dao.neo4j.entity.JavaMethodEntity;
+import org.example.lowcodekg.dao.neo4j.entity.WorkflowEntity;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaClassEntity;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaFieldEntity;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.dao.neo4j.repository.JavaMethodRepo;
+import org.example.lowcodekg.dao.neo4j.repository.WorkflowRepo;
 import org.example.lowcodekg.service.ElasticSearchService;
-import org.example.lowcodekg.util.JSONUtils;
+import org.example.lowcodekg.util.JsonUtil;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -50,7 +52,7 @@ public class JavaProject {
             System.out.println("json file not found");
             throw new RuntimeException("json file not found");
         }
-        jsonMap = JSONUtils.loadJsonFile(file.getAbsolutePath());
+        jsonMap = JsonUtil.loadJsonFile(file.getAbsolutePath());
         System.out.println("jsonObject number:" + jsonMap.size());
     }
 
@@ -70,14 +72,17 @@ public class JavaProject {
     /**
      * 创建实体及关系
      */
-    public void parse(JavaClassRepo javaClassRepo, JavaMethodRepo javaMethodRepo, JavaFieldRepo javaFieldRepo) {
+    public void parse(WorkflowRepo workflowRepo,
+                      JavaClassRepo javaClassRepo,
+                      JavaMethodRepo javaMethodRepo,
+                      JavaFieldRepo javaFieldRepo) {
         methodMap.values().forEach(info -> methodBindingMap.put(info.getMethodBiding(), info));
 
         /*
          * create entities
          */
         parseClassEntity(javaClassRepo);
-        parseMethodEntity(javaMethodRepo);
+        parseMethodEntity(javaMethodRepo, workflowRepo);
         parseFieldEntity(javaFieldRepo);
 
         /*
@@ -92,6 +97,7 @@ public class JavaProject {
             classInfo.getSuperClassList().addAll(findJavaClassInfo(classInfo.getSuperClassType()));
             classInfo.getSuperInterfaceList().addAll(findJavaClassInfo(classInfo.getSuperInterfaceType()));
             JavaClassEntity classEntity = classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName()));
+
             classEntityMap.put(classInfo.getFullName(), classEntity);
 
             // vector store
@@ -113,7 +119,7 @@ public class JavaProject {
         });
     }
 
-    private void parseMethodEntity(JavaMethodRepo javaMethodRepo) {
+    private void parseMethodEntity(JavaMethodRepo javaMethodRepo, WorkflowRepo workflowRepo) {
         methodMap.values().forEach(methodInfo -> {
             methodInfo.setProjectName(projectName);
             findJavaClassInfo(methodInfo.getBelongTo()).forEach(owner -> owner.getContainMethodList().add(methodInfo));
@@ -129,6 +135,13 @@ public class JavaProject {
 
             JavaMethodEntity methodEntity = methodInfo.storeInNeo4j(javaMethodRepo, jsonMap.get(methodInfo.getFullName()));
             methodEntityMap.put(methodInfo.getFullName(), methodEntity);
+
+            // check if the method belongs to workflow
+            if(methodInfo.belongToWorkflow()) {
+                Workflow workflow = new Workflow(methodInfo);
+                WorkflowEntity workflowEntity = workflow.createWorkflowEntity(workflowRepo);
+                workflowRepo.createRelationOfContainedMethod(workflowEntity.getId(), methodEntity.getId());
+            }
 
             // vector store
             methodInfo.setVid(methodEntity.getVid());

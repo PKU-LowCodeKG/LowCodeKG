@@ -3,8 +3,8 @@ package org.example.lowcodekg.extraction.component;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.lowcodekg.schema.entity.category.Category;
-import org.example.lowcodekg.schema.entity.Component;
-import org.example.lowcodekg.schema.entity.ConfigItem;
+import org.example.lowcodekg.schema.entity.page.Component;
+import org.example.lowcodekg.schema.entity.page.ConfigItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +66,7 @@ public class RawData {
         for(RawConfigItem configItem: configItems) {
             configItemList.add(configItem.convertToConfigItem());
         }
-        component.setContainedConfigItems(configItemList);
+        component.setConfigItemList(configItemList);
         return component;
     }
 }

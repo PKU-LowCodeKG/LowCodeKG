@@ -1,8 +1,10 @@
-package org.example.lowcodekg.schema.entity;
+package org.example.lowcodekg.schema.entity.page;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.example.lowcodekg.dao.neo4j.entity.ComponentEntity;
-import org.example.lowcodekg.dao.neo4j.entity.ConfigItemEntity;
+import lombok.NoArgsConstructor;
+import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
+import org.example.lowcodekg.dao.neo4j.entity.page.ConfigItemEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
 import org.example.lowcodekg.schema.entity.category.Category;
@@ -14,6 +16,8 @@ import java.util.List;
  * 低代码组件实体类
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Component {
 
     /**
@@ -27,6 +31,13 @@ public class Component {
     private String cnName;
 
     /**
+     * 文本元素内容
+     */
+    private String text;
+
+    private String content;
+
+    /**
      * 组件类别，包括场景标签、功能分类等
      */
     private Category category;
@@ -37,23 +48,41 @@ public class Component {
     private String description;
 
     /**
+     * 组件子项(体现为template中的层级嵌套关系)
+     */
+    private List<Component> children = new ArrayList<>();
+
+    /**
      * 组件关联的配置型
      */
-    private List<ConfigItem> containedConfigItems;
+    private List<ConfigItem> configItemList = new ArrayList<>();
 
     /**
      * 组件依赖的其他组件（outgoing）
      */
-    private List<Component> relatedComponents;
+    private List<Component> relatedComponentList = new ArrayList<>();
 
-
-    public Component() {}
 
     public Component(ComponentEntity entity) {
         this.name = entity.getName();
         this.category = Category.setCategoryBy(entity.getCategory());
         this.description = entity.getDescription();
-        this.containedConfigItems = entity.getContainedConfigItemEntities().stream().map(e -> new ConfigItem(e)).toList();
+        this.configItemList = entity.getContainedConfigItemEntities().stream().map(e -> new ConfigItem(e)).toList();
+    }
+
+    public ComponentEntity createComponentEntity(ComponentRepo componentRepo) {
+        ComponentEntity entity = new ComponentEntity();
+        entity.setName(name);
+        entity.setText(text);
+        entity.setContent(content);
+        entity.setDescription(description);
+        entity = componentRepo.save(entity);
+        for(Component child: children) {
+            ComponentEntity childEntity = child.createComponentEntity(componentRepo);
+            entity.getChildComponentList().add(childEntity);
+            componentRepo.createRelationOfChildComponent(entity.getId(), childEntity.getId());
+        }
+        return entity;
     }
 
     /**
@@ -69,7 +98,7 @@ public class Component {
 
             // 组件关联的配置型列表
             List<ConfigItemEntity> configItemEntities = new ArrayList<>();
-            for(ConfigItem configItem: containedConfigItems) {
+            for(ConfigItem configItem: configItemList) {
                 // 存储配置项节点
                 ConfigItemEntity configEntity = configItem.storeInNeo4j(configItemRepo);
                 configItemEntities.add(configEntity);

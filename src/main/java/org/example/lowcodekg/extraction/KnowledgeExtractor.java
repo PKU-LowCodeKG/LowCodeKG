@@ -2,20 +2,12 @@ package org.example.lowcodekg.extraction;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.repository.*;
-import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
 import org.example.lowcodekg.service.ElasticSearchService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.ApplicationScope;
-import org.yaml.snakeyaml.Yaml;
+import org.example.lowcodekg.service.LLMGenerateService;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 定义知识挖掘的抽象类
@@ -23,9 +15,19 @@ import java.util.Map;
 public abstract class KnowledgeExtractor {
 
     @Setter
+    protected static PageRepo pageRepo;
+    @Setter
+    protected static ScriptRepo scriptRepo;
+    @Setter
+    protected static ScriptMethodRepo scriptMethodRepo;
+    @Setter
+    protected static ScriptDataRepo scriptDataRepo;
+    @Setter
     protected static ComponentRepo componentRepo;
     @Setter
     protected static ConfigItemRepo configItemRepo;
+    @Setter
+    protected static WorkflowRepo workflowRepo;
     @Setter
     protected static JavaClassRepo javaClassRepo;
     @Setter
@@ -35,6 +37,8 @@ public abstract class KnowledgeExtractor {
 
     @Setter
     protected static ElasticSearchService elasticSearchService;
+    @Setter
+    protected static LLMGenerateService llmGenerateService;
 
     @Getter
     @Setter
@@ -59,13 +63,6 @@ public abstract class KnowledgeExtractor {
         }
     }
 
-//    public static void main(String[] args) {
-//        try {
-//            KnowledgeExtractor.executeFromYaml(FileUtils.readFileToString(new File("/Users/chang/Documents/projects/LowCodeKG/config.yml"), "utf-8"));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public abstract void extraction();
 

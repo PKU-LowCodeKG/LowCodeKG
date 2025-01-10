@@ -1,4 +1,4 @@
-package org.example.lowcodekg.dao.neo4j.entity;
+package org.example.lowcodekg.dao.neo4j.entity.java;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,6 +44,9 @@ public class JavaClassEntity {
 
     @Property("superInterfaceType")
     private String superInterfaceType;
+
+    @Property("isData")
+    private Boolean isData;
 
     @Relationship(type = "EXTEND", direction = Relationship.Direction.OUTGOING)
     private List<JavaClassEntity> superClassList = new ArrayList<>();
