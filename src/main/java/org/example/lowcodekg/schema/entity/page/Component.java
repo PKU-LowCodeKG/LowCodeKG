@@ -77,11 +77,6 @@ public class Component {
         entity.setContent(content);
         entity.setDescription(description);
         entity = componentRepo.save(entity);
-        for(Component child: children) {
-            ComponentEntity childEntity = child.createComponentEntity(componentRepo);
-            entity.getChildComponentList().add(childEntity);
-            componentRepo.createRelationOfChildComponent(entity.getId(), childEntity.getId());
-        }
         return entity;
     }
 

@@ -109,7 +109,7 @@ public class Neo4jModifyTest {
          ConfigItemEntity ci1 = new ConfigItemEntity();
          ci1.setName("click");
          ci1 = configItemRepo.save(ci1);
-         componentRepo.createRelationOfRelatedConfigItem(c4.getId(), ci1.getId());
+         componentRepo.createRelationOfContainedConfigItem(c4.getId(), ci1.getId());
          ScriptEntity s1 = new ScriptEntity();
          s1.setName("writeMoment");
          s1 = scriptRepo.save(s1);

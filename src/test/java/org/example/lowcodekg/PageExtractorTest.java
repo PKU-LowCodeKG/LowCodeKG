@@ -1,12 +1,12 @@
 package org.example.lowcodekg;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import dev.langchain4j.data.message.AiMessage;
-import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.ollama.OllamaChatModel;
+import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
+import org.example.lowcodekg.dao.neo4j.entity.page.ConfigItemEntity;
 import org.example.lowcodekg.extraction.page.PageExtractor;
 import org.example.lowcodekg.schema.entity.page.Component;
+import org.example.lowcodekg.schema.entity.page.ConfigItem;
 import org.example.lowcodekg.schema.entity.page.PageTemplate;
 import org.example.lowcodekg.schema.entity.page.Script;
 import org.example.lowcodekg.service.LLMGenerateService;
@@ -21,10 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.File;
 import java.util.*;
 
-import static org.example.lowcodekg.extraction.page.PageExtractor.*;
-
 @SpringBootTest
-public class LLMServiceTest {
+public class PageExtractorTest {
 
     @Autowired
     private OllamaChatModel ollamaChatModel;
@@ -72,7 +70,7 @@ public class LLMServiceTest {
     @Test
     public void testVueParser() {
         String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-vue/aurora-admin/src/views/talk/TalkList.vue";
-        path = "/Users/chang/Documents/projects/data_projects/NBlog/blog-view/src/views/blog/Blog.vue";
+        path = "/Users/chang/Documents/projects/data_projects/NBlog/blog-cms/src/views/blog/moment/WriteMoment.vue";
         File vueFile = new File(path);
         System.out.println(vueFile.getName());
 
@@ -82,26 +80,42 @@ public class LLMServiceTest {
 
         PageExtractor pageExtractor = new PageExtractor();
 
-        // parse script
-        String content = pageExtractor.getScriptContent(fileContent);
-        if(content.length() != 0) {
-            Script script = new Script();
-            script.setContent(content);
-
-            // parse import components
-            JSONObject importsList = pageExtractor.parseImportsComponent(content);
-            script.setImportsComponentList(importsList.toString());
-
-            // parse data
-//            JSONObject data = pageExtractor.parseScriptData(content);
-//            script.setDataList(data);
-
-            // parse methods
-            List<Script.ScriptMethod> methodList = pageExtractor.parseScriptMethod(content);
-            script.setMethodList(methodList);
-            pageTemplate.setScript(script);
+        // parse template
+        String templateContent = pageExtractor.getTemplateContent(fileContent);
+        if(!Objects.isNull(templateContent)) {
+            Document document = Jsoup.parse(templateContent);
+            Element divElement = document.selectFirst("Template");
+            divElement.children().forEach(element -> {
+                Component component = pageExtractor.parseTemplate(element, null);
+                pageTemplate.getComponentList().add(component);
+            });
         }
+        for(Component component: pageTemplate.getComponentList()) {
+            for(ConfigItem configItem: component.getConfigItemList()) {
+
+                System.out.println("config item: " + configItem.getCode() + " " + configItem.getValue());
+
+            }
+        }
+
+        // parse script
+//        String content = pageExtractor.getScriptContent(fileContent);
+//        if(content.length() != 0) {
+//            Script script = new Script();
+//            script.setContent(content);
+//
+//            // parse import components
+//            JSONObject importsList = pageExtractor.parseImportsComponent(content);
+//            script.setImportsComponentList(importsList.toString());
+//
+//            // parse data
+////            JSONObject data = pageExtractor.parseScriptData(content);
+////            script.setDataList(data);
+//
+//            // parse methods
+//            List<Script.ScriptMethod> methodList = pageExtractor.parseScriptMethod(content);
+//            script.setMethodList(methodList);
+//            pageTemplate.setScript(script);
+//        }
     }
-
-
 }

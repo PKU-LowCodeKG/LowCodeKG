@@ -54,7 +54,7 @@ public class PageExtractor extends KnowledgeExtractor {
                 String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
                 // for test
-//                if(!name.equals("TalkList")) {
+//                if(!name.equals("WriteMoment")) {
 //                    continue;
 //                }
 
@@ -77,6 +77,8 @@ public class PageExtractor extends KnowledgeExtractor {
                 }
                 // neo4j store
                 storeNeo4j(pageTemplate);
+                // create relations
+                parseRelBetweenConfigItemAndScriptMethod();
             }
             // create relationships among page entities
             parseRelations();
@@ -86,23 +88,16 @@ public class PageExtractor extends KnowledgeExtractor {
     /**
      * store page-related entities and relationships in neo4j
      */
-    private PageEntity storeNeo4j(PageTemplate pageTemplate) {
+    public PageEntity storeNeo4j(PageTemplate pageTemplate) {
         try {
             PageEntity pageEntity = pageTemplate.createPageEntity(pageRepo);
             pageEntityMap.put(pageEntity.getName(), pageEntity);
             pageTemplateMap.put(pageEntity.getName(), pageTemplate);
             // component entity
             for(Component component: pageTemplate.getComponentList()) {
-                ComponentEntity componentEntity = component.createComponentEntity(componentRepo);
+                ComponentEntity componentEntity = createComponentEntity(component);
                 pageEntity.getComponentList().add(componentEntity);
                 pageRepo.createRelationOfContainedComponent(pageEntity.getId(), componentEntity.getId());
-                // config item entity
-                for(ConfigItem configItem: component.getConfigItemList()) {
-                    ConfigItemEntity configItemEntity = configItem.createConfigItemEntity(configItemRepo);
-                    componentEntity.getContainedConfigItemEntities().add(configItemEntity);
-                    componentRepo.createRelationOfRelatedConfigItem(componentEntity.getId(), configItemEntity.getId());
-                    configItemMap.put(component.getName() + ":" + configItemEntity.getName(), configItemEntity);
-                }
             }
             // script entity
             if(!Objects.isNull(pageTemplate.getScript())) {
@@ -145,13 +140,41 @@ public class PageExtractor extends KnowledgeExtractor {
                 });
             }
         });
+    }
+
+    private ComponentEntity createComponentEntity(Component component) {
+        ComponentEntity componentEntity = component.createComponentEntity(componentRepo);
+        for(ConfigItem configItem: component.getConfigItemList()) {
+            ConfigItemEntity configItemEntity = configItem.createConfigItemEntity(configItemRepo);
+            componentEntity.getContainedConfigItemEntities().add(configItemEntity);
+            componentRepo.createRelationOfContainedConfigItem(componentEntity.getId(), configItemEntity.getId());
+            // generate unique key for config item
+            String configItemKey = component.getName() + configItemEntity.getName() + configItemEntity.getValue();
+            configItemMap.put(configItemKey, configItemEntity);
+        }
+        if(!Objects.isNull(component.getChildren())) {
+            for (Component child : component.getChildren()) {
+                ComponentEntity childComponentEntity = createComponentEntity(child);
+                componentEntity.getChildComponentList().add(childComponentEntity);
+                componentRepo.createRelationOfChildComponent(componentEntity.getId(), childComponentEntity.getId());
+            }
+        }
+        return componentEntity;
+    }
+
+    private void parseRelBetweenConfigItemAndScriptMethod() {
         // configItem-[related_to]->scriptMethod
         configItemMap.values().forEach(configItemEntity -> {
-           String value = configItemEntity.getValue();
-           if(scriptMethodMap.containsKey(value)) {
-               ScriptMethodEntity methodEntity = scriptMethodMap.get(value);
-               configItemRepo.createRelationOfRelatedMethod(configItemEntity.getId(), methodEntity.getId());
-           }
+            String value = configItemEntity.getValue();
+            Pattern p = Pattern.compile("(\\w+)\\(([\\w,:\\s=\\.]*)\\)");
+            Matcher match = p.matcher(value);
+            if(match.find()) {
+                String name = match.group(1);
+                if (scriptMethodMap.containsKey(name)) {
+                    ScriptMethodEntity methodEntity = scriptMethodMap.get(name);
+                    configItemRepo.createRelationOfRelatedMethod(configItemEntity.getId(), methodEntity.getId());
+                }
+            }
         });
     }
 
@@ -190,6 +213,7 @@ public class PageExtractor extends KnowledgeExtractor {
         element.attributes().forEach(attr -> {
             ConfigItem config = new ConfigItem(attr.getKey(), attr.getValue());
             component.getConfigItemList().add(config);
+
         });
         for (Element child : element.children()) {
             Component childComponent = parseTemplate(child, element);
@@ -257,6 +281,7 @@ public class PageExtractor extends KnowledgeExtractor {
                 "headers": {
                     "Authorization": "'Bearer ' + sessionStorage.getItem('token')"
                   }
+                如果包含了"//""标识的注释内容，请将注释的文字删除
                 
                 下面是给出的代码片段:
                 {content}
@@ -382,10 +407,6 @@ public class PageExtractor extends KnowledgeExtractor {
             }
         }
         return indentation.toString();
-    }
-
-    public static void main(String[] args) {
-
     }
 
 }
