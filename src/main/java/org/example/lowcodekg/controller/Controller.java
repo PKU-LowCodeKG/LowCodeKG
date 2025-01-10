@@ -47,6 +47,7 @@ public class Controller {
         session.setAttribute("query", query);
 
         Neo4jSubGraph subGraph = neo4jGraphService.searchRelevantGraph(query);
+//        Neo4jSubGraph subGraph = neo4jGraphService.searchFixedGraph(query);  // 暂时为了展示一个例子
         session.setAttribute("subGraph", subGraph);
         return subGraph;
     }

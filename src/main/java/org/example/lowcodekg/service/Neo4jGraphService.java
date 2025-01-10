@@ -16,8 +16,6 @@ public interface Neo4jGraphService {
 
 //    Neo4jSubGraph codeSearch(String query);
 
-    Neo4jSubGraph findAddTags(String query);
-
     Neo4jSubGraph searchRelevantGraph(String query);
 
     List<JavaClassEntity> findAllJavaClass();
@@ -25,4 +23,6 @@ public interface Neo4jGraphService {
     List<JavaMethodEntity> findAllJavaMethod();
 
     CodeGenerationResult codeGeneration(String query, Neo4jSubGraph oriSubGraph, List<Long> remainNodeIds);
+
+    Neo4jSubGraph searchFixedGraph(String query);
 }
