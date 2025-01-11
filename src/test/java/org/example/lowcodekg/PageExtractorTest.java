@@ -21,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.File;
 import java.util.*;
 
+import static org.example.lowcodekg.util.PageParserUtil.getTemplateContent;
+
 @SpringBootTest
 public class PageExtractorTest {
 
@@ -81,7 +83,7 @@ public class PageExtractorTest {
         PageExtractor pageExtractor = new PageExtractor();
 
         // parse template
-        String templateContent = pageExtractor.getTemplateContent(fileContent);
+        String templateContent = getTemplateContent(fileContent);
         if(!Objects.isNull(templateContent)) {
             Document document = Jsoup.parse(templateContent);
             Element divElement = document.selectFirst("Template");

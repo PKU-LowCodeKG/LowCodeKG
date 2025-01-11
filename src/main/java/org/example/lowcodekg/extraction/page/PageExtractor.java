@@ -18,6 +18,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.example.lowcodekg.util.PageParserUtil.*;
+
 
 /**
  * 前端页面抽取
@@ -45,7 +47,10 @@ public class PageExtractor extends KnowledgeExtractor {
                 scriptMethodMap.clear();
                 configItemMap.clear();
 
-                // each .vue file parsed as one PageTemplate entity
+                /**
+                 * each .vue file is parsed as one PageTemplate entity
+                 * including: component, config item, script, script method, script data
+                 */
                 PageTemplate pageTemplate = new PageTemplate();
                 String name = vueFile.getName().substring(0, vueFile.getName().length()-4);
                 String fullName = vueFile.getAbsolutePath().replace(filePath, "");
@@ -75,7 +80,7 @@ public class PageExtractor extends KnowledgeExtractor {
                     script.setName(name);
                     pageTemplate.setScript(script);
                 }
-                // neo4j store
+                // create neo4j entities
                 storeNeo4j(pageTemplate);
                 // create relations
                 parseRelBetweenConfigItemAndScriptMethod();
@@ -129,17 +134,22 @@ public class PageExtractor extends KnowledgeExtractor {
      */
     private void parseRelations() {
         // page-[dependency]->page
-        pageEntityMap.values().forEach(pageEntity -> {
-            PageTemplate pageTemplate = pageTemplateMap.get(pageEntity.getName());
-            if(!Objects.isNull(pageTemplate.getScript())) {
-                pageTemplate.findDependedPage();
-                pageTemplate.getDependedPageList().forEach(dependedPageName -> {
-                    if(pageEntityMap.containsKey(dependedPageName)) {
-                        pageRepo.createRelationOfDependedPage(pageEntity.getId(), pageEntityMap.get(dependedPageName).getId());
-                    }
-                });
-            }
-        });
+        try {
+            pageEntityMap.values().forEach(pageEntity -> {
+                PageTemplate pageTemplate = pageTemplateMap.get(pageEntity.getName());
+                if(!Objects.isNull(pageTemplate.getScript())) {
+                    pageTemplate.findDependedPage();
+                    pageTemplate.getDependedPageList().forEach(dependedPageName -> {
+                        if(pageEntityMap.containsKey(dependedPageName)) {
+                            pageRepo.createRelationOfDependedPage(pageEntity.getId(), pageEntityMap.get(dependedPageName).getId());
+                        }
+                    });
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error in parseRelations: " + e.getMessage());
+        }
     }
 
     private ComponentEntity createComponentEntity(Component component) {
@@ -176,32 +186,6 @@ public class PageExtractor extends KnowledgeExtractor {
                 }
             }
         });
-    }
-
-    public String getTemplateContent(String fileContent) {
-        Pattern pattern = Pattern.compile("<template>(.*?)</template>", Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(fileContent);
-        if (matcher.find()) {
-            return matcher.group(0).trim(); // 返回去除前后空白的模板内容
-        } else {
-            return null;
-        }
-    }
-
-    public String getScriptContent(String fileContent) {
-        StringBuilder scriptContent = new StringBuilder();
-        List<String> lines = Arrays.asList(fileContent.split("\n"));
-        for(int i = 0;i < lines.size();i++) {
-            if(lines.get(i).contains("<script")) {
-                int j = i + 1;
-                while(j < lines.size() && !lines.get(j).contains("</script>")) {
-                    scriptContent.append(lines.get(j)).append("\n");
-                    j++;
-                }
-                break;
-            }
-        }
-        return scriptContent.toString();
     }
 
     public Component parseTemplate(Element element, Element parent) {
@@ -242,29 +226,6 @@ public class PageExtractor extends KnowledgeExtractor {
         return script;
     }
 
-    public JSONObject parseImportsComponent(String content) {
-        try {
-            JSONObject importsList = new JSONObject();
-            String importPattern = "import\\s*\\{?\\s*([\\w,\\s]+)\\s*\\}?\\s*from\\s*['\"]([^'\"]+)['\"]";
-            Pattern pattern = Pattern.compile(importPattern);
-            Matcher matcher = pattern.matcher(content);
-
-            while (matcher.find()) {
-                String names = matcher.group(1).trim();
-                String path = matcher.group(2).trim();
-
-                String[] nameArray = names.split("\\s*,\\s*");
-                for (String name : nameArray) {
-                    importsList.put(name, path);
-                }
-            }
-            return importsList;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public List<Script.ScriptData> parseScriptData(String content) {
         // get data block
         String dataBlock = getScriptData(content);
@@ -273,7 +234,7 @@ public class PageExtractor extends KnowledgeExtractor {
         }
         // json format
         String prompt = """
-                给定下面的代码内容，你的任务是对其进行解析返回一个json对象。注意，如果key对应的value包含了表达式或函数调用，将其转为字符串格式
+                给定下面的代码内容，你的任务是对其进行解析返回一个json对象，以 ```json 开始，以 ``` 结尾。注意，如果key对应的value包含了表达式或函数调用，将其转为字符串格式
                 比如：对于
                 "headers": {
                     "Authorization": "Bearer " + sessionStorage.getItem('token')
@@ -305,32 +266,6 @@ public class PageExtractor extends KnowledgeExtractor {
             System.out.println("script data json format error:\n" + dataBlock);
         }
         return dataList;
-    }
-
-    public String getScriptData(String content) {
-        String[] lines = content.split("\n");
-        List<String> lineList = new ArrayList<>(Arrays.asList(lines));
-        StringBuilder dataBlock = new StringBuilder();
-        for(int i = 0;i < lineList.size();i++) {
-            if(lineList.get(i).contains("data")) {
-                if((lineList.get(i).contains("data()") || lineList.get(i).contains("function"))
-                        && i+1 < lineList.size() && lineList.get(i+1).contains("return {")) {
-                    int j = i + 2;
-                    String intent = getScriptIndent(lineList.get(i));
-                    while (j < lineList.size()) {
-                        dataBlock.append(lineList.get(j));
-                        j++;
-                        if (j == lineList.size() || lineList.get(j).equals(intent + "},") || lineList.get(j).equals(intent + "}")) break;
-                    }
-                    break;
-                }
-            }
-        }
-        if(dataBlock.length() == 0) {
-            return null;
-        }
-        dataBlock.insert(0, " { ");
-        return dataBlock.toString();
     }
 
     public List<Script.ScriptMethod> parseScriptMethod(String content) {
@@ -372,41 +307,4 @@ public class PageExtractor extends KnowledgeExtractor {
         }
         return methodList;
     }
-
-    private String getScriptMethod(String content) {
-        String[] lines = content.split("\n");
-        List<String> lineList = new ArrayList<>(Arrays.asList(lines));
-        StringBuilder dataBlock = new StringBuilder();
-        for(int i = 0;i < lineList.size();i++) {
-            if(lineList.get(i).contains("methods: {")) {
-                int j = i + 1;
-                String intent = getScriptIndent(lineList.get(i));
-                while(j < lineList.size()) {
-                    dataBlock.append(lineList.get(j) + "\n");
-                    j++;
-                    if(j >= lineList.size()
-                            || lineList.get(j).equals(intent + "},")
-                            || lineList.get(j).equals(intent + "}"))
-                        break;
-                }
-                break;
-            }
-        }
-        return dataBlock.toString();
-    }
-
-    private String getScriptIndent(String line) {
-        StringBuilder indentation = new StringBuilder();
-        for (char c : line.toCharArray()) {
-            if (c == ' ') {
-                indentation.append(" ");
-            } else if (c == '\t') {
-                indentation.append('\t');
-            } else {
-                break;
-            }
-        }
-        return indentation.toString();
-    }
-
 }
