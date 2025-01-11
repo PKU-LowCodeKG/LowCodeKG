@@ -1,8 +1,9 @@
-package org.example.lowcodekg.dao.neo4j.entity.java;
+package org.example.lowcodekg.dao.neo4j.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
 import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.ArrayList;

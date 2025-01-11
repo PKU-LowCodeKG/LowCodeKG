@@ -3,7 +3,7 @@ package org.example.lowcodekg.schema.entity.workflow;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.lowcodekg.dao.neo4j.entity.java.WorkflowEntity;
+import org.example.lowcodekg.dao.neo4j.entity.WorkflowEntity;
 import org.example.lowcodekg.dao.neo4j.repository.WorkflowRepo;
 
 import java.util.ArrayList;

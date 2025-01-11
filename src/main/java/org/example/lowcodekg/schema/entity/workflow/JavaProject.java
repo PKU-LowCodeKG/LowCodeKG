@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.example.lowcodekg.dao.neo4j.entity.java.WorkflowEntity;
+import org.example.lowcodekg.dao.neo4j.entity.WorkflowEntity;
 import org.example.lowcodekg.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.dao.neo4j.entity.java.JavaFieldEntity;
 import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;

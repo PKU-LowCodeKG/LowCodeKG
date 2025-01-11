@@ -71,8 +71,8 @@ public class PageExtractorTest {
 
     @Test
     public void testVueParser() {
-        String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-vue/aurora-admin/src/views/talk/TalkList.vue";
-        path = "/Users/chang/Documents/projects/data_projects/NBlog/blog-cms/src/views/blog/moment/WriteMoment.vue";
+        String path = "";
+        path = "/Users/chang/Documents/projects/data_projects/NBlog/blog-cms/src/views/page/FriendList.vue";
         File vueFile = new File(path);
         System.out.println(vueFile.getName());
 
@@ -94,9 +94,7 @@ public class PageExtractorTest {
         }
         for(Component component: pageTemplate.getComponentList()) {
             for(ConfigItem configItem: component.getConfigItemList()) {
-
                 System.out.println("config item: " + configItem.getCode() + " " + configItem.getValue());
-
             }
         }
 

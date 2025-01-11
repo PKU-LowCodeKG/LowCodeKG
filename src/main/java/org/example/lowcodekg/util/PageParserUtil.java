@@ -94,13 +94,20 @@ public class PageParserUtil {
     }
 
     public static String getTemplateContent(String fileContent) {
-        Pattern pattern = Pattern.compile("<template>(.*?)</template>", Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(fileContent);
-        if (matcher.find()) {
-            return matcher.group(0).trim(); // 返回去除前后空白的模板内容
-        } else {
-            return null;
+        StringBuilder templateContent = new StringBuilder("<template>\n");
+        List<String> lines = Arrays.asList(fileContent.split("\n"));
+        for(int i = 0;i < lines.size();i++) {
+            if(lines.get(i).startsWith("<template")) {
+                int j = i + 1;
+                while(j < lines.size() && !lines.get(j).startsWith("</template>")) {
+                    templateContent.append(lines.get(j)).append("\n");
+                    j++;
+                }
+                break;
+            }
         }
+        templateContent.append("</template>");
+        return templateContent.toString();
     }
 
     public static JSONObject parseImportsComponent(String content) {
