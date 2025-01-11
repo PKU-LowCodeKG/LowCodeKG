@@ -1,7 +1,7 @@
 package org.example.lowcodekg.service;
 
-import org.example.lowcodekg.dao.neo4j.entity.java.JavaClassEntity;
-import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
+import org.example.lowcodekg.dao.neo4j.entity.workflow.JavaClassEntity;
+import org.example.lowcodekg.dao.neo4j.entity.workflow.JavaMethodEntity;
 import org.example.lowcodekg.dto.CodeGenerationResult;
 import org.example.lowcodekg.dto.Neo4jNode;
 import org.example.lowcodekg.dto.Neo4jRelation;

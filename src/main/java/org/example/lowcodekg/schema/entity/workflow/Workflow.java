@@ -3,17 +3,16 @@ package org.example.lowcodekg.schema.entity.workflow;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.lowcodekg.dao.neo4j.entity.WorkflowEntity;
+import org.example.lowcodekg.dao.neo4j.entity.workflow.WorkflowEntity;
 import org.example.lowcodekg.dao.neo4j.repository.WorkflowRepo;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * 工作流实体（代码实体及关系的集合）
  * 根据后端代码调用路径抽取功能实现逻辑
+ * 跨项目执行聚类算法的对象
  */
 @Data
 @NoArgsConstructor
@@ -32,6 +31,9 @@ public class Workflow {
 
     // 请求响应方法调用链
     private List<JavaMethod> methodList = new ArrayList<>();
+
+    // 工作流包含的子类别实体(聚类过程)
+    private List<Workflow> subWorkflowList = new ArrayList<>();
 
     public Workflow(JavaMethod method) {
         this.name = method.getMappingUrl();

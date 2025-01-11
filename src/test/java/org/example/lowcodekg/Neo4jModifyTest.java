@@ -1,22 +1,16 @@
 package org.example.lowcodekg;
 
-import com.alibaba.fastjson.JSONObject;
-import org.example.lowcodekg.dao.neo4j.entity.java.JavaClassEntity;
-import org.example.lowcodekg.dao.neo4j.entity.java.JavaFieldEntity;
-import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
+import org.example.lowcodekg.dao.neo4j.entity.workflow.JavaClassEntity;
+import org.example.lowcodekg.dao.neo4j.entity.workflow.JavaFieldEntity;
+import org.example.lowcodekg.dao.neo4j.entity.workflow.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.entity.page.*;
 import org.example.lowcodekg.dao.neo4j.repository.*;
-import org.example.lowcodekg.schema.entity.page.PageTemplate;
-import org.example.lowcodekg.schema.entity.workflow.JavaClass;
-import org.example.lowcodekg.schema.entity.workflow.JavaField;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 @SpringBootTest

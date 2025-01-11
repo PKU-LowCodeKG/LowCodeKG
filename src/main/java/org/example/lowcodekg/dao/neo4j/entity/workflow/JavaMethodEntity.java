@@ -1,4 +1,4 @@
-package org.example.lowcodekg.dao.neo4j.entity.java;
+package org.example.lowcodekg.dao.neo4j.entity.workflow;
 
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.*;
@@ -16,6 +16,12 @@ public class JavaMethodEntity {
 
     @Property("vid")
     private Long vid;
+
+    /**
+     * 方法所属的工作流聚类簇id，对应WorkflowEntity的id
+     */
+    @Property("cluster_id")
+    private Long cid;
 
     @Property("name")
     private String name;

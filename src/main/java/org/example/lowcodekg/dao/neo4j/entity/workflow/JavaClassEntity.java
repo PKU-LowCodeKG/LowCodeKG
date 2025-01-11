@@ -1,4 +1,4 @@
-package org.example.lowcodekg.dao.neo4j.entity.java;
+package org.example.lowcodekg.dao.neo4j.entity.workflow;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
