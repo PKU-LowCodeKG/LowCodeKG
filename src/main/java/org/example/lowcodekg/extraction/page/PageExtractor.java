@@ -59,9 +59,9 @@ public class PageExtractor extends KnowledgeExtractor {
                 String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
                 // for test
-//                if(!name.equals("WriteMoment")) {
-//                    continue;
-//                }
+                if(!name.equals("FriendList")) {
+                    continue;
+                }
 
                 // parse template
                 String templateContent = getTemplateContent(fileContent);
@@ -184,6 +184,9 @@ public class PageExtractor extends KnowledgeExtractor {
                     ScriptMethodEntity methodEntity = scriptMethodMap.get(name);
                     configItemRepo.createRelationOfRelatedMethod(configItemEntity.getId(), methodEntity.getId());
                 }
+            } else if(scriptMethodMap.containsKey(value)) {
+                ScriptMethodEntity methodEntity = scriptMethodMap.get(value);
+                configItemRepo.createRelationOfRelatedMethod(configItemEntity.getId(), methodEntity.getId());
             }
         });
     }

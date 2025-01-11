@@ -43,7 +43,6 @@ public class KnowledgeExtractorService {
     @Autowired
     private JavaFieldRepo javaFieldRepo;
 
-
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
