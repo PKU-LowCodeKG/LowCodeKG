@@ -1,4 +1,4 @@
-package org.example.lowcodekg.dao.neo4j.entity.workflow;
+package org.example.lowcodekg.dao.neo4j.entity.java;
 
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.*;

@@ -2,7 +2,7 @@ package org.example.lowcodekg.schema.entity.workflow;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.*;
-import org.example.lowcodekg.dao.neo4j.entity.workflow.JavaFieldEntity;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaFieldEntity;
 import org.example.lowcodekg.dao.neo4j.repository.JavaFieldRepo;
 
 import java.util.ArrayList;

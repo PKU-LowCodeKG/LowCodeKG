@@ -1,8 +1,8 @@
 package org.example.lowcodekg;
 
-import org.example.lowcodekg.dao.neo4j.entity.workflow.JavaClassEntity;
-import org.example.lowcodekg.dao.neo4j.entity.workflow.JavaFieldEntity;
-import org.example.lowcodekg.dao.neo4j.entity.workflow.JavaMethodEntity;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaClassEntity;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaFieldEntity;
+import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
 import org.example.lowcodekg.dao.neo4j.entity.page.*;
 import org.example.lowcodekg.dao.neo4j.repository.*;
 import org.junit.jupiter.api.Test;
