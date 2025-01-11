@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * 工作流逻辑，包含前后端的逻辑实现
+ * 工作流实体（代码实体及关系的集合）
+ * 根据后端代码调用路径抽取功能实现逻辑
  */
 @Data
 @NoArgsConstructor
@@ -26,7 +27,6 @@ public class Workflow {
     // 直接关联的method（工作流起点）
     private JavaMethod method;
 
-    // TODO
     // 调用链中方法体内容拼接
     private String content;
 
