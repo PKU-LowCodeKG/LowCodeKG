@@ -62,13 +62,6 @@ http.host: 0.0.0.0
 #----------------------- END SECURITY AUTO CONFIGURATION -------------------------
 ```
 
-## 项目结构
-- controller: 前端请求处理，调用服务接口并返回
-- dao: 数据访问层，提供 Neo4j 和 ES 的数据存取接口
-- extraction: 知识挖掘及关联的插件集
-- schema: 定义知识图谱的元模型，包括实体、关系、属性等。通过调用 dao 层接口实现数据持久化
-- search: 组件及模板检索的接口定义及实现，基于 dao 层接口调用，向 controller 提供检索服务
-
 ## 运行
 - 编译打包：mvn package -Dmaven.test.skip=true（跳过测试，可选）
 - 执行插件：java -jar target/LowCodeKG-0.0.1-SNAPSHOT.jar -gen {yml_config_path}
