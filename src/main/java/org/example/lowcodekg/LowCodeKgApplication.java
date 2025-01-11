@@ -1,14 +1,11 @@
 package org.example.lowcodekg;
 
 import org.apache.commons.io.FileUtils;
-import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.extraction.component.AntMDExtractor;
 import org.example.lowcodekg.service.KnowledgeExtractorService;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.ExplicitBooleanOptionHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -16,7 +13,6 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.File;
-import java.io.IOException;
 
 @EnableTransactionManagement
 @EnableNeo4jRepositories

@@ -1,4 +1,4 @@
-package org.example.lowcodekg.extraction.component;
+package org.example.lowcodekg.extraction.document;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

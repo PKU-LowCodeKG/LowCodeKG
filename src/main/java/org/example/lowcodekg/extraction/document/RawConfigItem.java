@@ -1,4 +1,4 @@
-package org.example.lowcodekg.extraction.component;
+package org.example.lowcodekg.extraction.document;
 
 import lombok.Getter;
 import lombok.Setter;
