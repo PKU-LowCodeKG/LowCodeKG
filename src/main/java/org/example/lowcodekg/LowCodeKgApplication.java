@@ -38,14 +38,11 @@ public class LowCodeKgApplication {
                 extractor.execute(FileUtils.readFileToString(new File(option.genConfigPath), "utf-8"));
                 System.exit(0);
             }
-
         } catch (CmdLineException cle) {
             System.out.println("Command line error: " + cle.getMessage());
-            return;
         } catch (Exception e) {
             System.out.println("Error in main: " + e.getMessage());
             e.printStackTrace();
-            return;
         }
     }
 }

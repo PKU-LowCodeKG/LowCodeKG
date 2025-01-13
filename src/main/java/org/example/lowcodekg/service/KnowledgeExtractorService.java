@@ -49,6 +49,8 @@ public class KnowledgeExtractorService {
     private ElasticSearchService elasticSearchService;
     @Autowired
     private LLMGenerateService llmGenerateService;
+    @Autowired
+    private FunctionalityGenService functionalityGenService;
 
     public void execute(String yamlStr)
     {
@@ -92,6 +94,8 @@ public class KnowledgeExtractorService {
 
         KnowledgeExtractor.setElasticSearchService(elasticSearchService);
         KnowledgeExtractor.setLlmGenerateService(llmGenerateService);
+        KnowledgeExtractor.setNeo4jClient(neo4jClient);
+        KnowledgeExtractor.setFunctionalityGenService(functionalityGenService);
     }
 
     public static void main(String[] args) {
