@@ -59,9 +59,9 @@ public class PageExtractor extends KnowledgeExtractor {
                 String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
                 // for test
-//                if(!name.equals("FriendList")) {
-//                    continue;
-//                }
+                if(!name.equals("FriendList")) {
+                    continue;
+                }
 
                 // parse template
                 String templateContent = getTemplateContent(fileContent);
