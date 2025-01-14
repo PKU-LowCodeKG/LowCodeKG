@@ -3,14 +3,12 @@ package org.example.lowcodekg;
 import com.alibaba.fastjson.JSONObject;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
-import org.example.lowcodekg.dao.neo4j.entity.page.ConfigItemEntity;
-import org.example.lowcodekg.dao.neo4j.entity.page.PageEntity;
+import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.extraction.page.PageExtractor;
 import org.example.lowcodekg.schema.entity.page.Component;
 import org.example.lowcodekg.schema.entity.page.ConfigItem;
 import org.example.lowcodekg.schema.entity.page.PageTemplate;
-import org.example.lowcodekg.schema.entity.page.Script;
 import org.example.lowcodekg.service.FunctionalityGenService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.example.lowcodekg.util.FileUtil;
@@ -25,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.*;
 
 import static org.example.lowcodekg.util.PageParserUtil.getTemplateContent;
@@ -42,6 +41,8 @@ public class PageExtractorTest {
     private PageRepo pageRepo;
     @Autowired
     private FunctionalityGenService functionalityGenService;
+    @Autowired
+    private ComponentRepo componentRepo;
 
     @Test
     public void test() {
@@ -133,16 +134,18 @@ public class PageExtractorTest {
 
     @Test
     public void textFunctionality() {
-        String cypher = """
-                MATCH (n:PageTemplate)
-                RETURN n
-                """;
+        String cypher = MessageFormat.format("""
+                MATCH (n:PageTemplate)-[:CONTAIN]->(m:Component)
+                    WHERE id(n) = {0}
+                    RETURN m
+                """, String.format("%d", 1343));
         Result res = neo4jClient.getQueryRunner().run(cypher);
         while(res.hasNext()) {
-            Node node = res.next().get("n").asNode();
-            Optional<PageEntity> entity = pageRepo.findById(node.id());
-            entity.ifPresent(pageEntity -> {
-                functionalityGenService.generatePageFunctionality(pageEntity);
+            Node node = res.next().get("m").asNode();
+            Optional<ComponentEntity> entity = componentRepo.findById(node.id());
+            entity.ifPresent(componentEntity -> {
+//                functionalityGenService.generatePageFunctionality(pageEntity);
+                System.out.println(componentEntity.getName());
             });
         }
     }
