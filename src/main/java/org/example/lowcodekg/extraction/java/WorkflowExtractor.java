@@ -68,6 +68,9 @@ public class WorkflowExtractor extends KnowledgeExtractor {
     private void getMethodInvokeChain(WorkflowEntity workflowEntity, JavaMethodEntity startMethodEntity) {
         try {
             workflowEntity.getContainedMethodList().add(startMethodEntity);
+            // set workflow id property of method entity
+            startMethodEntity.setCid(workflowEntity.getId());
+            javaMethodRepo.save(startMethodEntity);
 
             String cypher = MessageFormat.format("""
                 MATCH (n:JavaMethod)-[:METHOD_CALL]->(m:JavaMethod)
