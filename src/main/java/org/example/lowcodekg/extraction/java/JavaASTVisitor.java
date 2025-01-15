@@ -132,7 +132,7 @@ public class JavaASTVisitor extends ASTVisitor {
                             mappingUrl = literal.getLiteralValue();
                         }
                     }
-                    if(!Objects.isNull(mappingUrl)) {
+                    if(!Objects.isNull(mappingUrl) && !mappingUrl.isEmpty()) {
                         mappingUrl = mappingUrl.substring(1).replaceAll("/", "_");
                         info.setMappingUrl(mappingUrl);
                     }
