@@ -3,6 +3,7 @@ package org.example.lowcodekg.extraction.document;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import java.util.*;
@@ -176,7 +177,7 @@ public class AntMDExtractor extends KnowledgeExtractor {
                 if (values.length >= 3) {
                     config.setType(values[2].substring(1));
                 }
-                if (values.length >= 4) {
+                if (values.length >= 5) {
                     config.setDefaultValue(values[3].substring(1));
                     config.setVersion(values[4].substring(1));
                 }
@@ -194,12 +195,13 @@ public class AntMDExtractor extends KnowledgeExtractor {
             String path = filePath + "/components";
             File[] folders = new File(path).listFiles(File::isDirectory);
             for (int i = 0; i < folders.length; i++) {
-                if (!Files.exists(Paths.get(path, folders[i].getName(), "index.zh-CN.md"))) {
-                    System.err.println(".md File Not Found (May not component): " + folders[i].getName());
+                Path p = Paths.get(path, folders[i].getName(), "index.zh-CN.md");
+                if (!Files.exists(p)) {
+                    System.err.println(".md File Not Found (May not component): " + p.toString());
                     continue;
                 } else {
                     RawData data = new RawData();
-                    WorkDir = filePath + "/" + folders[i].getName();
+                    WorkDir = path + "/" + folders[i].getName();
                     parseComponent(WorkDir + "/index.zh-CN.md", data);
                     if (data.getName().equals("组件总览") || data.getName().equals("Util")) {
                         continue;
