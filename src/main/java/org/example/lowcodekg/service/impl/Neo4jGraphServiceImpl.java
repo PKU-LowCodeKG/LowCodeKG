@@ -277,7 +277,8 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         addInitialNodesToGraph(realInitialNodeProps, addNodesIds, subGraph);
 
         // 处理初始的JavaMethod节点
-        for(Neo4jNode node : subGraph.getNodes()){
+        List<Neo4jNode> realInitialNodes = new ArrayList<>(subGraph.getNodes());
+        for(Neo4jNode node : realInitialNodes){
             if("JavaMethod".equals(node.getLabel())){
                 expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds, runner);
             }
@@ -302,30 +303,65 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         return subGraph;
     }
 
+    private boolean isFrequentMethod(QueryRunner runner, Node m) {
+        Long id = m.id();
+        String idStr = String.valueOf(id);
+        String methodCalledCountCypher = MessageFormat.format("""
+                MATCH (n)-[r:METHOD_CALL]->(m:JavaMethod)
+                WHERE id(m) = {0}
+                RETURN COUNT(r) as num
+                """, idStr);
+        Result result = runner.run(methodCalledCountCypher);
+        if (!result.hasNext()) {
+            return false;
+        }
+        int num = result.next().get("num").asInt();
+        return num > 10;
+    }
+
+    private boolean isFrequentClass(QueryRunner runner, Node m) {
+        Long id = m.id();
+        String idStr = String.valueOf(id);
+        String returnTypeCountCypher = MessageFormat.format("""
+                    MATCH (n:JavaMethod)-[r:RETURN_TYPE]->(m:JavaClass)
+                    WHERE id(m) = {0}
+                    RETURN COUNT(r) as num
+                """, idStr);
+        Result result = runner.run(returnTypeCountCypher);
+        if (!result.hasNext()) {
+            return false;
+        }
+        int num = result.next().get("num").asInt();
+        return num > 10;
+    }
+
     private void expandJavaMethodNode(Neo4jNode node, Neo4jSubGraph subGraph,
                                       Set<Long> addNodesIds, Set<Long> addRelationIds,
                                       QueryRunner runner){
+        Long id = node.getId();
+        String idStr = String.valueOf(id);
         // 1.1 处理METHOD_CALL出边
         String outCallCypher = MessageFormat.format("""
                 MATCH (n:JavaMethod)-[r:METHOD_CALL]->(m:JavaMethod)
                 WHERE id(n) = {0}
-                WITH m, r, size((m)<-[:METHOD_CALL]-()) as inDegree
-                WHERE inDegree < 10
                 RETURN m, r
-                """, node.getId());
+                """, idStr);
         Result result = runner.run(outCallCypher);
         while(result.hasNext()){
             Record record = result.next();
+            if (isFrequentMethod(runner, record.get("m").asNode())) {
+                continue;
+            }
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
-            methodCallExtendCount ++;
+            methodCallExtendCount++;
         }
         // 1.2 处理METHOD_CALL入边
         String inCallCypher = MessageFormat.format("""
                 MATCH (m:JavaMethod)-[r:METHOD_CALL]->(n:JavaMethod)
                 WHERE id(n) = {0}
                 RETURN m, r
-                """, node.getId());
+                """, idStr);
         result = runner.run(inCallCypher);
         while(result.hasNext()){
             Record record = result.next();
@@ -337,7 +373,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                 MATCH (n:JavaMethod)-[r:PARAM_TYPE]->(m:JavaClass)
                 WHERE id(n) = {0}
                 RETURN m, r
-                """, node.getId());
+                """, idStr);
         result = runner.run(paramTypeCypher);
         while(result.hasNext()){
             Record record = result.next();
@@ -348,13 +384,14 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         String returnTypeCypher = MessageFormat.format("""
                 MATCH (n:JavaMethod)-[r:RETURN_TYPE]->(m:JavaClass)
                 WHERE id(n) = {0}
-                WITH m, r, size((m)<-[:RETURN_TYPE]-()) as useCount
-                WHERE useCount < 10
                 RETURN m, r
-                """, node.getId());
+                """, idStr);
         result = runner.run(returnTypeCypher);
         while(result.hasNext()){
             Record record = result.next();
+            if (isFrequentClass(runner, record.get("m").asNode())) {
+                continue;
+            }
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
         }
@@ -363,9 +400,10 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         String implCypher = MessageFormat.format("""
                 MATCH (n1:JavaMethod)<-[r1:HAVE_METHOD]-(n2:JavaClass)-[r2:IMPLEMENT]->(m:JavaClass)-[r:HAVE_METHOD]->(n:JavaMethod)
                 WHERE id(n) = {0}
+                AND n.name = n1.name
                 OPTIONAL MATCH (n1)-[r3:METHOD_CALL]->(n3:JavaMethod)
                 RETURN n1, n2, m, n3, r1, r2, r, r3
-                """, node.getId());
+                """, idStr);
         result = runner.run(implCypher);
         while(result.hasNext()){
             Record record = result.next();
@@ -384,9 +422,10 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         String extendCypher = MessageFormat.format("""
                 MATCH (n1:JavaMethod)<-[r1:HAVE_METHOD]-(n2:JavaClass)<-[r2:IMPLEMENT]-(m:JavaClass)-[r:HAVE_METHOD]->(n:JavaMethod)
                 WHERE id(n) = {0}
+                AND n.name = n1.name
                 OPTIONAL MATCH (n3:JavaMethod)-[r3:METHOD_CALL]->(n1)
                 RETURN n1, n2,m, n3, r1, r2, r, r3
-                """, node.getId());
+                """, idStr);
         result = runner.run(extendCypher);
         while(result.hasNext()){
             Record record = result.next();
@@ -405,12 +444,14 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
     private void expandJavaClassFields(Neo4jNode node, Neo4jSubGraph subGraph,
                                       Set<Long> addNodesIds, Set<Long> addRelationIds,
                                       QueryRunner runner){
+        Long id = node.getId();
+        String idStr = String.valueOf(id);
         // 2.3 处理类字段
         String fieldsCypher = MessageFormat.format("""
                 MATCH (c:JavaClass)-[r:HAVE_FIELD]->(f:JavaField)
                 WHERE id(c) = {0}
                 RETURN f, r
-                """, node.getId());
+                """, idStr);
         // 朴素方法 将所有的Field都加入
         Result result = runner.run(fieldsCypher);
 
@@ -440,7 +481,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 //            addNodeAndRelation(record.get("f").asNode(), record.get("r").asRelationship(),
 //                    subGraph, addNodesIds, addRelationIds);
 //        }
-        classFieldExtendCount ++;
+        classFieldExtendCount++;
     }
     private void addNodeAndRelation(Node node, Relationship relation, Neo4jSubGraph subGraph, Set<Long> addNodesIds, Set<Long> addRelationIds){
         if(!addNodesIds.contains(node.id())){
