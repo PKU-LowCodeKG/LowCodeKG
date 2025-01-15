@@ -2,18 +2,14 @@ package org.example.lowcodekg.extraction;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.FileUtils;
-import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
-import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.Yaml;
+import org.example.lowcodekg.dao.neo4j.repository.*;
+import org.example.lowcodekg.service.ElasticSearchService;
+import org.example.lowcodekg.service.FunctionalityGenService;
+import org.example.lowcodekg.service.LLMGenerateService;
+import org.springframework.data.neo4j.core.Neo4jClient;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 定义知识挖掘的抽象类
@@ -21,17 +17,38 @@ import java.util.Map;
 public abstract class KnowledgeExtractor {
 
     @Setter
+    protected static PageRepo pageRepo;
+    @Setter
+    protected static ScriptRepo scriptRepo;
+    @Setter
+    protected static ScriptMethodRepo scriptMethodRepo;
+    @Setter
+    protected static ScriptDataRepo scriptDataRepo;
+    @Setter
     protected static ComponentRepo componentRepo;
     @Setter
     protected static ConfigItemRepo configItemRepo;
+    @Setter
+    protected static WorkflowRepo workflowRepo;
+    @Setter
+    protected static JavaClassRepo javaClassRepo;
+    @Setter
+    protected static JavaMethodRepo javaMethodRepo;
+    @Setter
+    protected static JavaFieldRepo javaFieldRepo;
+
+    @Setter
+    protected static ElasticSearchService elasticSearchService;
+    @Setter
+    protected static LLMGenerateService llmGenerateService;
+    @Setter
+    protected static Neo4jClient neo4jClient;
+    @Setter
+    protected static FunctionalityGenService functionalityGenService;
 
     @Getter
     @Setter
-    private String graphDir;
-
-    @Getter
-    @Setter
-    private String dataDir;
+    private List<String> dataDir;
 
     public static void execute(List<ExtractorConfig> extractorConfigList) {
         for (ExtractorConfig config : extractorConfigList) {
@@ -42,7 +59,6 @@ public abstract class KnowledgeExtractor {
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
-            extractor.setGraphDir(config.getGraphDir());
             extractor.setDataDir(config.getDataDir());
             try {
                 extractor.execute();
@@ -53,37 +69,6 @@ public abstract class KnowledgeExtractor {
         }
     }
 
-    public static void executeFromYaml(String yamlStr) {
-        Yaml yaml = new Yaml();
-        Map<String, Object> ret = yaml.load(yamlStr);
-        String graphDir = (String) ret.get("graphDir");
-        ret.remove("graphDir");
-        boolean increment = false;
-        if (ret.containsKey("increment") && (boolean)ret.get("increment")){
-            increment = true;
-            ret.remove("increment");
-        }
-        List<ExtractorConfig> configs = new ArrayList<>();
-        for (String key : ret.keySet()) {
-            configs.add(new ExtractorConfig(key, graphDir, (String) ret.get(key)));
-        }
-        if (new File(graphDir).exists() && !increment){
-            try {
-                FileUtils.deleteDirectory(new File(graphDir));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        execute(configs);
-    }
-
-    public static void main(String[] args) {
-        try {
-            KnowledgeExtractor.executeFromYaml(FileUtils.readFileToString(new File("/Users/chang/Documents/projects/LowCodeKG/config.yml"), "utf-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public abstract void extraction();
 
