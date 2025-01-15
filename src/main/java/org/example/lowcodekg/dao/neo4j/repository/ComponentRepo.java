@@ -29,6 +29,20 @@ public interface ComponentRepo extends Neo4jRepository<ComponentEntity, Long> {
             "CREATE (s)-[:CONTAIN]->(e)")
     void createRelationOfContainedConfigItem(Long sid, Long eid);
 
-    @Override
-    void deleteAll();
+    /**
+     * 组件定义
+     * @param id 节点 id
+     */
+    @Query("Match (n:Component) WHERE id(n)=$id " +
+            "SET n:ComponentDef " +
+            "return n")
+    void setComponentDef(Long id);
+
+    /**
+     * 组件实例
+     */
+    @Query("Match (n:Component) WHERE id(n)=$id " +
+            "SET n:ComponentExample " +
+            "return n")
+    void setComponentExample(Long id);
 }

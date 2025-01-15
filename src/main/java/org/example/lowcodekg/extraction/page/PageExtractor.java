@@ -3,7 +3,6 @@ package org.example.lowcodekg.extraction.page;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.entity.page.*;
-import org.example.lowcodekg.dao.neo4j.repository.ScriptMethodRepo;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.schema.entity.page.*;
 import org.example.lowcodekg.util.FileUtil;
@@ -37,6 +36,7 @@ public class PageExtractor extends KnowledgeExtractor {
     private Map<String, ScriptMethodEntity> scriptMethodMap = new HashMap<>();
     private Map<String, ConfigItemEntity> configItemMap = new HashMap<>();
 
+
     @Override
     public void extraction() {
         for(String filePath: this.getDataDir()) {
@@ -59,9 +59,9 @@ public class PageExtractor extends KnowledgeExtractor {
                 String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());
 
                 // for test
-                if(!name.equals("FriendList")) {
-                    continue;
-                }
+//                if(!name.equals("FriendList")) {
+//                    continue;
+//                }
 
                 // parse template
                 String templateContent = getTemplateContent(fileContent);
@@ -154,6 +154,7 @@ public class PageExtractor extends KnowledgeExtractor {
 
     private ComponentEntity createComponentEntity(Component component) {
         ComponentEntity componentEntity = component.createComponentEntity(componentRepo);
+        componentRepo.setComponentExample(componentEntity.getId());
         for(ConfigItem configItem: component.getConfigItemList()) {
             ConfigItemEntity configItemEntity = configItem.createConfigItemEntity(configItemRepo);
             componentEntity.getContainedConfigItemEntities().add(configItemEntity);
@@ -165,6 +166,7 @@ public class PageExtractor extends KnowledgeExtractor {
         if(!Objects.isNull(component.getChildren())) {
             for (Component child : component.getChildren()) {
                 ComponentEntity childComponentEntity = createComponentEntity(child);
+                componentRepo.setComponentExample(childComponentEntity.getId());
                 componentEntity.getChildComponentList().add(childComponentEntity);
                 componentRepo.createRelationOfChildComponent(componentEntity.getId(), childComponentEntity.getId());
             }

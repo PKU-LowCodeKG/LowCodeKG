@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import java.util.*;
 
+import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.extraction.document.RawData;
 import org.example.lowcodekg.schema.entity.page.Component;
@@ -31,7 +32,8 @@ public class EleMDExtractor extends KnowledgeExtractor {
 
         for (RawData data : dataList) {
             Component component = data.convertToComponent();
-            component.storeInNeo4j(componentRepo, configItemRepo);
+            ComponentEntity componentEntity = component.storeInNeo4j(componentRepo, configItemRepo);
+            componentRepo.setComponentDef(componentEntity.getId());
         }
     }
 
@@ -75,7 +77,6 @@ public class EleMDExtractor extends KnowledgeExtractor {
             // API or other tables
             this.subTitle = line.substring(4);
             parseConfig(lines, data);
-            return;
         }
     }
 
@@ -105,7 +106,6 @@ public class EleMDExtractor extends KnowledgeExtractor {
 
             lineNum++;
         }
-        return;
     }
 
     private void parseConfig(List<String> lines, RawData data) {

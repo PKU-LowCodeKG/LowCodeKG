@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 
 import java.util.*;
 
+import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.schema.entity.page.Component;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,8 @@ public class AntMDExtractor extends KnowledgeExtractor {
         // 转化为 Schema 对象
         for(RawData data : dataList) {
             Component component = data.convertToComponent();
-            component.storeInNeo4j(componentRepo, configItemRepo);
+            ComponentEntity componentEntity = component.storeInNeo4j(componentRepo, configItemRepo);
+            componentRepo.setComponentDef(componentEntity.getId());
         }
         return;
     }
