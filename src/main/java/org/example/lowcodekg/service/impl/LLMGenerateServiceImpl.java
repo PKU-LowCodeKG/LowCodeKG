@@ -219,4 +219,53 @@ public class LLMGenerateServiceImpl implements LLMGenerateService {
 
         return remainIdx;
     }
+
+    @Override
+    public List<Integer> selectRelevantFields(String query,
+                                              String className,
+                                              List<Map<String, Object>> fieldsProps) {
+        String template = """
+                你是一名程序员，现在正在使用springboot框架开发一个个人博客系统的后端。
+                当前，你要实现的功能为【{query}】，首先需要定义数据类。
+                                
+                在编写代码之前，你在网络上搜索到了一些可能与该功能相关的代码片段，都来自其他的个人博客系统。
+                其中一段代码是数据实体的class，里面定义了若干成员变量field。
+                现在你需要判断这段代码中哪些field是更加重要的，是真正对【{query}】功能的开发具有帮助的。
+                
+                输入包含class 【{className}】 中每个field的编号、类型、名字。
+                【注意】：你需要判断这些field是否对开发【{query}】功能有帮助，只输出重要的field的编号！数量尽量限制在5个以内！
+                【注意】：你需要严格遵守输出格式，输出一个列表，例如：[1, 4, 5]
+                【注意】：请勿输出任何解释性文字，务必遵守输出格式！
+                
+                {className}的成员变量:
+                {fieldDetails}
+                
+                """;
+
+
+        Map<String, Object> argumentMap = new HashMap<>();
+        StringBuilder fieldDetails = new StringBuilder();
+        for (int i = 0; i < fieldsProps.size(); i++) {
+            Map<String, Object> fieldProp = fieldsProps.get(i);
+            fieldDetails.append("field编号").append(i).append("：");
+            fieldDetails.append(fieldProp.get("type")).append(" ");
+            fieldDetails.append(fieldProp.get("name")).append("\n");
+            fieldDetails.append("\n");
+        }
+
+        argumentMap.put("query", query);
+        argumentMap.put("className", className);
+        argumentMap.put("fieldDetails", fieldDetails.toString());
+        String prompt = StrUtil.format(template, argumentMap);
+
+        System.out.println("成员变量筛选：");
+        System.out.println(prompt);
+        String answer = generateAnswer(prompt);
+        System.out.println(answer);
+        List<Integer> relevantFieldIdx = FormatParseUtil.parseIntList(answer);
+        System.out.println("扩展解析保留：" + relevantFieldIdx);
+
+        return relevantFieldIdx;
+    }
+
 }
