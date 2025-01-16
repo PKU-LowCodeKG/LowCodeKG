@@ -1,6 +1,7 @@
 package org.example.lowcodekg.schema.entity.workflow;
 
 import com.alibaba.fastjson.JSONObject;
+import io.micrometer.common.util.StringUtils;
 import lombok.*;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
@@ -111,7 +112,7 @@ public class JavaMethod {
      * 判断方法是否属于工作流
      */
     public boolean belongToWorkflow() {
-        return (!Objects.isNull(mappingUrl) && !"".equals(mappingUrl));
+        return (StringUtils.isNotEmpty(mappingUrl) && !"".equals(mappingUrl));
     }
 
 }

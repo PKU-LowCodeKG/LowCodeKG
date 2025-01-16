@@ -1,5 +1,6 @@
 package org.example.lowcodekg.extraction.java;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 import org.eclipse.jdt.core.dom.*;
 import org.example.lowcodekg.schema.entity.workflow.JavaClass;
@@ -132,7 +133,7 @@ public class JavaASTVisitor extends ASTVisitor {
                             mappingUrl = literal.getLiteralValue();
                         }
                     }
-                    if(!Objects.isNull(mappingUrl) && !mappingUrl.isEmpty()) {
+                    if(StringUtils.isNotEmpty(mappingUrl)) {
                         mappingUrl = mappingUrl.substring(1).replaceAll("/", "_");
                         info.setMappingUrl(mappingUrl);
                     }

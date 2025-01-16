@@ -1,6 +1,7 @@
 package org.example.lowcodekg.extraction.page;
 
 import com.alibaba.fastjson.JSONObject;
+import io.micrometer.common.util.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.entity.page.*;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
@@ -65,7 +66,7 @@ public class PageExtractor extends KnowledgeExtractor {
 
                 // parse template
                 String templateContent = getTemplateContent(fileContent);
-                if(!Objects.isNull(templateContent)) {
+                if(StringUtils.isNotEmpty(templateContent)) {
                     Document document = Jsoup.parse(templateContent);
                     Element divElement = document.selectFirst("Template");
                     divElement.children().forEach(element -> {
@@ -234,7 +235,7 @@ public class PageExtractor extends KnowledgeExtractor {
     public List<Script.ScriptData> parseScriptData(String content) {
         // get data block
         String dataBlock = getScriptData(content);
-        if(Objects.isNull(dataBlock)) {
+        if(StringUtils.isEmpty(dataBlock)) {
             return null;
         }
         // json format

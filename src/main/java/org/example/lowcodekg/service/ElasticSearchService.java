@@ -10,6 +10,7 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingSearchResult;
 import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
 import dev.langchain4j.store.embedding.elasticsearch.ElasticsearchEmbeddingStore;
+import io.micrometer.common.util.StringUtils;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class ElasticSearchService {
     }
 
     public void storeJavaClassEmbedding(JavaClass javaClass) {
-        if (!Objects.isNull(javaClass.getDescription()) && !javaClass.getDescription().isEmpty()) {
+        if (StringUtils.isNotEmpty(javaClass.getDescription())) {
             TextSegment descriptionSegment = TextSegment.from(javaClass.getDescription());
             TextSegment vidSegment = TextSegment.from(String.valueOf(javaClass.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
@@ -53,7 +54,7 @@ public class ElasticSearchService {
     }
 
     public void storeJavaMethodEmbedding(JavaMethod javaMethod) {
-        if (!Objects.isNull(javaMethod.getDescription()) && !javaMethod.getDescription().isEmpty()) {
+        if (StringUtils.isNotEmpty(javaMethod.getDescription())) {
             TextSegment descriptionSegment = TextSegment.from(javaMethod.getDescription());
             TextSegment vidSegment = TextSegment.from(String.valueOf(javaMethod.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();
@@ -64,7 +65,7 @@ public class ElasticSearchService {
         }
     }
     public void storeJavaFieldEmbedding(JavaField javaField) {
-        if (!Objects.isNull(javaField.getDescription()) && !javaField.getDescription().isEmpty()) {
+        if (StringUtils.isNotEmpty(javaField.getDescription())) {
             TextSegment descriptionSegment = TextSegment.from(javaField.getDescription());
             TextSegment vidSegment = TextSegment.from(String.valueOf(javaField.getVid()));
             Embedding embedding = embeddingModel.embed(descriptionSegment).content();

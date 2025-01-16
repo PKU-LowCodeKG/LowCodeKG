@@ -1,6 +1,7 @@
 package org.example.lowcodekg.schema.entity.page;
 
 import com.alibaba.fastjson.JSONObject;
+import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -59,7 +60,7 @@ public class PageTemplate {
 
     public void findDependedPage() {
         String imports = this.script.getImportsComponentList();
-        if(Objects.isNull(imports)) {
+        if(StringUtils.isEmpty(imports)) {
             return;
         }
         JSONObject importsList = JSONObject.parseObject(imports);
