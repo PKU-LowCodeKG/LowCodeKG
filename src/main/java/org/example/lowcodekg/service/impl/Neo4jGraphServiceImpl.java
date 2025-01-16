@@ -35,6 +35,10 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
     @Autowired
     private LLMGenerateService llmGenerateService;
 
+    // 记录METHOD_CALL的扩展次数
+    private int methodCallExtendCount = 0;
+    // 记录JavaClass字段的扩展次数
+    private int classFieldExtendCount = 0;
 
     private List<Map<String, Object>> fetchInitialNodeProperties(QueryRunner runner, List<String> relevantNodeVids) {
         List<Map<String, Object>> initialNodeProps = new ArrayList<>();
@@ -212,7 +216,6 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             Result result = runner.run(oneHopCypher);
             while (result.hasNext()) {
                 Record record = result.next();
-                Node n = record.get("n").asNode();
                 Node m = record.get("m").asNode();
                 Relationship r = record.get("r").asRelationship();
 
@@ -231,8 +234,13 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 
             }
         }
+
+
+
+        // 获得1-hop关系和节点后让LLM进行筛选
         List<Integer> realExtendIdx =
                 llmGenerateService.selectExtendNode(query, extendNodeProps);
+        // 将筛选出来的关系和节点加入到待输出的子图
         for (int idx : realExtendIdx) {
             Map<String, Object> mNodeProps = extendNodeProps.get(idx);
             Relationship mRelation = extendRelationships.get(idx);
@@ -250,6 +258,240 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 
         subGraph.setGeneratedCode("");
         return subGraph;
+    }
+
+    @Override
+    public Neo4jSubGraph searchRelevantGraphByRules(String query) {
+        List<String> relevantNodeVids = elasticSearchService.searchEmbedding(query);
+        QueryRunner runner = neo4jClient.getQueryRunner();
+        Neo4jSubGraph subGraph = new Neo4jSubGraph();
+
+        Set<Long> addNodesIds = new HashSet<>();
+        Set<Long> addRelationIds = new HashSet<>();
+        // 根据es搜索结果的vid属性，从neo4j中获得相应节点信息
+        List<Map<String, Object>> initialNodeProps = fetchInitialNodeProperties(runner, relevantNodeVids);
+
+        // 对于最初根据语义相似度选出的节点，让LLM判断哪几个是真正与功能相关的,把相关的节点加入子图
+        List<Map<String, Object>> realInitialNodeProps =
+                llmGenerateService.selectInitialNodes(query, initialNodeProps);
+        addInitialNodesToGraph(realInitialNodeProps, addNodesIds, subGraph);
+
+        // 处理初始的JavaMethod节点
+        List<Neo4jNode> realInitialNodes = new ArrayList<>(subGraph.getNodes());
+        for(Neo4jNode node : realInitialNodes){
+            if("JavaMethod".equals(node.getLabel())){
+                expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds, runner);
+            }
+        }
+
+        // 处理扩展出的节点
+        List<Neo4jNode> nodesToProcess = new ArrayList<>(subGraph.getNodes());
+        for(Neo4jNode node : nodesToProcess){
+            if("JavaMethod".equals(node.getLabel())) {
+                // 对于METHOD_CALL扩展出的节点，继续扩展
+                if (methodCallExtendCount < 3) {
+                    expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds, runner);
+                }
+            }
+            else if("JavaClass".equals(node.getLabel())){
+                if(classFieldExtendCount < 2){
+                    expandJavaClassFields(node, subGraph, addNodesIds, addRelationIds, runner);
+                }
+            }
+        }
+        subGraph.setGeneratedCode("");
+        return subGraph;
+    }
+
+    private boolean isFrequentMethod(QueryRunner runner, Node m) {
+        Long id = m.id();
+        String idStr = String.valueOf(id);
+        String methodCalledCountCypher = MessageFormat.format("""
+                MATCH (n)-[r:METHOD_CALL]->(m:JavaMethod)
+                WHERE id(m) = {0}
+                RETURN COUNT(r) as num
+                """, idStr);
+        Result result = runner.run(methodCalledCountCypher);
+        if (!result.hasNext()) {
+            return false;
+        }
+        int num = result.next().get("num").asInt();
+        return num > 10;
+    }
+
+    private boolean isFrequentClass(QueryRunner runner, Node m) {
+        Long id = m.id();
+        String idStr = String.valueOf(id);
+        String returnTypeCountCypher = MessageFormat.format("""
+                    MATCH (n:JavaMethod)-[r:RETURN_TYPE]->(m:JavaClass)
+                    WHERE id(m) = {0}
+                    RETURN COUNT(r) as num
+                """, idStr);
+        Result result = runner.run(returnTypeCountCypher);
+        if (!result.hasNext()) {
+            return false;
+        }
+        int num = result.next().get("num").asInt();
+        return num > 10;
+    }
+
+    private void expandJavaMethodNode(Neo4jNode node, Neo4jSubGraph subGraph,
+                                      Set<Long> addNodesIds, Set<Long> addRelationIds,
+                                      QueryRunner runner){
+        Long id = node.getId();
+        String idStr = String.valueOf(id);
+        // 1.1 处理METHOD_CALL出边
+        String outCallCypher = MessageFormat.format("""
+                MATCH (n:JavaMethod)-[r:METHOD_CALL]->(m:JavaMethod)
+                WHERE id(n) = {0}
+                RETURN m, r
+                """, idStr);
+        Result result = runner.run(outCallCypher);
+        while(result.hasNext()){
+            Record record = result.next();
+            if (isFrequentMethod(runner, record.get("m").asNode())) {
+                continue;
+            }
+            addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+            methodCallExtendCount++;
+        }
+        // 1.2 处理METHOD_CALL入边
+        String inCallCypher = MessageFormat.format("""
+                MATCH (m:JavaMethod)-[r:METHOD_CALL]->(n:JavaMethod)
+                WHERE id(n) = {0}
+                RETURN m, r
+                """, idStr);
+        result = runner.run(inCallCypher);
+        while(result.hasNext()){
+            Record record = result.next();
+            addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+        }
+        // 1.3 处理参数类型
+        String paramTypeCypher = MessageFormat.format("""
+                MATCH (n:JavaMethod)-[r:PARAM_TYPE]->(m:JavaClass)
+                WHERE id(n) = {0}
+                RETURN m, r
+                """, idStr);
+        result = runner.run(paramTypeCypher);
+        while(result.hasNext()){
+            Record record = result.next();
+            addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+        }
+        // 1.4 处理返回类型
+        String returnTypeCypher = MessageFormat.format("""
+                MATCH (n:JavaMethod)-[r:RETURN_TYPE]->(m:JavaClass)
+                WHERE id(n) = {0}
+                RETURN m, r
+                """, idStr);
+        result = runner.run(returnTypeCypher);
+        while(result.hasNext()){
+            Record record = result.next();
+            if (isFrequentClass(runner, record.get("m").asNode())) {
+                continue;
+            }
+            addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+        }
+        // 1.5 处理所属类
+        // 1.5.1 处理接口实现
+        String implCypher = MessageFormat.format("""
+                MATCH (n1:JavaMethod)<-[r1:HAVE_METHOD]-(n2:JavaClass)-[r2:IMPLEMENT]->(m:JavaClass)-[r:HAVE_METHOD]->(n:JavaMethod)
+                WHERE id(n) = {0}
+                AND n.name = n1.name
+                OPTIONAL MATCH (n1)-[r3:METHOD_CALL]->(n3:JavaMethod)
+                RETURN n1, n2, m, n3, r1, r2, r, r3
+                """, idStr);
+        result = runner.run(implCypher);
+        while(result.hasNext()){
+            Record record = result.next();
+            addNodeAndRelation(record.get("n1").asNode(), record.get("r1").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+            addNodeAndRelation(record.get("n2").asNode(), record.get("r2").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+            addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+            if(record.get("n3") != null){
+                addNodeAndRelation(record.get("n3").asNode(), record.get("r3").asRelationship(),
+                        subGraph, addNodesIds, addRelationIds);
+            }
+        }
+        // 1.5.2 处理接口定义
+        String extendCypher = MessageFormat.format("""
+                MATCH (n1:JavaMethod)<-[r1:HAVE_METHOD]-(n2:JavaClass)<-[r2:IMPLEMENT]-(m:JavaClass)-[r:HAVE_METHOD]->(n:JavaMethod)
+                WHERE id(n) = {0}
+                AND n.name = n1.name
+                OPTIONAL MATCH (n3:JavaMethod)-[r3:METHOD_CALL]->(n1)
+                RETURN n1, n2,m, n3, r1, r2, r, r3
+                """, idStr);
+        result = runner.run(extendCypher);
+        while(result.hasNext()){
+            Record record = result.next();
+            addNodeAndRelation(record.get("n1").asNode(), record.get("r1").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+            addNodeAndRelation(record.get("n2").asNode(), record.get("r2").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+            addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+            if(record.get("n3") != null){
+                addNodeAndRelation(record.get("n3").asNode(), record.get("r3").asRelationship(),
+                        subGraph, addNodesIds, addRelationIds);
+            }
+        }
+    }
+    private void expandJavaClassFields(Neo4jNode node, Neo4jSubGraph subGraph,
+                                      Set<Long> addNodesIds, Set<Long> addRelationIds,
+                                      QueryRunner runner){
+        Long id = node.getId();
+        String idStr = String.valueOf(id);
+        // 2.3 处理类字段
+        String fieldsCypher = MessageFormat.format("""
+                MATCH (c:JavaClass)-[r:HAVE_FIELD]->(f:JavaField)
+                WHERE id(c) = {0}
+                RETURN f, r
+                """, idStr);
+        // 朴素方法 将所有的Field都加入
+        Result result = runner.run(fieldsCypher);
+
+        while(result.hasNext()){
+            Record record = result.next();
+            addNodeAndRelation(record.get("f").asNode(), record.get("r").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+        }
+        // 使用LLM进行筛选 TODO
+//        Result result = runner.run(fieldsCypher);
+//        List<Map<String, Object>> fieldsProps = new ArrayList<>();
+//        List<Record> records = new ArrayList<>();
+//
+//        while(result.hasNext()){
+//            Record record = result.next();
+//            Map<String, Object> fieldProps = new HashMap<>();
+//            fieldProps.put("name", record.get("name").asString());
+//            fieldProps.put("type", record.get("type").asString());
+//            fieldsProps.add(fieldProps);
+//            records.add(record);
+//        }
+//
+//        List<Integer> relevantFieldIdx = llmGenerateService.selectRevelantFields(fieldsProps);
+//
+//        for(Integer idx : relevantFieldIdx){
+//            Record record = records.get(idx);
+//            addNodeAndRelation(record.get("f").asNode(), record.get("r").asRelationship(),
+//                    subGraph, addNodesIds, addRelationIds);
+//        }
+        classFieldExtendCount++;
+    }
+    private void addNodeAndRelation(Node node, Relationship relation, Neo4jSubGraph subGraph, Set<Long> addNodesIds, Set<Long> addRelationIds){
+        if(!addNodesIds.contains(node.id())){
+            subGraph.addNeo4jNode(getNodeDetail(node.id()));
+            addNodesIds.add(node.id());
+        }
+        if(!addRelationIds.contains(relation.id())){
+            subGraph.addNeo4jRelation(getRelationDetail(relation));
+            addRelationIds.add(relation.id());
+        }
     }
 
     @Override
