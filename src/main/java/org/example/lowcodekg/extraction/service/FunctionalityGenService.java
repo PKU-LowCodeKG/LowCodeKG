@@ -1,4 +1,4 @@
-package org.example.lowcodekg.service;
+package org.example.lowcodekg.extraction.service;
 
 import org.example.lowcodekg.dao.neo4j.entity.page.PageEntity;
 

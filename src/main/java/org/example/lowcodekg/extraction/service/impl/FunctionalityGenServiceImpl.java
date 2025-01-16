@@ -1,11 +1,11 @@
-package org.example.lowcodekg.service.impl;
+package org.example.lowcodekg.extraction.service.impl;
 
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.example.lowcodekg.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.PageRepo;
+import org.example.lowcodekg.extraction.service.FunctionalityGenService;
 import org.example.lowcodekg.service.LLMGenerateService;
-import org.example.lowcodekg.service.FunctionalityGenService;
 import org.neo4j.driver.QueryRunner;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;

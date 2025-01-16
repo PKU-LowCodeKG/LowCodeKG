@@ -9,7 +9,7 @@ import org.example.lowcodekg.extraction.page.PageExtractor;
 import org.example.lowcodekg.schema.entity.page.Component;
 import org.example.lowcodekg.schema.entity.page.ConfigItem;
 import org.example.lowcodekg.schema.entity.page.PageTemplate;
-import org.example.lowcodekg.service.FunctionalityGenService;
+import org.example.lowcodekg.extraction.service.FunctionalityGenService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.example.lowcodekg.util.FileUtil;
 import org.jsoup.Jsoup;
