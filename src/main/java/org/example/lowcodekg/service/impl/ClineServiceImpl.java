@@ -25,6 +25,8 @@ public class ClineServiceImpl implements ClineService {
          */
 
         return """
+                以下是该项目的功能架构
+                
                 博客系统
                 ├── 用户管理
                 │   ├── 修改账户信息 [1]
@@ -54,15 +56,17 @@ public class ClineServiceImpl implements ClineService {
     }
 
     @Override
-    public void responseUserRequirement(String requirement) {
+    public String responseUserRequirement(String requirement) {
         // target code retrieval
-        JSONArray relevantFileList = new JSONArray();
+        // already implemented functionalities
         StringBuilder implementedFunc = new StringBuilder();
-        // mock data
         implementedFunc.append("""
                 1. 用户注册
                 2. 博客文章发布
                 """);
+        // relevant code files
+        // NOTE:检索相关代码可能需要将整个文件内容完整给出，还有对于和需求开发隐形相关的文件，仅根据用户需求进行检索很难完全覆盖到
+        JSONArray relevantFileList = new JSONArray();
         try {
             JSONObject file1 = new JSONObject();
             file1.put("fileName", "/src/main/java/org/example/lowcodekg/service/UserService.java");
@@ -75,43 +79,93 @@ public class ClineServiceImpl implements ClineService {
             System.err.println("code retrieval error");
         }
 
-        // generate code
+        // construct prompt and get result from LLM
         String prompt = MessageFormat.format("""
-                你是一个编程专家，目前用户基于一个已有的软件项目进行系统开发，用户希望实现的功能是：
+                You are a programming expert, currently working on system development based on an existing software project. The user wishes to implement the following functionality: 
                 {0}
                 
-                目前现有的软件项目已经实现的功能包括:
+                The existing functionalities already implemented in the software project include: 
                 {1}
                 
-                现有软件项目实现以上功能的代码如下，包含了相关代码所属文件的名称、系统路径以及具体的代码片段:
+                The code implementing the above functionalities in the existing software project is as follows, including the file names, system paths, and specific code snippets: 
                 {2}
                 
-                为了实现用户的开发需求，需要在此基础上进行哪些修改，请给出具体的解决方案，你的返回结果必须严格按照如下json格式：
-                [
-                    {
-                        "filePath": "", // 待修改文件的全局路径
-                        "editType": "", // 对当前文件的修改类型，包含 add, modify, delete 三种操作类型
-                        "elementType": "", // 待修改的代码元素的类型，对于Java语言，包含 class, method, filed 三种类型
-                        "srcContent": "", // 修改前的代码内容，如果 editType 是 add，则为空
-                        "dstContent": "" // 修改后的代码内容，如果 editType 是 delete，则为空
-                    }
-                ]
+                To achieve the user's development requirements, which files need to be created or modified? Please provide a specific solution. Your response must strictly follow the execute_command rule:
+                ## execute_command
+                Parameters:
+                - command: (required) The CLI command to execute. This should be valid for the current operating system. Ensure the command is properly formatted and does not contain any harmful instructions.
+                - requires_approval: (required) A boolean indicating whether this command requires explicit user approval before execution in case the user has auto-approve mode enabled. Set to 'true' for potentially impactful operations like installing/uninstalling packages, deleting/overwriting files, system configuration changes, network operations, or any commands that could have unintended side effects. Set to 'false' for safe operations like reading files/directories, running development servers, building projects, and other non-destructive operations.
+                Usage:
+                <execute_command>
+                <command>Your command here</command>
+                <requires_approval>true or false</requires_approval>
+                </execute_command>
+                
+                ## write_to_file
+                Description: Request to write content to a file at the specified path. If the file exists, it will be overwritten with the provided content. If the file doesn't exist, it will be created. This tool will automatically create any directories needed to write the file.
+                Parameters:
+                - path: (required) The path of the file to write to
+                - content: (required) The content to write to the file. ALWAYS provide the COMPLETE intended content of the file, without any truncation or omissions. You MUST include ALL parts of the file, even if they haven't been modified.
+                Usage:
+                <write_to_file>
+                <path>File path here</path>
+                <content>
+                Your file content here
+                </content>
+                </write_to_file>
+                
+                ## replace_in_file
+                Description: Request to replace sections of content in an existing file using SEARCH/REPLACE blocks that define exact changes to specific parts of the file. This tool should be used when you need to make targeted changes to specific parts of a file.
+                Parameters:
+                - path: (required) The path of the file to modify
+                - diff: (required) One or more SEARCH/REPLACE blocks following this exact format:
+                  \\`\\`\\`
+                  <<<<<<< SEARCH
+                  [exact content to find]
+                  =======
+                  [new content to replace with]
+                  >>>>>>> REPLACE
+                  \\`\\`\\`
+                  Critical rules:
+                  1. SEARCH content must match the associated file section to find EXACTLY:
+                     * Match character-for-character including whitespace, indentation, line endings
+                     * Include all comments, docstrings, etc.
+                  2. SEARCH/REPLACE blocks will ONLY replace the first match occurrence.
+                     * Including multiple unique SEARCH/REPLACE blocks if you need to make multiple changes.
+                     * Include *just* enough lines in each SEARCH section to uniquely match each set of lines that need to change.
+                     * When using multiple SEARCH/REPLACE blocks, list them in the order they appear in the file.
+                  3. Keep SEARCH/REPLACE blocks concise:
+                     * Break large SEARCH/REPLACE blocks into a series of smaller blocks that each change a small portion of the file.
+                     * Include just the changing lines, and a few surrounding lines if needed for uniqueness.
+                     * Do not include long runs of unchanging lines in SEARCH/REPLACE blocks.
+                     * Each line must be complete. Never truncate lines mid-way through as this can cause matching failures.
+                  4. Special operations:
+                     * To move code: Use two SEARCH/REPLACE blocks (one to delete from original + one to insert at new location)
+                     * To delete code: Use empty REPLACE section
+                Usage:
+                <replace_in_file>
+                <path>File path here</path>
+                <diff>
+                Search and replace blocks here
+                </diff>
+                </replace_in_file>
                 """, requirement, implementedFunc.toString(), relevantFileList.toString());
         String result = llmGenerateService.generateAnswer(prompt);
         if(result.startsWith("```json")) {
             result = result.substring(8, result.length() - 3);
         }
+        return result;
+
         // format transform for different tools
-        try {
-            JSONArray jsonArray = JSON.parseArray(result);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            System.err.println("LLM generate error");
-        }
+
+//        try {
+//            JSONArray jsonArray = JSON.parseArray(result);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            System.err.println("LLM generate error");
+//        }
 
         // edit file
 
     }
-
-
 }

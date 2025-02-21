@@ -10,6 +10,7 @@ import org.example.lowcodekg.schema.entity.page.Component;
 import org.example.lowcodekg.schema.entity.page.ConfigItem;
 import org.example.lowcodekg.schema.entity.page.PageTemplate;
 import org.example.lowcodekg.extraction.service.FunctionalityGenService;
+import org.example.lowcodekg.service.ClineService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.example.lowcodekg.util.FileUtil;
 import org.jsoup.Jsoup;
@@ -29,12 +30,14 @@ import java.util.*;
 import static org.example.lowcodekg.util.PageParserUtil.getTemplateContent;
 
 @SpringBootTest
-public class PageExtractorTest {
+public class ExtractorTest {
 
     @Autowired
     private OllamaChatModel ollamaChatModel;
     @Autowired
     private LLMGenerateService llmGenerateService;
+    @Autowired
+    private ClineService clineService;
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
@@ -238,19 +241,7 @@ public class PageExtractorTest {
 
     @Test
     public void textFunctionality() {
-        String cypher = MessageFormat.format("""
-                MATCH (n:PageTemplate)-[:CONTAIN]->(m:Component)
-                    WHERE id(n) = {0}
-                    RETURN m
-                """, String.format("%d", 1343));
-        Result res = neo4jClient.getQueryRunner().run(cypher);
-        while(res.hasNext()) {
-            Node node = res.next().get("m").asNode();
-            Optional<ComponentEntity> entity = componentRepo.findById(node.id());
-            entity.ifPresent(componentEntity -> {
-//                functionalityGenService.generatePageFunctionality(pageEntity);
-                System.out.println(componentEntity.getName());
-            });
-        }
+        String requirement = "新增用户通过邮箱注册的功能";
+        System.out.println(clineService.responseUserRequirement(requirement));
     }
 }
