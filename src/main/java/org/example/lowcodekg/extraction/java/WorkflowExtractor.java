@@ -36,9 +36,15 @@ public class WorkflowExtractor extends KnowledgeExtractor {
                     workflowEntity.setContent(content);
                     // remove redundant relations
                     workflowEntity.getContainedMethodList().clear();
-                    workflowRepo.save(workflowEntity);
+                    workflowEntity = workflowRepo.save(workflowEntity);
+
+                    // generate description
+                    functionalityGenService.genWorkflowFunc(workflowEntity);
                 });
             }
+            // generate workflow module tree
+            functionalityGenService.genWorkflowModule();
+
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Error in Workflow extraction");

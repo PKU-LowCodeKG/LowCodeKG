@@ -65,6 +65,15 @@
             <artifactId>spring-data-rest-webmvc</artifactId>
             <version>4.3.4</version>
         </dependency>
+
+        <!-- MySQL Connector -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.32</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>args4j</groupId>
             <artifactId>args4j</artifactId>
@@ -145,6 +154,7 @@
             <artifactId>jsoup</artifactId>
             <version>1.15.4</version>
         </dependency>
+
 
     </dependencies>
 

@@ -12,4 +12,14 @@ public interface WorkflowRepo extends Neo4jRepository<WorkflowEntity, Long> {
             "MATCH (e:JavaMethod) WHERE id(e)=$eid " +
             "CREATE (s)-[:CONTAIN]->(e)")
     void createRelationOfContainedMethod(Long sid, Long eid);
+
+    @Query("MATCH (s:Workflow) WHERE id(s)=$sid " +
+            "MATCH (e:Workflow) WHERE id(e)=$eid " +
+            "CREATE (s)-[:CONTAIN]->(e)")
+    void createRelationOfContainedWorkflow(Long sid, Long eid);
+
+    @Query("Match (n:Workflow) WHERE id(n)=$id " +
+            "SET n:WorkflowModule " +
+            "return n")
+    void setWorkflowModule(Long id);
 }
