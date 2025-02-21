@@ -7,8 +7,11 @@ import org.springframework.stereotype.Service;
 public class ClineServiceImpl implements ClineService {
 
     @Override
-    public String getProjectSummarization(String projectPath)
-    {
+    public String getProjectSummarization(String projectPath) {
+        /**
+         * TODO: 之后需要根据workflowModule实体生成项目功能架构树
+         */
+
         return """
                 博客系统
                 ├── 用户管理
@@ -37,4 +40,14 @@ public class ClineServiceImpl implements ClineService {
                 │   ├── 删除访客 [17]
                 """;
     }
+
+    @Override
+    public void responseUserRequirement(String requirement) {
+        // generate code
+
+        // edit file
+
+    }
+
+
 }

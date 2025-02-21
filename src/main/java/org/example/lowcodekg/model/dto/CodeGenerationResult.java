@@ -1,4 +1,4 @@
-package org.example.lowcodekg.dto;
+package org.example.lowcodekg.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

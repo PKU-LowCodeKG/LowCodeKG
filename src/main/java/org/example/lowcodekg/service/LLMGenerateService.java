@@ -1,6 +1,6 @@
 package org.example.lowcodekg.service;
 
-import org.example.lowcodekg.dto.Neo4jNode;
+import org.example.lowcodekg.model.dto.Neo4jNode;
 
 import java.util.List;
 import java.util.Map;

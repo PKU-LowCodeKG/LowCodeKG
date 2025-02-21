@@ -1,8 +1,6 @@
-package org.example.lowcodekg.dto;
+package org.example.lowcodekg.model.dto;
 
 import lombok.Data;
-import org.neo4j.driver.Result;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;

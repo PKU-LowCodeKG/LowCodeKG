@@ -8,6 +8,9 @@ public interface ClineService {
      */
     String getProjectSummarization(String projectPath);
 
-
+    /**
+     * 基于用户给定功能需求，生成功能实现代码，同时完成文件更新
+     */
+    void responseUserRequirement(String requirement);
 
 }

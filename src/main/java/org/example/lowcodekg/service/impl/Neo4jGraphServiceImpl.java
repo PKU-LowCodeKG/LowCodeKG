@@ -2,10 +2,10 @@ package org.example.lowcodekg.service.impl;
 
 import org.example.lowcodekg.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
-import org.example.lowcodekg.dto.CodeGenerationResult;
-import org.example.lowcodekg.dto.Neo4jNode;
-import org.example.lowcodekg.dto.Neo4jRelation;
-import org.example.lowcodekg.dto.Neo4jSubGraph;
+import org.example.lowcodekg.model.dto.CodeGenerationResult;
+import org.example.lowcodekg.model.dto.Neo4jNode;
+import org.example.lowcodekg.model.dto.Neo4jRelation;
+import org.example.lowcodekg.model.dto.Neo4jSubGraph;
 import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.example.lowcodekg.service.Neo4jGraphService;

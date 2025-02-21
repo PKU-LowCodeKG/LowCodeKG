@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.ollama.OllamaChatModel;
-import org.example.lowcodekg.dto.Neo4jNode;
+import org.example.lowcodekg.model.dto.Neo4jNode;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.example.lowcodekg.util.FileUtil;
 import org.example.lowcodekg.util.FormatParseUtil;
