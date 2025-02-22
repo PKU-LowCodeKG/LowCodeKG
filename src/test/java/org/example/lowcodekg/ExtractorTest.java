@@ -2,14 +2,13 @@ package org.example.lowcodekg;
 
 import com.alibaba.fastjson.JSONObject;
 import dev.langchain4j.model.ollama.OllamaChatModel;
-import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.extraction.page.PageExtractor;
 import org.example.lowcodekg.schema.entity.page.Component;
 import org.example.lowcodekg.schema.entity.page.ConfigItem;
 import org.example.lowcodekg.schema.entity.page.PageTemplate;
-import org.example.lowcodekg.extraction.service.FunctionalityGenService;
+import org.example.lowcodekg.service.FunctionalityGenService;
 import org.example.lowcodekg.service.ClineService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.example.lowcodekg.util.FileUtil;
@@ -17,14 +16,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
-import org.neo4j.driver.Result;
-import org.neo4j.driver.types.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.*;
 
 import static org.example.lowcodekg.util.PageParserUtil.getTemplateContent;

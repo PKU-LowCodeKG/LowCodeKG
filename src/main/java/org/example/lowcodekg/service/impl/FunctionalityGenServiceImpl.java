@@ -1,4 +1,4 @@
-package org.example.lowcodekg.extraction.service.impl;
+package org.example.lowcodekg.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -9,7 +9,7 @@ import org.example.lowcodekg.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
 import org.example.lowcodekg.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.dao.neo4j.repository.WorkflowRepo;
-import org.example.lowcodekg.extraction.service.FunctionalityGenService;
+import org.example.lowcodekg.service.FunctionalityGenService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.neo4j.driver.QueryRunner;
 import org.neo4j.driver.Result;
@@ -111,7 +111,7 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
     public void genWorkflowFunc(WorkflowEntity workflowEntity) {
         try {
             String prompt = """
-                    ● 以下给出一个软件项目中实现某一功能请求所涉及的调用方法和操作的数据对象，请你根据代码内容概括实现的功能，以及在实现过程中采取的技术框架、三方库等技术信息，按照“功能概况”、“执行逻辑”和“技术特征”三方面返回结果，其中，
+                    ● 你是一个编程专家，能够很好地理解软件项目。以下给出一个软件项目中实现某一功能请求所涉及的调用方法和操作的数据对象，请你根据代码内容概括实现的功能，以及在实现过程中采取的技术框架、三方库等技术信息，按照“功能概况”、“执行逻辑”和“技术特征”三方面返回结果，其中，
                       ○ 功能概况：对代码实现的功能进行简明扼要的描述，不涉及技术细节，内容尽可能简短
                       ○ 执行逻辑：对代码整体执行的过程进行描述，尽可能不涉及技术细节
                       ○ 技术特征：在代码执行过程中涉及到哪些技术框架、三方库、三方工具等

@@ -15,6 +15,4 @@ public interface ClineService {
      */
     Result<String> responseUserRequirement(String requirement);
 
-
-
 }
