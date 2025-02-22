@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.catalina.User;
+import org.example.lowcodekg.model.vo.Result;
+import org.example.lowcodekg.model.vo.ResultCodeEnum;
 import org.example.lowcodekg.service.ClineService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +21,12 @@ public class ClineServiceImpl implements ClineService {
     private LLMGenerateService llmGenerateService;
 
     @Override
-    public String getProjectSummarization(String projectPath) {
+    public Result<String> getProjectSummarization(String projectPath) {
         /**
          * TODO: 之后需要根据workflowModule实体生成项目功能架构树
          */
 
-        return """
+        String res = """
                 以下是该项目的功能架构
                 
                 博客系统
@@ -53,10 +55,11 @@ public class ClineServiceImpl implements ClineService {
                 │   ├── 获取访客列表 [16]
                 │   ├── 删除访客 [17]
                 """;
+        return Result.build(res, ResultCodeEnum.SUCCESS);
     }
 
     @Override
-    public String responseUserRequirement(String requirement) {
+    public Result<String> responseUserRequirement(String requirement) {
         // target code retrieval
         // already implemented functionalities
         StringBuilder implementedFunc = new StringBuilder();
@@ -154,7 +157,7 @@ public class ClineServiceImpl implements ClineService {
         if(result.startsWith("```json")) {
             result = result.substring(8, result.length() - 3);
         }
-        return result;
+        return Result.build(result, ResultCodeEnum.SUCCESS);
 
         // format transform for different tools
 
