@@ -17,6 +17,12 @@ public class JavaMethodEntity {
     @Property("vid")
     private Long vid;
 
+    /**
+     * 方法所属的工作流聚类簇id，对应WorkflowEntity的id
+     */
+    @Property("cluster_id")
+    private Long cid;
+
     @Property("name")
     private String name;
 

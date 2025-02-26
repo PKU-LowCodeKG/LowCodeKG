@@ -4,12 +4,11 @@ import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.repository.*;
 import org.example.lowcodekg.extraction.ExtractorConfig;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.schema.entity.page.Script;
+import org.example.lowcodekg.extraction.service.FunctionalityGenService;
 import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
-import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -43,13 +42,14 @@ public class KnowledgeExtractorService {
     @Autowired
     private JavaFieldRepo javaFieldRepo;
 
-
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
     private ElasticSearchService elasticSearchService;
     @Autowired
     private LLMGenerateService llmGenerateService;
+    @Autowired
+    private FunctionalityGenService functionalityGenService;
 
     public void execute(String yamlStr)
     {
@@ -93,6 +93,8 @@ public class KnowledgeExtractorService {
 
         KnowledgeExtractor.setElasticSearchService(elasticSearchService);
         KnowledgeExtractor.setLlmGenerateService(llmGenerateService);
+        KnowledgeExtractor.setNeo4jClient(neo4jClient);
+        KnowledgeExtractor.setFunctionalityGenService(functionalityGenService);
     }
 
     public static void main(String[] args) {

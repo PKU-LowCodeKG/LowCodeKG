@@ -83,7 +83,7 @@ public class Component {
     /**
      * 将数据对象持久化到Neo4j
      */
-    public void storeInNeo4j(ComponentRepo componentRepo, ConfigItemRepo configItemRepo) {
+    public ComponentEntity storeInNeo4j(ComponentRepo componentRepo, ConfigItemRepo configItemRepo) {
         try {
             // 设置组件实体属性
             ComponentEntity entity = new ComponentEntity();
@@ -101,13 +101,15 @@ public class Component {
             entity.getContainedConfigItemEntities().addAll(configItemEntities);
 
             // Neo4j 存储数据对象
-            componentRepo.save(entity);
+            entity = componentRepo.save(entity);
             configItemRepo.saveAll(entity.getContainedConfigItemEntities());
+            return entity;
 
         } catch (Exception e) {
             System.err.println("Error in storeInNeo4j: " + e.getMessage());
             e.printStackTrace();
         }
+        return null;
     }
 
     /**

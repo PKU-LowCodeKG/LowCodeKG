@@ -73,7 +73,7 @@ config.yml 示例
 # 依次执行以下插件(执行时数据位置需要替换为本地路径)
 
 # 开源组件库 Ant Design 文档解析
-org.example.lowcodekg.extraction.component.AntMDExtractor: 
+org.example.lowcodekg.extraction.document.AntMDExtractor: 
   - /Users/chang/Documents/projects/ant-design/components
 # Java 项目代码解析
 org.example.lowcodekg.extraction.java.JavaExtractor:

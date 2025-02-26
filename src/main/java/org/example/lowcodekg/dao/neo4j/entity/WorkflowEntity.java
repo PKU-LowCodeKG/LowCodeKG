@@ -18,6 +18,12 @@ public class WorkflowEntity {
     @GeneratedValue
     private Long id;
 
+    /**
+     * 多项目工作流实体聚类后生成的工作流实体的id
+     */
+    @Property("cluster_id")
+    private Long cid;
+
     @Property("name")
     private String name;
 
@@ -31,7 +37,7 @@ public class WorkflowEntity {
     private String methodList;
 
     /**
-     * 工作流直接关联的method实体
+     * 工作流关联的method实体
      */
     @Relationship(type = "CONTAIN", direction = Relationship.Direction.OUTGOING)
     private List<JavaMethodEntity> containedMethodList = new ArrayList<>();

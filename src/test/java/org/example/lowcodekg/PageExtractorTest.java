@@ -3,23 +3,30 @@ package org.example.lowcodekg;
 import com.alibaba.fastjson.JSONObject;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
-import org.example.lowcodekg.dao.neo4j.entity.page.ConfigItemEntity;
+import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
+import org.example.lowcodekg.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.extraction.page.PageExtractor;
 import org.example.lowcodekg.schema.entity.page.Component;
 import org.example.lowcodekg.schema.entity.page.ConfigItem;
 import org.example.lowcodekg.schema.entity.page.PageTemplate;
-import org.example.lowcodekg.schema.entity.page.Script;
+import org.example.lowcodekg.extraction.service.FunctionalityGenService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.example.lowcodekg.util.FileUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.*;
+
+import static org.example.lowcodekg.util.PageParserUtil.getTemplateContent;
 
 @SpringBootTest
 public class PageExtractorTest {
@@ -28,6 +35,14 @@ public class PageExtractorTest {
     private OllamaChatModel ollamaChatModel;
     @Autowired
     private LLMGenerateService llmGenerateService;
+    @Autowired
+    private Neo4jClient neo4jClient;
+    @Autowired
+    private PageRepo pageRepo;
+    @Autowired
+    private FunctionalityGenService functionalityGenService;
+    @Autowired
+    private ComponentRepo componentRepo;
 
     @Test
     public void test() {
@@ -69,8 +84,8 @@ public class PageExtractorTest {
 
     @Test
     public void testVueParser() {
-        String path = "/Users/chang/Documents/projects/data_projects/aurora/aurora-vue/aurora-admin/src/views/talk/TalkList.vue";
-        path = "/Users/chang/Documents/projects/data_projects/NBlog/blog-cms/src/views/blog/moment/WriteMoment.vue";
+        String path = "";
+        path = "/Users/chang/Documents/projects/data_projects/NBlog/blog-cms/src/views/page/FriendList.vue";
         File vueFile = new File(path);
         System.out.println(vueFile.getName());
 
@@ -81,7 +96,7 @@ public class PageExtractorTest {
         PageExtractor pageExtractor = new PageExtractor();
 
         // parse template
-        String templateContent = pageExtractor.getTemplateContent(fileContent);
+        String templateContent = getTemplateContent(fileContent);
         if(!Objects.isNull(templateContent)) {
             Document document = Jsoup.parse(templateContent);
             Element divElement = document.selectFirst("Template");
@@ -92,9 +107,7 @@ public class PageExtractorTest {
         }
         for(Component component: pageTemplate.getComponentList()) {
             for(ConfigItem configItem: component.getConfigItemList()) {
-
                 System.out.println("config item: " + configItem.getCode() + " " + configItem.getValue());
-
             }
         }
 
@@ -117,5 +130,23 @@ public class PageExtractorTest {
 //            script.setMethodList(methodList);
 //            pageTemplate.setScript(script);
 //        }
+    }
+
+    @Test
+    public void textFunctionality() {
+        String cypher = MessageFormat.format("""
+                MATCH (n:PageTemplate)-[:CONTAIN]->(m:Component)
+                    WHERE id(n) = {0}
+                    RETURN m
+                """, String.format("%d", 1343));
+        Result res = neo4jClient.getQueryRunner().run(cypher);
+        while(res.hasNext()) {
+            Node node = res.next().get("m").asNode();
+            Optional<ComponentEntity> entity = componentRepo.findById(node.id());
+            entity.ifPresent(componentEntity -> {
+//                functionalityGenService.generatePageFunctionality(pageEntity);
+                System.out.println(componentEntity.getName());
+            });
+        }
     }
 }

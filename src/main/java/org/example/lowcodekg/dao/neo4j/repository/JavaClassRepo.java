@@ -7,7 +7,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-//@RepositoryRestResource(collectionResourceRel = "javaClass", path = "javaClass")
+@RepositoryRestResource(collectionResourceRel = "javaClass", path = "javaClass")
 public interface JavaClassRepo extends Neo4jRepository<JavaClassEntity, Long> {
 
     @Query("MATCH (s:JavaClass) WHERE id(s)=$sid " +

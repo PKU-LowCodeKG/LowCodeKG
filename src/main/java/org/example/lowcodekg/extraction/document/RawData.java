@@ -1,4 +1,4 @@
-package org.example.lowcodekg.extraction.component;
+package org.example.lowcodekg.extraction.document;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -33,6 +33,14 @@ public class RawData {
     @Getter
     @Setter
     private String usage = "";
+
+    @Getter
+    @Setter
+    private String source;
+
+    @Getter
+    @Setter
+    private String language;
 
     @Getter
     private ArrayList<CodeDemo> codeDemos = new ArrayList<CodeDemo>();
