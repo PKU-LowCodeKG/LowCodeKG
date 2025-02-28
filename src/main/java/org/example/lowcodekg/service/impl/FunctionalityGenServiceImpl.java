@@ -119,16 +119,18 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
     public void genWorkflowFunc(WorkflowEntity workflowEntity) {
         try {
             String prompt = MessageFormat.format("""
-                    你是一个编程专家，能够很好地理解软件项目。
-                    以下给出一个软件项目中实现某一功能请求所涉及的调用方法和操作的数据对象，请你根据代码内容概括实现的功能，以及在实现过程中采取的技术框架、三方库等技术信息，按照“功能概况”、“执行逻辑”和“技术特征”三方面返回结果，其中，
-                      ○ 功能概况：对代码实现的功能进行简明扼要的描述，不涉及技术细节，内容尽可能简短
-                      ○ 执行逻辑：对代码整体执行的过程进行描述，尽可能不涉及技术细节
-                      ○ 技术特征：在代码执行过程中涉及到哪些技术框架、三方库、三方工具等
-                   
-                   你要解释的代码内容如下：
+                    You are an expert in programming with a thorough understanding of software projects.
+                    The content below provides the method calls and data objects involved in implementing a certain function request within a software project.
+                    Based on the code provided, please summarize the implemented function and the technological frameworks, third-party libraries, etc., used during the implementation.
+                    Your results should address three aspects: "功能概括," "执行逻辑," and "技术特征." Specifically:
+                    * **功能概括**: Provide a concise description of the implemented function without involving technical details, keep it as short as possible.
+                    * **执行逻辑**: Describe the overall process of code execution, minimizing technical details.
+                    * **技术特征**: Mention any technological frameworks, third-party libraries, tools, etc., involved during the code execution.
+                    
+                    The code content you need to explain is as follows:
                     {0}
                     
-                    请保证结果简明扼要，内容不要太长，同时务必按照以下的json格式进行输出，不要包含其他内容
+                    Please ensure the output is concise and not too lengthy, also in Chinese, while strictly following the JSON format below without including any additional content:
                     ```json
                     {
                         "功能概括": "",
