@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class FunctionalityGenServiceImpl implements FunctionalityGenService {
@@ -68,6 +70,7 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
             prompt += entityList.toString();
             prompt += """
                     请严格按照以下json格式返回结果
+                    ```json
                     [
                         {
                             "module": "",
@@ -75,11 +78,16 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
                             "workflowList": [] // 列表包含该模块下工作流的序号
                         }
                     ]
+                    ```
                     """;
             String res = llmGenerateService.generateAnswer(prompt);
             System.out.println(res);
-            if(res.startsWith("```json")) {
-                res = res.substring(8, res.length() - 3);
+            Pattern p = Pattern.compile("```json\\s*(\\[[.\\d\\w\\s\\n\\D]*\\])\\s*```");
+            Matcher m = p.matcher(res);
+            if (m.find()) {
+                res = m.group(1);
+            } else {
+                throw new RuntimeException("generate workflow module format error, " + res);
             }
             JSONArray jsonArray = JSON.parseArray(res);
             for(int i = 0; i < jsonArray.size(); i++) {
@@ -110,21 +118,32 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
     @Override
     public void genWorkflowFunc(WorkflowEntity workflowEntity) {
         try {
-            String prompt = """
-                    ● 你是一个编程专家，能够很好地理解软件项目。以下给出一个软件项目中实现某一功能请求所涉及的调用方法和操作的数据对象，请你根据代码内容概括实现的功能，以及在实现过程中采取的技术框架、三方库等技术信息，按照“功能概况”、“执行逻辑”和“技术特征”三方面返回结果，其中，
+            String prompt = MessageFormat.format("""
+                    你是一个编程专家，能够很好地理解软件项目。
+                    以下给出一个软件项目中实现某一功能请求所涉及的调用方法和操作的数据对象，请你根据代码内容概括实现的功能，以及在实现过程中采取的技术框架、三方库等技术信息，按照“功能概况”、“执行逻辑”和“技术特征”三方面返回结果，其中，
                       ○ 功能概况：对代码实现的功能进行简明扼要的描述，不涉及技术细节，内容尽可能简短
                       ○ 执行逻辑：对代码整体执行的过程进行描述，尽可能不涉及技术细节
                       ○ 技术特征：在代码执行过程中涉及到哪些技术框架、三方库、三方工具等
-                    ● 请保证结果简明扼要，内容不要太长，同时务必按照以下的json格式进行输出，不要包含其他内容
+                   
+                   你要解释的代码内容如下：
+                    {0}
+                    
+                    请保证结果简明扼要，内容不要太长，同时务必按照以下的json格式进行输出，不要包含其他内容
+                    ```json
                     {
                         "功能概括": "",
                         "执行逻辑": "",
                         "技术特征": ""
-                    }\n
-                    """ + workflowEntity.getContent();
+                    }
+                    ```
+                    """, workflowEntity.getContent());
             String result = llmGenerateService.generateAnswer(prompt);
-            if(result.startsWith("```json")) {
-                result = result.substring(8, result.length() - 3);
+            Pattern p = Pattern.compile("```json\\s*(\\{[.\\d\\w\\s\\n\\D]*\\})\\s*```");
+            Matcher m = p.matcher(result);
+            if (m.find()) {
+                result = m.group(1);
+            } else {
+                throw new RuntimeException("LLM generate functionality: format error, " + result);
             }
             JSONObject jsonObject = JSONObject.parseObject(result);
             workflowEntity.setDescription(jsonObject.toString());
@@ -140,13 +159,6 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
     public void generatePageFunctionality(PageEntity pageEntity) {
         try {
             String formattedId = String.format("%d", pageEntity.getId());
-            String prompt = """
-                    以下给定一个前端Vue页面的代码内容，请你为其生成简短的功能概括描述，字数不超过100字。
-                    {codeContent}
-                    
-                    请重点关注以下关键词内容作为生成功能描述的参考。
-                    {keywords}                    
-                    """;
             StringBuilder codeContent = new StringBuilder();
             Set<String> keywords = new HashSet<>();
             List<Node> nodeList = new ArrayList<>();
@@ -174,8 +186,13 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
             });
 
             // construct final prompt
-            prompt = prompt.replace("{codeContent}", codeContent.toString());
-            prompt = prompt.replace("{keywords}", keywords.toString());
+            String prompt = MessageFormat.format("""
+                    以下给定一个前端Vue页面的代码内容，请你为其生成简短的功能概括描述，字数不超过100字。
+                    {0}
+                    
+                    请重点关注以下关键词内容作为生成功能描述的参考。
+                    {1}                    
+                    """, codeContent.toString(), keywords.toString());
             String description = llmGenerateService.generateAnswer(prompt);
 
 //            System.out.println(prompt);
@@ -235,5 +252,23 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
             return "";
         }
         return "";
+    }
+
+    public static void main(String[] args) {
+        String str = """
+                ```json
+                                    {
+                                        "功能概括": "",
+                                        "执行逻辑": "",
+                                        "技术特征": ""
+                                    }
+                                    ```
+                """;
+
+        Pattern p = Pattern.compile("```json\\s*(\\{[.\\d\\w\\s\\n\\D]*\\})\\s*```");
+        Matcher m = p.matcher(str);
+        while (m.find()) {
+            System.out.println(m.group(1));
+        }
     }
 }

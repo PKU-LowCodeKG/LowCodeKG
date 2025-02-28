@@ -18,6 +18,9 @@ public interface WorkflowRepo extends Neo4jRepository<WorkflowEntity, Long> {
             "CREATE (s)-[:CONTAIN]->(e)")
     void createRelationOfContainedWorkflow(Long sid, Long eid);
 
+    /**
+     * 将包含多个工作流节点的实体节点设置为工作流模块
+     */
     @Query("Match (n:Workflow) WHERE id(n)=$id " +
             "SET n:WorkflowModule " +
             "return n")
