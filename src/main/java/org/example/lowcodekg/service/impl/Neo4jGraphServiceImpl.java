@@ -262,12 +262,17 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 
     @Override
     public Neo4jSubGraph searchRelevantGraphByRules(String query) {
+        this.methodCallExtendCount = 0;
+        this.classFieldExtendCount = 0;
+
         List<String> relevantNodeVids = elasticSearchService.searchEmbedding(query);
         QueryRunner runner = neo4jClient.getQueryRunner();
         Neo4jSubGraph subGraph = new Neo4jSubGraph();
 
         Set<Long> addNodesIds = new HashSet<>();
         Set<Long> addRelationIds = new HashSet<>();
+        Map<Long, String> extendNodesFlags = new HashMap<>();
+
         // 根据es搜索结果的vid属性，从neo4j中获得相应节点信息
         List<Map<String, Object>> initialNodeProps = fetchInitialNodeProperties(runner, relevantNodeVids);
 
@@ -280,7 +285,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         List<Neo4jNode> realInitialNodes = new ArrayList<>(subGraph.getNodes());
         for(Neo4jNode node : realInitialNodes){
             if("JavaMethod".equals(node.getLabel())){
-                expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds, runner);
+                expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds, extendNodesFlags, runner);
             }
         }
 
@@ -290,12 +295,15 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             if("JavaMethod".equals(node.getLabel())) {
                 // 对于METHOD_CALL扩展出的节点，继续扩展
                 if (methodCallExtendCount < 3) {
-                    expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds, runner);
+                    expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds, extendNodesFlags, runner);
                 }
             }
             else if("JavaClass".equals(node.getLabel())){
-                if(classFieldExtendCount < 2){
-                    expandJavaClassFields(node, subGraph, addNodesIds, addRelationIds, runner);
+                if (classFieldExtendCount < 2) {
+                    if (extendNodesFlags.containsKey(node.getId()) &&
+                            extendNodesFlags.get(node.getId()).equals("DATA")) {
+                        expandJavaClassFields(node, subGraph, addNodesIds, addRelationIds, runner, query);
+                    }
                 }
             }
         }
@@ -316,6 +324,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             return false;
         }
         int num = result.next().get("num").asInt();
+        System.out.println(num);
         return num > 10;
     }
 
@@ -337,7 +346,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 
     private void expandJavaMethodNode(Neo4jNode node, Neo4jSubGraph subGraph,
                                       Set<Long> addNodesIds, Set<Long> addRelationIds,
-                                      QueryRunner runner){
+                                      Map<Long, String> extendNodesFlags, QueryRunner runner){
         Long id = node.getId();
         String idStr = String.valueOf(id);
         // 1.1 处理METHOD_CALL出边
@@ -379,6 +388,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             Record record = result.next();
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
+            extendNodesFlags.put(record.get("m").asNode().id(), "DATA");
         }
         // 1.4 处理返回类型
         String returnTypeCypher = MessageFormat.format("""
@@ -394,6 +404,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             }
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
+            extendNodesFlags.put(record.get("m").asNode().id(), "DATA");
         }
         // 1.5 处理所属类
         // 1.5.1 处理接口实现
@@ -443,7 +454,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
     }
     private void expandJavaClassFields(Neo4jNode node, Neo4jSubGraph subGraph,
                                       Set<Long> addNodesIds, Set<Long> addRelationIds,
-                                      QueryRunner runner){
+                                      QueryRunner runner, String query){
         Long id = node.getId();
         String idStr = String.valueOf(id);
         // 2.3 处理类字段
@@ -452,35 +463,39 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                 WHERE id(c) = {0}
                 RETURN f, r
                 """, idStr);
-        // 朴素方法 将所有的Field都加入
-        Result result = runner.run(fieldsCypher);
 
-        while(result.hasNext()){
-            Record record = result.next();
-            addNodeAndRelation(record.get("f").asNode(), record.get("r").asRelationship(),
-                    subGraph, addNodesIds, addRelationIds);
-        }
-        // 使用LLM进行筛选 TODO
+        // 朴素方法 将所有的Field都加入
 //        Result result = runner.run(fieldsCypher);
-//        List<Map<String, Object>> fieldsProps = new ArrayList<>();
-//        List<Record> records = new ArrayList<>();
-//
+
 //        while(result.hasNext()){
 //            Record record = result.next();
-//            Map<String, Object> fieldProps = new HashMap<>();
-//            fieldProps.put("name", record.get("name").asString());
-//            fieldProps.put("type", record.get("type").asString());
-//            fieldsProps.add(fieldProps);
-//            records.add(record);
-//        }
-//
-//        List<Integer> relevantFieldIdx = llmGenerateService.selectRevelantFields(fieldsProps);
-//
-//        for(Integer idx : relevantFieldIdx){
-//            Record record = records.get(idx);
 //            addNodeAndRelation(record.get("f").asNode(), record.get("r").asRelationship(),
 //                    subGraph, addNodesIds, addRelationIds);
 //        }
+
+        // 使用LLM进行筛选
+        Result result = runner.run(fieldsCypher);
+        List<Map<String, Object>> fieldsProps = new ArrayList<>();
+        List<Record> fieldRecords = new ArrayList<>();
+
+        while(result.hasNext()){
+            Record record = result.next();
+            Node field = record.get("f").asNode();
+            Map<String, Object> fieldProps = new HashMap<>();
+            fieldProps.put("name", (String) field.asMap().get("name"));
+            fieldProps.put("type", (String) field.asMap().get("type"));
+            fieldsProps.add(fieldProps);
+            fieldRecords.add(record);
+        }
+
+        String className = (String) node.getProperties().get("name");
+        List<Integer> relevantFieldIdx = llmGenerateService.selectRelevantFields(query, className, fieldsProps);
+
+        for(Integer idx : relevantFieldIdx){
+            Record record = fieldRecords.get(idx);
+            addNodeAndRelation(record.get("f").asNode(), record.get("r").asRelationship(),
+                    subGraph, addNodesIds, addRelationIds);
+        }
         classFieldExtendCount++;
     }
     private void addNodeAndRelation(Node node, Relationship relation, Neo4jSubGraph subGraph, Set<Long> addNodesIds, Set<Long> addRelationIds){

@@ -14,4 +14,6 @@ public interface LLMGenerateService {
     List<Map<String, Object>> selectInitialNodes(String query, List<Map<String, Object>> initialNodeProps);
 
     List<Integer> selectExtendNode(String query, List<Map<String, Object>> extendNodeProps);
+
+    List<Integer> selectRelevantFields(String query, String className, List<Map<String, Object>> fieldsProps);
 }
