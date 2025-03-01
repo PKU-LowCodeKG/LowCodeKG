@@ -21,7 +21,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.example.lowcodekg.util.PageParserUtil.getTemplateContent;
 
@@ -237,7 +240,70 @@ public class ExtractorTest {
 
     @Test
     public void textFunctionality() {
-        String requirement = "新增用户通过邮箱注册的功能";
-        System.out.println(clineService.responseUserRequirement(requirement));
+        String codeContent = """
+                @PostMapping("/account")
+                	public Result account(@RequestBody User user, @RequestHeader(value = "Authorization", defaultValue = "") String jwt) {
+                		boolean res = userService.changeAccount(user, jwt);
+                		return res ? Result.ok("修改成功") : Result.error("修改失败");
+                	}
+                
+                @Override
+                	public boolean changeAccount(User user, String jwt) {
+                		String username = JwtUtils.getTokenBody(jwt).getSubject();
+                		user.setPassword(HashUtils.getBC(user.getPassword()));
+                		if (userMapper.updateUserByUsername(username, user) != 1) {
+                			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                			return false;
+                		}
+                		return true;
+                	}
+                
+                <!--按username修改-->
+                    <update id="updateUserByUsername">
+                        update user set username=#{user.username}, password=#{user.password}, update_time=now() where username=#{username}
+                    </update>
+                
+                public static Claims getTokenBody(String token) {
+                		Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token.replace("Bearer", "")).getBody();
+                		return claims;
+                	}
+                
+                public static String getBC(CharSequence rawPassword) {
+                		return bCryptPasswordEncoder.encode(rawPassword);
+                	}
+                
+                """;
+        String prompt = """
+                    You are an expert in programming with a thorough understanding of software projects.
+                    The content below provides the method calls and data objects involved in implementing a certain function request within a software project.
+                    Based on the code provided, please summarize the implemented function and the technological frameworks, third-party libraries, etc., used during the implementation.
+                    Your results should address three aspects: "功能概括," "执行逻辑," and "技术特征." Specifically:
+                    * **功能概括**: Provide a concise description of the implemented function without involving technical details, keep it as short as possible.
+                    * **执行逻辑**: Describe the overall process of code execution, minimizing technical details.
+                    * **技术特征**: Mention any technological frameworks, third-party libraries, tools, etc., involved during the code execution.
+                    
+                    The code content you need to explain is as follows:
+                    {codeContent}
+                    
+                    Please ensure the output is concise and not too lengthy, also in Chinese, while strictly following the JSON format below without including any additional content:
+                    ```json
+                    {
+                        "功能概括": "",
+                        "执行逻辑": "",
+                        "技术特征": ""
+                    }
+                    ```
+                    """;
+        prompt = prompt.replace("{codeContent}", codeContent);
+        String result = llmGenerateService.generateAnswer(prompt);
+        System.out.println(result);
+        Pattern p = Pattern.compile("```json\\s*(\\{[.\\d\\w\\s\\n\\D]*\\})\\s*```");
+        Matcher m = p.matcher(result);
+        if (m.find()) {
+            result = m.group(1);
+            System.out.println(result);
+        }
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        System.out.println(jsonObject.getString("功能概括"));
     }
 }

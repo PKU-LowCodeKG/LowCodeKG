@@ -118,7 +118,7 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
     @Override
     public void genWorkflowFunc(WorkflowEntity workflowEntity) {
         try {
-            String prompt = MessageFormat.format("""
+            String prompt = """
                     You are an expert in programming with a thorough understanding of software projects.
                     The content below provides the method calls and data objects involved in implementing a certain function request within a software project.
                     Based on the code provided, please summarize the implemented function and the technological frameworks, third-party libraries, etc., used during the implementation.
@@ -128,7 +128,7 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
                     * **技术特征**: Mention any technological frameworks, third-party libraries, tools, etc., involved during the code execution.
                     
                     The code content you need to explain is as follows:
-                    {0}
+                    {codeContent}
                     
                     Please ensure the output is concise and not too lengthy, also in Chinese, while strictly following the JSON format below without including any additional content:
                     ```json
@@ -138,7 +138,8 @@ public class FunctionalityGenServiceImpl implements FunctionalityGenService {
                         "技术特征": ""
                     }
                     ```
-                    """, workflowEntity.getContent());
+                    """;
+            prompt = prompt.replace("{codeContent}", workflowEntity.getContent());
             String result = llmGenerateService.generateAnswer(prompt);
             Pattern p = Pattern.compile("```json\\s*(\\{[.\\d\\w\\s\\n\\D]*\\})\\s*```");
             Matcher m = p.matcher(result);

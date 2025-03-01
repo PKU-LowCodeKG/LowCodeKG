@@ -36,7 +36,7 @@ public class Workflow {
     private List<Workflow> subWorkflowList = new ArrayList<>();
 
     public Workflow(JavaMethod method) {
-        this.name = method.getMappingUrl();
+        this.name = method.getName();
         this.method = method;
         appendMethod(method);
     }

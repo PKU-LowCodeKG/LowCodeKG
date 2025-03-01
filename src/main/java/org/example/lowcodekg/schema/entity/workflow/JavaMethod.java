@@ -112,7 +112,7 @@ public class JavaMethod {
      * 判断方法是否属于工作流
      */
     public boolean belongToWorkflow() {
-        return (StringUtils.isNotEmpty(mappingUrl) && !"".equals(mappingUrl));
+        return (StringUtils.isNotEmpty(mappingUrl) && !"".equals(mappingUrl)) && fullName.contains("Controller");
     }
 
 }
