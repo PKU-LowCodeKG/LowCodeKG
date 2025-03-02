@@ -260,6 +260,12 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         return subGraph;
     }
 
+    /**
+     * 用ES定位初始节点集合，使用大模型从中筛选出种子节点集合，
+     * 按照规则在图谱上扩展，大模型辅助筛选节点，最终得到子图作为答案
+     * @param query 用户要查询的功能
+     * @return 查询所得的子图
+     */
     @Override
     public Neo4jSubGraph searchRelevantGraphByRules(String query) {
         this.methodCallExtendCount = 0;
@@ -271,46 +277,77 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
 
         Set<Long> addNodesIds = new HashSet<>();
         Set<Long> addRelationIds = new HashSet<>();
-        Map<Long, String> extendNodesFlags = new HashMap<>();
+        Map<Long, String> nodesFlags = new HashMap<>();
 
-        // 根据es搜索结果的vid属性，从neo4j中获得相应节点信息
+        // 根据es搜索结果的vid属性，从neo4j中获得相应节点信息，此为初始节点集合
         List<Map<String, Object>> initialNodeProps = fetchInitialNodeProperties(runner, relevantNodeVids);
 
-        // 对于最初根据语义相似度选出的节点，让LLM判断哪几个是真正与功能相关的,把相关的节点加入子图
+        // 对于最初根据语义相似度选出的初始节点，让LLM判断哪几个是真正与功能相关的,作为种子节点
         List<Map<String, Object>> realInitialNodeProps =
                 llmGenerateService.selectInitialNodes(query, initialNodeProps);
-        addInitialNodesToGraph(realInitialNodeProps, addNodesIds, subGraph);
+//        addInitialNodesToGraph(realInitialNodeProps, addNodesIds, subGraph);
 
-        // 处理初始的JavaMethod节点
-        List<Neo4jNode> realInitialNodes = new ArrayList<>(subGraph.getNodes());
-        for(Neo4jNode node : realInitialNodes){
-            if("JavaMethod".equals(node.getLabel())){
-                expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds, extendNodesFlags, runner);
+        // 遍历每个种子节点，对于JavaMethod节点，开始扩展
+        for (Map<String, Object> nodeProps : realInitialNodeProps) {
+            Long nodeId = (Long) nodeProps.get("id");
+            Neo4jNode seedNode = getNodeDetail(nodeId);
+            if (addNodesIds.contains(nodeId)) {
+                continue;  // 这个种子节点之前已经扩展出来了，不再重复扩展
+            }
+            addNodesIds.add(nodeId);
+            subGraph.addNeo4jNode(seedNode);
+            if ("JavaMethod".equals(seedNode.getLabel())) {
+                expandJavaMethodNode(seedNode, subGraph, addNodesIds, addRelationIds,
+                        nodesFlags, runner);
+            }
+            if("JavaClass".equals(seedNode.getLabel())) {
+                if (this.classFieldExtendCount < 2) {
+                    expandJavaClassFields(seedNode, subGraph, addNodesIds, addRelationIds,
+                            runner, query);
+                }
             }
         }
 
-        // 处理扩展出的节点
+        // 处理扩展出的节点，目前需要进一步处理的节点包括：
+        // 根据正向 / 反向METHOD_CALL关系扩展出的method，和根据PARAM_TYPE / RETURN_TYPE扩展出的数据类
         List<Neo4jNode> nodesToProcess = new ArrayList<>(subGraph.getNodes());
-        for(Neo4jNode node : nodesToProcess){
+        for(Neo4jNode node : nodesToProcess) {
             if("JavaMethod".equals(node.getLabel())) {
-                // 对于METHOD_CALL扩展出的节点，继续扩展
-                if (methodCallExtendCount < 3) {
-                    expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds, extendNodesFlags, runner);
-                }
-            }
-            else if("JavaClass".equals(node.getLabel())){
-                if (classFieldExtendCount < 2) {
-                    if (extendNodesFlags.containsKey(node.getId()) &&
-                            extendNodesFlags.get(node.getId()).equals("DATA")) {
-                        expandJavaClassFields(node, subGraph, addNodesIds, addRelationIds, runner, query);
-                    }
+                // 对于METHOD_CALL关系正向或反向扩展出的节点，可继续扩展
+                if (isExpandNodeOfType(node, nodesFlags, "CALL_EXTEND") ||
+                        isExpandNodeOfType(node, nodesFlags, "CALL_REVERSE")) {
+                    expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds,
+                            nodesFlags, runner);
                 }
             }
         }
+
+        nodesToProcess = new ArrayList<>(subGraph.getNodes());
+        for(Neo4jNode node : nodesToProcess) {
+            if("JavaClass".equals(node.getLabel())) {
+                if (isExpandNodeOfType(node, nodesFlags, "DATA") &&
+                        this.classFieldExtendCount < 2) {
+                    expandJavaClassFields(node, subGraph, addNodesIds, addRelationIds, runner, query);
+                }
+            }
+        }
+
         subGraph.setGeneratedCode("");
         return subGraph;
     }
 
+    /**
+     * 判断一个节点是否为根据某个扩展规则所得到的节点，以便决定是否继续对其扩展
+     */
+    private boolean isExpandNodeOfType(Neo4jNode node, Map<Long, String> nodesFlags, String typeToCheck) {
+        Long nodeId = node.getId();
+        return nodesFlags.containsKey(nodeId) && nodesFlags.get(nodeId).equals(typeToCheck);
+    }
+
+    /**
+     * 判断一个method是否频繁被其他method调用
+     * 如果被调用次数超过阈值（目前设为10），说明它并不与某个特定功能需求相关，而是一个通用的工具方法
+     */
     private boolean isFrequentMethod(QueryRunner runner, Node m) {
         Long id = m.id();
         String idStr = String.valueOf(id);
@@ -328,6 +365,10 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         return num > 10;
     }
 
+    /**
+     * 判断一个class是否频繁作为各种method的返回值
+     * 如果它是返回值的次数超过阈值（目前设为10），说明它在整个系统里是通用的，而非与特定功能需求相关
+     */
     private boolean isFrequentClass(QueryRunner runner, Node m) {
         Long id = m.id();
         String idStr = String.valueOf(id);
@@ -344,39 +385,61 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         return num > 10;
     }
 
+    /**
+     * 从JavaMethod节点出发进行扩展，加入子图里
+     * 对于一部分已扩展出的节点，还需再次迭代扩展，因此会继续调用该方法
+     */
     private void expandJavaMethodNode(Neo4jNode node, Neo4jSubGraph subGraph,
                                       Set<Long> addNodesIds, Set<Long> addRelationIds,
-                                      Map<Long, String> extendNodesFlags, QueryRunner runner){
+                                      Map<Long, String> nodesFlags, QueryRunner runner){
         Long id = node.getId();
         String idStr = String.valueOf(id);
+        Result result = null;
+
         // 1.1 处理METHOD_CALL出边
-        String outCallCypher = MessageFormat.format("""
+        if (!isExpandNodeOfType(node, nodesFlags, "CALL_REVERSE")) {
+            String outCallCypher = MessageFormat.format("""
                 MATCH (n:JavaMethod)-[r:METHOD_CALL]->(m:JavaMethod)
                 WHERE id(n) = {0}
                 RETURN m, r
                 """, idStr);
-        Result result = runner.run(outCallCypher);
-        while(result.hasNext()){
-            Record record = result.next();
-            if (isFrequentMethod(runner, record.get("m").asNode())) {
-                continue;
+            result = runner.run(outCallCypher);
+            while(result.hasNext()){
+                Record record = result.next();
+                if (isFrequentMethod(runner, record.get("m").asNode())) {
+                    continue;
+                }
+
+                boolean callNodeExist = addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
+                        subGraph, addNodesIds, addRelationIds);
+
+                // 这一规则最多允许使用3次，通过这个规则扩展出的节点，之后还可继续扩展
+                if (!callNodeExist && this.methodCallExtendCount < 3) {
+                    this.methodCallExtendCount++;
+                    nodesFlags.put(record.get("m").asNode().id(), "CALL_EXTEND");
+                }
             }
-            addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
-                    subGraph, addNodesIds, addRelationIds);
-            methodCallExtendCount++;
         }
+
         // 1.2 处理METHOD_CALL入边
-        String inCallCypher = MessageFormat.format("""
+        if (!isExpandNodeOfType(node, nodesFlags, "CALL_EXTEND")) {
+            String inCallCypher = MessageFormat.format("""
                 MATCH (m:JavaMethod)-[r:METHOD_CALL]->(n:JavaMethod)
                 WHERE id(n) = {0}
                 RETURN m, r
                 """, idStr);
-        result = runner.run(inCallCypher);
-        while(result.hasNext()){
-            Record record = result.next();
-            addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
-                    subGraph, addNodesIds, addRelationIds);
+            result = runner.run(inCallCypher);
+            while(result.hasNext()){
+                Record record = result.next();
+                if (!addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
+                        subGraph, addNodesIds, addRelationIds)) {
+                    // 这一规则扩展出的节点，之后可对其使用规则1.3-1.5
+                    nodesFlags.put(record.get("m").asNode().id(), "CALL_REVERSE");
+                }
+
+            }
         }
+
         // 1.3 处理参数类型
         String paramTypeCypher = MessageFormat.format("""
                 MATCH (n:JavaMethod)-[r:PARAM_TYPE]->(m:JavaClass)
@@ -388,8 +451,9 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             Record record = result.next();
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
-            extendNodesFlags.put(record.get("m").asNode().id(), "DATA");
+            nodesFlags.put(record.get("m").asNode().id(), "DATA");
         }
+
         // 1.4 处理返回类型
         String returnTypeCypher = MessageFormat.format("""
                 MATCH (n:JavaMethod)-[r:RETURN_TYPE]->(m:JavaClass)
@@ -404,8 +468,9 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             }
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
-            extendNodesFlags.put(record.get("m").asNode().id(), "DATA");
+            nodesFlags.put(record.get("m").asNode().id(), "DATA");
         }
+
         // 1.5 处理所属类
         // 1.5.1 处理接口实现
         String implCypher = MessageFormat.format("""
@@ -425,8 +490,10 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
             if(record.get("n3") != null){
-                addNodeAndRelation(record.get("n3").asNode(), record.get("r3").asRelationship(),
-                        subGraph, addNodesIds, addRelationIds);
+                if (!isFrequentMethod(runner, record.get("n3").asNode())) {
+                    addNodeAndRelation(record.get("n3").asNode(), record.get("r3").asRelationship(),
+                            subGraph, addNodesIds, addRelationIds);
+                }
             }
         }
         // 1.5.2 处理接口定义
@@ -446,12 +513,16 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                     subGraph, addNodesIds, addRelationIds);
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
-            if(record.get("n3") != null){
+            if(!record.get("n3").isNull()){
                 addNodeAndRelation(record.get("n3").asNode(), record.get("r3").asRelationship(),
                         subGraph, addNodesIds, addRelationIds);
             }
         }
     }
+
+    /**
+     * 从JavaClass节点扩展若干JavaField节点，使用大模型判断哪些field与query更相关
+     */
     private void expandJavaClassFields(Neo4jNode node, Neo4jSubGraph subGraph,
                                       Set<Long> addNodesIds, Set<Long> addRelationIds,
                                       QueryRunner runner, String query){
@@ -463,15 +534,6 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                 WHERE id(c) = {0}
                 RETURN f, r
                 """, idStr);
-
-        // 朴素方法 将所有的Field都加入
-//        Result result = runner.run(fieldsCypher);
-
-//        while(result.hasNext()){
-//            Record record = result.next();
-//            addNodeAndRelation(record.get("f").asNode(), record.get("r").asRelationship(),
-//                    subGraph, addNodesIds, addRelationIds);
-//        }
 
         // 使用LLM进行筛选
         Result result = runner.run(fieldsCypher);
@@ -496,17 +558,27 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             addNodeAndRelation(record.get("f").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
         }
-        classFieldExtendCount++;
+        this.classFieldExtendCount++;
     }
-    private void addNodeAndRelation(Node node, Relationship relation, Neo4jSubGraph subGraph, Set<Long> addNodesIds, Set<Long> addRelationIds){
+
+    /**
+     * 往subGraph里添加节点和关系，如果本来就存在，则不会重复添加
+     * @return 待添加的节点原来是否已存在
+     */
+    private boolean addNodeAndRelation(Node node, Relationship relation,
+                                       Neo4jSubGraph subGraph,
+                                       Set<Long> addNodesIds, Set<Long> addRelationIds){
+        boolean nodeExist = true;
         if(!addNodesIds.contains(node.id())){
             subGraph.addNeo4jNode(getNodeDetail(node.id()));
             addNodesIds.add(node.id());
+            nodeExist = false;
         }
         if(!addRelationIds.contains(relation.id())){
             subGraph.addNeo4jRelation(getRelationDetail(relation));
             addRelationIds.add(relation.id());
         }
+        return nodeExist;
     }
 
     @Override
