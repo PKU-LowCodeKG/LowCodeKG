@@ -46,10 +46,10 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
         for (int i = 0; i < top; i++) {
             String initialNodeVid = relevantNodeVids.get(i);
             String nodeVidCypher = MessageFormat.format("""
-            MATCH (n)
-            WHERE n.vid = {0}
-            RETURN n
-            """, initialNodeVid);
+                MATCH (n)
+                WHERE n.vid = {0}
+                RETURN n
+                """, initialNodeVid);
             Result result = runner.run(nodeVidCypher);
             if (result.hasNext()) {
                 Node node = result.next().get("n").asNode();
@@ -316,6 +316,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                 // 对于METHOD_CALL关系正向或反向扩展出的节点，可继续扩展
                 if (isExpandNodeOfType(node, nodesFlags, "CALL_EXTEND") ||
                         isExpandNodeOfType(node, nodesFlags, "CALL_REVERSE")) {
+                    System.out.println("iteratively expanding: " + node.getNodeFullName() + "  flag: " + nodesFlags.get(node.getId()));
                     expandJavaMethodNode(node, subGraph, addNodesIds, addRelationIds,
                             nodesFlags, runner);
                 }
@@ -361,7 +362,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             return false;
         }
         int num = result.next().get("num").asInt();
-        System.out.println(num);
+        System.out.println("Checking Freq Method: " + m.asMap().get("fullName") + "    Num: " + num);
         return num > 10;
     }
 
@@ -382,7 +383,8 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             return false;
         }
         int num = result.next().get("num").asInt();
-        return num > 10;
+        System.out.println("Checking Freq Class: " + m.asMap().get("fullName") + "    Num: " + num);
+        return num > 20;
     }
 
     /**
@@ -394,6 +396,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                                       Map<Long, String> nodesFlags, QueryRunner runner){
         Long id = node.getId();
         String idStr = String.valueOf(id);
+        System.out.println("start expanding JavaMethod: " + node.getNodeFullName());
         Result result = null;
 
         // 1.1 处理METHOD_CALL出边
@@ -417,6 +420,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                 if (!callNodeExist && this.methodCallExtendCount < 3) {
                     this.methodCallExtendCount++;
                     nodesFlags.put(record.get("m").asNode().id(), "CALL_EXTEND");
+                    System.out.println("Rule 1.1: " + node.getNodeFullName() + " -> " + record.get("m").asNode().asMap().get("fullName"));
                 }
             }
         }
@@ -435,6 +439,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                         subGraph, addNodesIds, addRelationIds)) {
                     // 这一规则扩展出的节点，之后可对其使用规则1.3-1.5
                     nodesFlags.put(record.get("m").asNode().id(), "CALL_REVERSE");
+                    System.out.println("Rule 1.2: " + node.getNodeFullName() + " <- " + record.get("m").asNode().asMap().get("fullName"));
                 }
 
             }
@@ -452,6 +457,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
             nodesFlags.put(record.get("m").asNode().id(), "DATA");
+            System.out.println("Rule 1.3: " + node.getNodeFullName() + " PARAM " + record.get("m").asNode().asMap().get("fullName"));
         }
 
         // 1.4 处理返回类型
@@ -469,6 +475,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
             nodesFlags.put(record.get("m").asNode().id(), "DATA");
+            System.out.println("Rule 1.4: " + node.getNodeFullName() + " RETURN " + record.get("m").asNode().asMap().get("fullName"));
         }
 
         // 1.5 处理所属类
@@ -489,10 +496,14 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                     subGraph, addNodesIds, addRelationIds);
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
+
+            System.out.println("Rule 1.5.1: " + node.getNodeFullName() + "  " + record.get("n1").asNode().asMap().get("fullName"));
+
             if(record.get("n3") != null){
                 if (!isFrequentMethod(runner, record.get("n3").asNode())) {
                     addNodeAndRelation(record.get("n3").asNode(), record.get("r3").asRelationship(),
                             subGraph, addNodesIds, addRelationIds);
+                    System.out.println("Rule 1.5.1 CALL: " + record.get("n3").asNode().asMap().get("fullName"));
                 }
             }
         }
@@ -513,9 +524,13 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                     subGraph, addNodesIds, addRelationIds);
             addNodeAndRelation(record.get("m").asNode(), record.get("r").asRelationship(),
                     subGraph, addNodesIds, addRelationIds);
+
+            System.out.println("Rule 1.5.2: " + node.getNodeFullName() + "  " + record.get("n1").asNode().asMap().get("fullName"));
+
             if(!record.get("n3").isNull()){
                 addNodeAndRelation(record.get("n3").asNode(), record.get("r3").asRelationship(),
                         subGraph, addNodesIds, addRelationIds);
+                System.out.println("Rule 1.5.2 BE CALLED: " + record.get("n3").asNode().asMap().get("fullName"));
             }
         }
     }
@@ -528,6 +543,7 @@ public class Neo4jGraphServiceImpl implements Neo4jGraphService {
                                       QueryRunner runner, String query){
         Long id = node.getId();
         String idStr = String.valueOf(id);
+        System.out.println("start expanding JavaClass: " + node.getNodeFullName());
         // 2.3 处理类字段
         String fieldsCypher = MessageFormat.format("""
                 MATCH (c:JavaClass)-[r:HAVE_FIELD]->(f:JavaField)
