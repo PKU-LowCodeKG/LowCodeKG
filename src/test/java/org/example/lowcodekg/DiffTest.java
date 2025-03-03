@@ -45,6 +45,7 @@ public class DiffTest {
         RevCommit currentCommit = null;
         try {
             currentCommit = revWalk.parseCommit(commitId);
+            System.out.println("commit message: " + currentCommit.getFullMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
