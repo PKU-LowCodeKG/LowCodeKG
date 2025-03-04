@@ -23,4 +23,8 @@ public class Neo4jNode {
         this.label = label;
     }
 
+    public String getNodeFullName() {
+        return (String) this.properties.get("fullName");
+    }
+
 }
