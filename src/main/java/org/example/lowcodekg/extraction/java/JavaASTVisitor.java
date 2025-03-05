@@ -63,7 +63,7 @@ public class JavaASTVisitor extends ASTVisitor {
                 if(modifier instanceof Annotation) {
                     Annotation annotation = (Annotation) modifier;
                     String annotationName = annotation.getTypeName().toString();
-                    if (annotationName.equals("Data")) {
+                    if (annotationName.equals("Data") || annotationName.contains("TableName")) {
                         classInfo.setIsData(true);
                     }
                 }
