@@ -1,4 +1,4 @@
-package org.example.lowcodekg.util;
+package org.example.lowcodekg.common.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

@@ -6,8 +6,8 @@ import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.example.lowcodekg.model.dto.Neo4jNode;
 import org.example.lowcodekg.service.LLMGenerateService;
-import org.example.lowcodekg.util.FileUtil;
-import org.example.lowcodekg.util.FormatParseUtil;
+import org.example.lowcodekg.common.util.FileUtil;
+import org.example.lowcodekg.common.util.FormatParseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

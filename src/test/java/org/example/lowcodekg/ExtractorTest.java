@@ -11,7 +11,7 @@ import org.example.lowcodekg.schema.entity.page.PageTemplate;
 import org.example.lowcodekg.service.FunctionalityGenService;
 import org.example.lowcodekg.service.ClineService;
 import org.example.lowcodekg.service.LLMGenerateService;
-import org.example.lowcodekg.util.FileUtil;
+import org.example.lowcodekg.common.util.FileUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,12 +21,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.example.lowcodekg.util.PageParserUtil.getTemplateContent;
+import static org.example.lowcodekg.common.util.PageParserUtil.getTemplateContent;
 
 @SpringBootTest
 public class ExtractorTest {

@@ -1,4 +1,4 @@
-package org.example.lowcodekg.util;
+package org.example.lowcodekg.common.util;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.example.lowcodekg.util;
+package org.example.lowcodekg.common.util;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

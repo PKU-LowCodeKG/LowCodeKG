@@ -1,12 +1,10 @@
 package org.example.lowcodekg.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.catalina.User;
-import org.example.lowcodekg.model.vo.Result;
-import org.example.lowcodekg.model.vo.ResultCodeEnum;
+import org.example.lowcodekg.common.result.Result;
+import org.example.lowcodekg.common.result.ResultCodeEnum;
 import org.example.lowcodekg.service.ClineService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +20,7 @@ public class ClineServiceImpl implements ClineService {
 
     @Override
     public Result<String> getProjectSummarization(String projectPath) {
-        /**
-         * TODO: 之后需要根据workflowModule实体生成项目功能架构树
-         */
-
+        // mock data
         String res = """
                 以下是该项目的功能架构
                 

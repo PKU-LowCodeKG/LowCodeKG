@@ -1,4 +1,4 @@
-package org.example.lowcodekg.model.vo;
+package org.example.lowcodekg.common.result;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

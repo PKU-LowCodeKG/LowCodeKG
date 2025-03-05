@@ -1,4 +1,4 @@
-package org.example.lowcodekg.config;
+package org.example.lowcodekg.common.config;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Bean;

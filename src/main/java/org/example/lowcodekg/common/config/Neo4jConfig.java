@@ -1,4 +1,4 @@
-package org.example.lowcodekg.config;
+package org.example.lowcodekg.common.config;
 
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;

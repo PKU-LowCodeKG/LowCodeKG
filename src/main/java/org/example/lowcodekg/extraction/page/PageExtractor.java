@@ -6,7 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.dao.neo4j.entity.page.*;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.schema.entity.page.*;
-import org.example.lowcodekg.util.FileUtil;
+import org.example.lowcodekg.common.util.FileUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,8 +17,6 @@ import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.example.lowcodekg.util.PageParserUtil.*;
 
 
 /**

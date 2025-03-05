@@ -1,4 +1,4 @@
-package org.example.lowcodekg.config;
+package org.example.lowcodekg.common.config;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
