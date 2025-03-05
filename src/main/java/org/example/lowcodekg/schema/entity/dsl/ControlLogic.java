@@ -11,7 +11,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeviceLogic {
+public class ControlLogic {
     @JsonProperty("projectUuid")
     private String projectUuid;
 
