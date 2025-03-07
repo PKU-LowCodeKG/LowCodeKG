@@ -1,10 +1,10 @@
 package org.example.lowcodekg;
 
-import org.example.lowcodekg.dao.neo4j.entity.java.JavaClassEntity;
-import org.example.lowcodekg.dao.neo4j.entity.java.JavaFieldEntity;
-import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
-import org.example.lowcodekg.dao.neo4j.entity.page.*;
-import org.example.lowcodekg.dao.neo4j.repository.*;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaFieldEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaMethodEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.page.*;
+import org.example.lowcodekg.model.dao.neo4j.repository.*;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;

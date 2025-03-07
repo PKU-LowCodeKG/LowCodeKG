@@ -1,7 +1,7 @@
 package org.example.lowcodekg;
 
-import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
-import org.example.lowcodekg.dao.neo4j.repository.ConfigItemRepo;
+import org.example.lowcodekg.model.dao.neo4j.repository.ComponentRepo;
+import org.example.lowcodekg.model.dao.neo4j.repository.ConfigItemRepo;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;

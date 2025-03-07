@@ -2,7 +2,7 @@ package org.example.lowcodekg.extraction;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.lowcodekg.dao.neo4j.repository.*;
+import org.example.lowcodekg.model.dao.neo4j.repository.*;
 import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.service.FunctionalityGenService;
 import org.example.lowcodekg.service.LLMGenerateService;

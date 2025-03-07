@@ -15,15 +15,12 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import org.example.lowcodekg.schema.entity.workflow.JavaClass;
-import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
-import org.example.lowcodekg.schema.entity.workflow.JavaField;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaClass;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaMethod;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaField;
 
 
 @Service

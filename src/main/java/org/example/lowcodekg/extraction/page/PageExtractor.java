@@ -3,9 +3,12 @@ package org.example.lowcodekg.extraction.page;
 import com.alibaba.fastjson.JSONObject;
 import io.micrometer.common.util.StringUtils;
 import org.apache.commons.io.FileUtils;
-import org.example.lowcodekg.dao.neo4j.entity.page.*;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.schema.entity.page.*;
+import org.example.lowcodekg.model.dao.neo4j.entity.page.*;
+import org.example.lowcodekg.model.schema.entity.page.Component;
+import org.example.lowcodekg.model.schema.entity.page.ConfigItem;
+import org.example.lowcodekg.model.schema.entity.page.PageTemplate;
+import org.example.lowcodekg.model.schema.entity.page.Script;
 import org.example.lowcodekg.common.util.FileUtil;
 
 import org.jsoup.Jsoup;
@@ -17,6 +20,8 @@ import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.example.lowcodekg.common.util.PageParserUtil.*;
 
 
 /**

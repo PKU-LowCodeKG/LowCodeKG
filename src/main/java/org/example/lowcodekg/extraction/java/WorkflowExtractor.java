@@ -1,7 +1,7 @@
 package org.example.lowcodekg.extraction.java;
 
-import org.example.lowcodekg.dao.neo4j.entity.java.WorkflowEntity;
-import org.example.lowcodekg.dao.neo4j.entity.java.JavaMethodEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaMethodEntity;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.neo4j.driver.QueryRunner;
 import org.neo4j.driver.Result;

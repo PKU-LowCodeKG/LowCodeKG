@@ -3,10 +3,10 @@ package org.example.lowcodekg.extraction.java;
 import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 import org.eclipse.jdt.core.dom.*;
-import org.example.lowcodekg.schema.entity.workflow.JavaClass;
-import org.example.lowcodekg.schema.entity.workflow.JavaField;
-import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
-import org.example.lowcodekg.schema.entity.workflow.JavaProject;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaClass;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaField;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaMethod;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaProject;
 
 import java.util.*;
 import java.util.stream.Collectors;

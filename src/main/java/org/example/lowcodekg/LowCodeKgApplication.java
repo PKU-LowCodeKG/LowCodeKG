@@ -1,7 +1,7 @@
 package org.example.lowcodekg;
 
 import org.apache.commons.io.FileUtils;
-import org.example.lowcodekg.extraction.service.KnowledgeExtractorService;
+import org.example.lowcodekg.service.KnowledgeExtractorService;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;

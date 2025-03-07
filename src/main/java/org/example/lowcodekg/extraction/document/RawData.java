@@ -2,9 +2,9 @@ package org.example.lowcodekg.extraction.document;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.lowcodekg.schema.entity.category.Category;
-import org.example.lowcodekg.schema.entity.page.Component;
-import org.example.lowcodekg.schema.entity.page.ConfigItem;
+import org.example.lowcodekg.model.schema.entity.category.Category;
+import org.example.lowcodekg.model.schema.entity.page.Component;
+import org.example.lowcodekg.model.schema.entity.page.ConfigItem;
 
 import java.util.ArrayList;
 import java.util.List;

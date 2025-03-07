@@ -1,7 +1,7 @@
 package org.example.lowcodekg.service;
 
-import org.example.lowcodekg.dao.neo4j.entity.java.WorkflowEntity;
-import org.example.lowcodekg.dao.neo4j.entity.page.PageEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 
 public interface FunctionalityGenService {
 

@@ -1,9 +1,9 @@
 package org.example.lowcodekg.controller;
 
 import org.example.lowcodekg.service.ElasticSearchService;
-import org.example.lowcodekg.schema.entity.workflow.JavaClass;
-import org.example.lowcodekg.schema.entity.workflow.JavaMethod;
-import org.example.lowcodekg.schema.entity.workflow.JavaField;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaClass;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaMethod;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

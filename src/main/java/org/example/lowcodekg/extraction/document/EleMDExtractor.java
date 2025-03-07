@@ -3,14 +3,12 @@ package org.example.lowcodekg.extraction.document;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import java.util.*;
 
-import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.page.ComponentEntity;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.extraction.document.RawData;
-import org.example.lowcodekg.schema.entity.page.Component;
+import org.example.lowcodekg.model.schema.entity.page.Component;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,7 +1,7 @@
 package org.example.lowcodekg.service;
 
 
-import org.example.lowcodekg.common.result.Result;
+import org.example.lowcodekg.model.result.Result;
 
 public interface ClineService {
 

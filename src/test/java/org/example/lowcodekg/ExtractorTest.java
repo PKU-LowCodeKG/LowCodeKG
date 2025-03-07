@@ -2,12 +2,12 @@ package org.example.lowcodekg;
 
 import com.alibaba.fastjson.JSONObject;
 import dev.langchain4j.model.ollama.OllamaChatModel;
-import org.example.lowcodekg.dao.neo4j.repository.ComponentRepo;
-import org.example.lowcodekg.dao.neo4j.repository.PageRepo;
+import org.example.lowcodekg.model.dao.neo4j.repository.ComponentRepo;
+import org.example.lowcodekg.model.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.extraction.page.PageExtractor;
-import org.example.lowcodekg.schema.entity.page.Component;
-import org.example.lowcodekg.schema.entity.page.ConfigItem;
-import org.example.lowcodekg.schema.entity.page.PageTemplate;
+import org.example.lowcodekg.model.schema.entity.page.Component;
+import org.example.lowcodekg.model.schema.entity.page.ConfigItem;
+import org.example.lowcodekg.model.schema.entity.page.PageTemplate;
 import org.example.lowcodekg.service.FunctionalityGenService;
 import org.example.lowcodekg.service.ClineService;
 import org.example.lowcodekg.service.LLMGenerateService;

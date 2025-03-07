@@ -8,9 +8,9 @@ import java.nio.file.Paths;
 
 import java.util.*;
 
-import org.example.lowcodekg.dao.neo4j.entity.page.ComponentEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.page.ComponentEntity;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.schema.entity.page.Component;
+import org.example.lowcodekg.model.schema.entity.page.Component;
 import org.springframework.stereotype.Service;
 
 /**

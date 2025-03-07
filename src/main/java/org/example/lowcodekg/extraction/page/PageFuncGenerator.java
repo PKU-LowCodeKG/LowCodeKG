@@ -1,12 +1,11 @@
 package org.example.lowcodekg.extraction.page;
 
-import org.example.lowcodekg.dao.neo4j.entity.page.PageEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.neo4j.driver.QueryRunner;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
 
-import java.text.MessageFormat;
 import java.util.Optional;
 
 /**

@@ -2,7 +2,7 @@ package org.example.lowcodekg.extraction.document;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.lowcodekg.schema.entity.page.ConfigItem;
+import org.example.lowcodekg.model.schema.entity.page.ConfigItem;
 
 public class RawConfigItem {
     @Getter

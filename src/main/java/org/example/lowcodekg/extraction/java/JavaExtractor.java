@@ -8,7 +8,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
-import org.example.lowcodekg.schema.entity.workflow.JavaProject;
+import org.example.lowcodekg.model.schema.entity.workflow.JavaProject;
 import org.example.lowcodekg.common.util.JsonUtil;
 import org.springframework.stereotype.Service;
 
