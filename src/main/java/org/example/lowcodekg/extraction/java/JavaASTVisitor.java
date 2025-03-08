@@ -107,30 +107,26 @@ public class JavaASTVisitor extends ASTVisitor {
         // check annotation
         List<IExtendedModifier> annotations = node.modifiers();
         for(IExtendedModifier modifier : annotations) {
-            if(modifier instanceof Annotation) {
-                Annotation annotation = (Annotation) modifier;
+            if(modifier instanceof Annotation annotation) {
                 String annotationName = annotation.getTypeName().toString();
                 if (annotationName.equals("GetMapping") || annotationName.equals("PostMapping")
                         || annotationName.equals("PutMapping") || annotationName.equals("DeleteMapping")
                         || annotationName.equals("RequestMapping")) {
                     // 提取路由路径
                     String mappingUrl = null;
-                    if (annotation instanceof NormalAnnotation) {
-                        NormalAnnotation normalAnnotation = (NormalAnnotation) annotation;
+                    if (annotation instanceof NormalAnnotation normalAnnotation) {
                         for (Object obj : normalAnnotation.values()) { // 修改这里
                             if (obj instanceof MemberValuePair) { // 添加类型检查
                                 MemberValuePair pair = (MemberValuePair) obj;
                                 if (pair.getName().toString().equals("value")) {
                                     Expression expression = pair.getValue();
-                                    if (expression instanceof StringLiteral) {
-                                        StringLiteral literal = (StringLiteral) expression;
+                                    if (expression instanceof StringLiteral literal) {
                                         mappingUrl = literal.getLiteralValue();
                                     }
                                 }
                             }
                         }
-                    } else if (annotation instanceof SingleMemberAnnotation) {
-                        SingleMemberAnnotation singleMemberAnnotation = (SingleMemberAnnotation) annotation;
+                    } else if (annotation instanceof SingleMemberAnnotation singleMemberAnnotation) {
                         Expression expression = singleMemberAnnotation.getValue();
                         if (expression instanceof StringLiteral) {
                             StringLiteral literal = (StringLiteral) expression;
@@ -138,7 +134,7 @@ public class JavaASTVisitor extends ASTVisitor {
                         }
                     }
                     if(StringUtils.isNotEmpty(mappingUrl)) {
-                        mappingUrl = mappingUrl.substring(1).replaceAll("/", "_");
+//                        mappingUrl = mappingUrl.substring(1).replaceAll("/", "_");
                         info.setMappingUrl(mappingUrl);
                     }
                 }

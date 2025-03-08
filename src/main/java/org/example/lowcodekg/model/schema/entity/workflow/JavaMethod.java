@@ -74,24 +74,6 @@ public class JavaMethod {
     private List<JavaField> fieldAccessList = new ArrayList<>();
 
 
-    public JavaMethod(String name, String fullName, String returnType, String content, String comment, String params, IMethodBinding methodBinding,
-                          String fullReturnType, String belongTo, String fullParams, String fullVariables, Set<IMethodBinding> methodCalls, String fieldAccesses, String throwTypes) {
-        this.name = name;
-        this.fullName = fullName;
-        this.returnType = returnType;
-        this.content = content;
-        this.comment = comment;
-        this.params = params;
-        this.methodBiding = methodBinding;
-        this.fullReturnType = fullReturnType;
-        this.belongTo = belongTo;
-        this.fullParams = fullParams;
-        this.methodCalls = methodCalls;
-        this.fullVariables = fullVariables;
-        this.fieldAccesses = fieldAccesses;
-        this.throwType = throwTypes;
-    }
-
     public JavaMethodEntity storeInNeo4j(JavaMethodRepo javaMethodRepo, JSONObject jsonContent) {
         JavaMethodEntity methodEntity = new JavaMethodEntity();
         methodEntity.setName(name);
@@ -101,6 +83,7 @@ public class JavaMethod {
         methodEntity.setContent(content);
         methodEntity.setComment(comment);
         methodEntity.setParams(params);
+        methodEntity.setMappingUrl(mappingUrl);
         if(!Objects.isNull(jsonContent)) {
             methodEntity.setVid(jsonContent.getLong("id"));
             methodEntity.setDescription(jsonContent.getString("description"));

@@ -47,6 +47,9 @@ public class JavaMethodEntity {
     @Property("params")
     private String params;
 
+    @Property("mappingUrl")
+    private String mappingUrl;
+
     @Relationship(type = "PARAM_TYPE", direction = Relationship.Direction.OUTGOING)
     private List<JavaClassEntity> paramTypeList = new ArrayList<>();
 
