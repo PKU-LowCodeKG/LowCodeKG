@@ -43,7 +43,7 @@ public class WorkflowExtractor extends KnowledgeExtractor {
                 });
             }
             // generate workflow module tree
-            functionalityGenService.genWorkflowModule();
+//            functionalityGenService.genWorkflowModule();
 
         } catch (Exception e) {
             e.printStackTrace();

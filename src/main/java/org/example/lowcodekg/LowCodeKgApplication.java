@@ -13,6 +13,7 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.File;
+import java.util.Objects;
 
 @EnableTransactionManagement
 @EnableNeo4jRepositories
@@ -32,10 +33,10 @@ public class LowCodeKgApplication {
             parser.parseArgument(args);
             if (option.exec) {
                 SpringApplication.run(LowCodeKgApplication.class, args);
-            } else if (option.genConfigPath != null) {
+            } else if (!Objects.isNull(option.configPath)) {
                 ApplicationContext ctx = SpringApplication.run(LowCodeKgApplication.class, args);
                 KnowledgeExtractorService extractor = ctx.getBean(KnowledgeExtractorService.class);
-                extractor.execute(FileUtils.readFileToString(new File(option.genConfigPath), "utf-8"));
+                extractor.execute(FileUtils.readFileToString(new File(option.configPath), "utf-8"));
                 System.exit(0);
             }
         } catch (CmdLineException cle) {
@@ -49,9 +50,15 @@ public class LowCodeKgApplication {
 
 class CmdOption {
 
+    /**
+     * construct knowledge graph
+     */
     @Option(name = "-gen", usage = "Generate a knowledge graph according to the yaml configure file")
-    public String genConfigPath = null;
+    public String configPath = null;
 
+    /**
+     * start web service
+     */
     @Option(name = "-exec", usage = "Run the web application in localhost", handler = ExplicitBooleanOptionHandler.class)
     public boolean exec = false;
 }
