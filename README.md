@@ -87,10 +87,18 @@ org.example.lowcodekg.extraction.java.JavaExtractor:
 ### 查询子图示例
 ![query_example.png](src/main/resources/static/query_example.png)
 
-## 数据源
+## 数据
 - [蚂蚁开源组件库](https://github.com/ant-design/ant-design)
 - 博客系统
   - https://github.com/linhaojun857/aurora
   - https://github.com/Naccl/NBlog
   - https://github.com/martin-chips/DimpleBlog
   - https://github.com/moxi624/mogu_blog_v2
+- 电商系统
+  - https://github.com/macrozheng/mall
+  - https://github.com/macrozheng/mall-admin-web
+  - https://github.com/macrozheng/mall-app-web
+  - https://github.com/2227324689/gpmall
+  - https://github.com/gz-yami/mall4j
+  - https://github.com/newbee-ltd/newbee-mall
+  - https://github.com/Exrick/xmall

@@ -82,7 +82,7 @@ public class PageWorkflowLink extends KnowledgeExtractor {
             Pattern regex = Pattern.compile(pattern);
             Matcher matcher = regex.matcher(content.toString());
 
-            // 查找所有匹配项
+            // 查找所有匹配项，并匹配Neo4j数据库中节点
             while (matcher.find()) {
                 String lib = matcher.group(1);      // axios/this.axios/fetch
                 String method = matcher.group(2);   // HTTP方法
