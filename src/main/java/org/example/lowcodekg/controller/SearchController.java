@@ -17,7 +17,7 @@ import java.util.List;
  * 响应搜索请求
  */
 @RestController
-public class Controller {
+public class SearchController {
 
     @Autowired
     Neo4jGraphService neo4jGraphService;
