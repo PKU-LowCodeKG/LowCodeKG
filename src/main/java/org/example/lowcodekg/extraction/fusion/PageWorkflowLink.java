@@ -2,8 +2,6 @@ package org.example.lowcodekg.extraction.fusion;
 
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
