@@ -121,7 +121,7 @@ public class JavaASTVisitor extends ASTVisitor {
                                 if (pair.getName().toString().equals("value")) {
                                     Expression expression = pair.getValue();
                                     if (expression instanceof StringLiteral literal) {
-                                        mappingUrl = literal.getLiteralValue();
+                                        mappingUrl = "@" + annotationName + "(\"" + literal.getLiteralValue() + "\")";
                                     }
                                 }
                             }
@@ -130,7 +130,7 @@ public class JavaASTVisitor extends ASTVisitor {
                         Expression expression = singleMemberAnnotation.getValue();
                         if (expression instanceof StringLiteral) {
                             StringLiteral literal = (StringLiteral) expression;
-                            mappingUrl = literal.getLiteralValue();
+                            mappingUrl = "@" + annotationName + "(\"" + literal.getLiteralValue() + "\")";
                         }
                     }
                     if(StringUtils.isNotEmpty(mappingUrl)) {

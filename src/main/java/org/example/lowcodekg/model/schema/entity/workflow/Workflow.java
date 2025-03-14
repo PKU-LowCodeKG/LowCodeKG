@@ -29,6 +29,8 @@ public class Workflow {
     // 调用链中方法体内容拼接
     private String content;
 
+    private String mappingUrl;
+
     // 请求响应方法调用链
     private List<JavaMethod> methodList = new ArrayList<>();
 
@@ -38,6 +40,7 @@ public class Workflow {
     public Workflow(JavaMethod method) {
         this.name = method.getName();
         this.method = method;
+        this.mappingUrl = method.getMappingUrl();
         appendMethod(method);
     }
 
@@ -45,6 +48,7 @@ public class Workflow {
         WorkflowEntity entity = new WorkflowEntity();
         entity.setName(name);
         entity.setDescription(description);
+        entity.setMappingUrl(mappingUrl);
         entity = workflowRepo.save(entity);
         return entity;
     }

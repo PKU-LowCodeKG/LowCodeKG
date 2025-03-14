@@ -32,6 +32,9 @@ public class WorkflowEntity {
     @Property("content")
     private String content;
 
+    @Property
+    private String mappingUrl;
+
     @Property("methodList")
     private String methodList;
 
