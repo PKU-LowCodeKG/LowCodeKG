@@ -10,6 +10,12 @@ import org.neo4j.driver.types.Node;
 import java.text.MessageFormat;
 import java.util.Optional;
 
+/**
+ * 从请求响应方法出发，抽取出该功能实现的方法调用链以及相关的数据实体
+ * @return 工作流实体
+ * @author Sherloque
+ * @date 2025/3/15
+ */
 public class WorkflowExtractor extends KnowledgeExtractor {
 
     @Override

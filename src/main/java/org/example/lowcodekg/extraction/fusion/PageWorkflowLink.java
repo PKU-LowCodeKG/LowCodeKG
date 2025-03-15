@@ -57,7 +57,6 @@ public class PageWorkflowLink extends KnowledgeExtractor {
                         );
                     }
                 }
-
                 // 从Neo4j数据库查询Workflow实体
                 processBackendFile();
 
