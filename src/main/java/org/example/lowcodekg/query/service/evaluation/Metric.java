@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.evaluation;
+package org.example.lowcodekg.query.service.evaluation;
 
 /**
  * @Description 衡量模板推荐结果的指标
