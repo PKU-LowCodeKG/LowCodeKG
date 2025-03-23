@@ -36,6 +36,15 @@ public class ElasticSearchService {
         this.client = client;
     }
 
+    public void setUp() {
+        deleteIndex();
+        try {
+            createIndex(Document.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void deleteIndex() {
         try {
             client.indices().delete(d -> d.index(ElasticSearchService.INDEX_NAME));
