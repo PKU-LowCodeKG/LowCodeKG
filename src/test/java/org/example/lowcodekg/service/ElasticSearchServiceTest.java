@@ -20,6 +20,7 @@ class ElasticSearchServiceTest {
 
     @BeforeEach
     void setUp() throws IOException {
+        esService.deleteIndex();
         // 确保索引存在
         String result = esService.createIndex();
         System.out.println("Index creation result: " + result);
@@ -38,7 +39,7 @@ class ElasticSearchServiceTest {
         Document doc1 = new Document();
         doc1.setId(UUID.randomUUID().toString());
         doc1.setName("Java Programming Guide");
-        doc1.setDescription("Java is a popular programming language. It is used for web development, Android apps, and enterprise software.");
+        doc1.setContent("Java is a popular programming language. It is used for web development, Android apps, and enterprise software.");
         float[] embedding1 = new float[384];
         // 填充一些示例向量值
         for (int i = 0; i < embedding1.length; i++) {
@@ -49,7 +50,7 @@ class ElasticSearchServiceTest {
         Document doc2 = new Document();
         doc2.setId(UUID.randomUUID().toString());
         doc2.setName("Python Tutorial");
-        doc2.setDescription("Python is an easy to learn programming language. It's great for data science and machine learning.");
+        doc2.setContent("Python is an easy to learn programming language. It's great for data science and machine learning.");
         float[] embedding2 = new float[384];
         for (int i = 0; i < embedding2.length; i++) {
             embedding2[i] = (float) Math.random();

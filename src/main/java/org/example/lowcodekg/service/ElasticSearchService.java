@@ -1,8 +1,10 @@
 package org.example.lowcodekg.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.AcknowledgedResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import co.elastic.clients.json.JsonData;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,16 @@ public class ElasticSearchService {
     @Autowired
     public ElasticSearchService(ElasticsearchClient client) {
         this.client = client;
+    }
+
+    public void deleteIndex() {
+        try {
+            client.indices().delete(d -> d.index(ElasticSearchService.INDEX_NAME));
+            System.out.println("Existing index deleted successfully.");
+        } catch (Exception e) {
+            // 忽略删除不存在的索引的异常
+            System.out.println("Index does not exist, skipping deletion.");
+        }
     }
 
     /**

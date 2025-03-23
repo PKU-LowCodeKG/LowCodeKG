@@ -12,7 +12,6 @@ public class Document {
     @Id
     private String id;
 
-    @Field(type = FieldType.Long)
     private Long neo4jId;
 
     @Field(type = FieldType.Keyword)
