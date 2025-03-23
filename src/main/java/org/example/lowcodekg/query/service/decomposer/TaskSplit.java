@@ -2,6 +2,7 @@ package org.example.lowcodekg.query.service.decomposer;
 
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.query.model.Task;
+import org.example.lowcodekg.query.model.TaskGraph;
 
 import java.util.List;
 
@@ -12,5 +13,6 @@ import java.util.List;
  */
 public interface TaskSplit {
 
-    Result<List<Task>> taskSplit(String query);
+    Result<TaskGraph> taskSplit(String query);
+
 }
