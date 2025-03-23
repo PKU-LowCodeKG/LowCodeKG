@@ -2,12 +2,14 @@ package org.example.lowcodekg.service;
 
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.query.utils.EmbeddingUtil;
+import org.example.lowcodekg.query.utils.FormatUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -42,21 +44,14 @@ class ElasticSearchServiceTest {
         doc1.setId(UUID.randomUUID().toString());
         doc1.setName("Java Programming Guide");
         doc1.setContent("Java is a popular programming language. It is used for web development, Android apps, and enterprise software.");
-        float[] embedding1 = new float[384];
-        // 填充一些示例向量值
-        for (int i = 0; i < embedding1.length; i++) {
-            embedding1[i] = (float) Math.random();
-        }
+        float[] embedding1 = FormatUtil.ListToArray(EmbeddingUtil.embedText(doc1.getName() + "\n" + doc1.getContent()));
         doc1.setEmbedding(embedding1);
 
         Document doc2 = new Document();
         doc2.setId(UUID.randomUUID().toString());
         doc2.setName("Python Tutorial");
         doc2.setContent("Python is an easy to learn programming language. It's great for data science and machine learning.");
-        float[] embedding2 = new float[384];
-        for (int i = 0; i < embedding2.length; i++) {
-            embedding2[i] = (float) Math.random();
-        }
+        float[] embedding2 = FormatUtil.ListToArray(EmbeddingUtil.embedText(doc2.getName() + "\n" + doc2.getContent()));
         doc2.setEmbedding(embedding2);
 
         // 索引文档
@@ -87,6 +82,7 @@ class ElasticSearchServiceTest {
         List<Float> vector2 = Arrays.asList(0.4f, 0.5f, 0.6f);
 
         List<Float> embedding1 = EmbeddingUtil.embedText(text1);
+        System.out.println(embedding1.size());
         List<Float> embedding2 = EmbeddingUtil.embedText(text2);
         double sim = EmbeddingUtil.calculateSimilarity(text1, text2);
         System.out.println(sim);

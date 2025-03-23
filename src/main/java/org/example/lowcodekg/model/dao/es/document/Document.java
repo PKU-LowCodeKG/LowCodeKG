@@ -5,6 +5,8 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.neo4j.core.schema.Id;
 
+import java.util.List;
+
 @Data
 @org.springframework.data.elasticsearch.annotations.Document(indexName = "documents")
 public class Document {
@@ -20,6 +22,6 @@ public class Document {
     @Field(type = FieldType.Text)
     private String content;
 
-    @Field(type = FieldType.Dense_Vector, dims = 384)
+    @Field(type = FieldType.Dense_Vector, dims = 512)
     private float[] embedding;
 }

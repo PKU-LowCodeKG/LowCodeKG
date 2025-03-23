@@ -15,7 +15,7 @@ import java.util.List;
 @Node("Component")
 @Data
 @NoArgsConstructor
-public class ComponentEntity implements Describable {
+public class ComponentEntity {
     @Id
     @GeneratedValue
     private Long id;

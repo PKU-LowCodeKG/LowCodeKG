@@ -49,6 +49,8 @@ public class JavaClassEntity implements Describable {
     @Property("isData")
     private Boolean isData;
 
+    private List<Float> embedding;
+
     @Relationship(type = "EXTEND", direction = Relationship.Direction.OUTGOING)
     private List<JavaClassEntity> superClassList = new ArrayList<>();
 

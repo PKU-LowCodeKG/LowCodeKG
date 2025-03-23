@@ -11,7 +11,7 @@ import java.util.List;
 
 @Node("ScriptMethod")
 @Data
-public class ScriptMethodEntity implements Describable {
+public class ScriptMethodEntity {
 
     @Id
     @GeneratedValue

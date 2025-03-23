@@ -70,7 +70,7 @@ public class ElasticSearchService {
                 fieldMapping.put("analyzer", "standard");
             } else if (field.getType() == float[].class) {
                 fieldMapping.put("type", "dense_vector");
-                fieldMapping.put("dims", 384); // 假设维度固定为384
+                fieldMapping.put("dims", 512); // 假设维度固定为384
                 fieldMapping.put("index", true);
                 fieldMapping.put("similarity", "cosine");
             }

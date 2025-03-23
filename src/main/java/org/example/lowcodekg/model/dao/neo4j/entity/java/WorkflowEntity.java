@@ -39,6 +39,8 @@ public class WorkflowEntity implements Describable {
     @Property("methodList")
     private String methodList;
 
+    private List<Float> embedding = new ArrayList<>();
+
     /**
      * 工作流关联的method实体
      */

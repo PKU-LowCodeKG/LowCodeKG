@@ -1,5 +1,8 @@
 package org.example.lowcodekg.model.dao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 可描述实体的接口，用于统一处理具有名称和描述的实体
  */
@@ -18,6 +21,8 @@ public interface Describable {
      * 获取实体的描述
      */
     String getDescription();
+
+    List<Float> getEmbedding();
 
     /**
      * 获取实体的类型

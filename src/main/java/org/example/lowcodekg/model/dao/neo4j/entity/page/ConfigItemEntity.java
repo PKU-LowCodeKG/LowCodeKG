@@ -11,7 +11,7 @@ import org.springframework.data.neo4j.core.schema.Property;
 @Node("ConfigItem")
 @Data
 @NoArgsConstructor
-public class ConfigItemEntity implements Describable {
+public class ConfigItemEntity {
     @Id
     @GeneratedValue
     private Long id;

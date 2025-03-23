@@ -9,7 +9,7 @@ import java.util.List;
 
 @Node("Script")
 @Data
-public class ScriptEntity implements Describable {
+public class ScriptEntity {
 
     @Id
     @GeneratedValue

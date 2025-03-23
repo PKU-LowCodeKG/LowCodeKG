@@ -9,7 +9,7 @@ import java.util.List;
 
 @Node("JavaMethod")
 @Data
-public class JavaMethodEntity implements Describable {
+public class JavaMethodEntity {
 
     @Id
     @GeneratedValue

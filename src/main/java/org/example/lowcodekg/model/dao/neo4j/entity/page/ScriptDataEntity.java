@@ -9,7 +9,7 @@ import org.springframework.data.neo4j.core.schema.Property;
 
 @Node("ScriptData")
 @Data
-public class ScriptDataEntity implements Describable {
+public class ScriptDataEntity {
 
     @Id
     @GeneratedValue

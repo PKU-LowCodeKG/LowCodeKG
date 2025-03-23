@@ -6,6 +6,7 @@ import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.model.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
+import org.example.lowcodekg.query.utils.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.service.LLMGenerateService;
@@ -83,6 +84,7 @@ public class FuncGenerateImpl implements FuncGenerate {
             WorkflowEntity entity = workflowRepo.save(workflowEntity);
 
             // create es index
+            entity.setEmbedding(EmbeddingUtil.embedText(entity.getDescription()));
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document);
 
@@ -141,6 +143,7 @@ public class FuncGenerateImpl implements FuncGenerate {
             PageEntity entity = pageRepo.save(pageEntity);
 
             // create es index
+            entity.setEmbedding(EmbeddingUtil.embedText(entity.getDescription()));
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document);
         } catch (Exception e) {

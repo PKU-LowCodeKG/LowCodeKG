@@ -9,7 +9,7 @@ import java.util.List;
 
 @Node("JavaField")
 @Data
-public class JavaFieldEntity implements Describable {
+public class JavaFieldEntity {
 
     @Id
     @GeneratedValue
