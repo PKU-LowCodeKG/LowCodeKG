@@ -1,6 +1,7 @@
 package org.example.lowcodekg.model.dao.neo4j.entity.page;
 
 import lombok.Data;
+import org.example.lowcodekg.model.dao.Describable;
 import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.List;
 
 @Node("Script")
 @Data
-public class ScriptEntity {
+public class ScriptEntity implements Describable {
 
     @Id
     @GeneratedValue

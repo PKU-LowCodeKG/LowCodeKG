@@ -2,6 +2,7 @@ package org.example.lowcodekg.model.dao.neo4j.entity.page;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.lowcodekg.model.dao.Describable;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
@@ -10,7 +11,7 @@ import org.springframework.data.neo4j.core.schema.Property;
 @Node("ConfigItem")
 @Data
 @NoArgsConstructor
-public class ConfigItemEntity {
+public class ConfigItemEntity implements Describable {
     @Id
     @GeneratedValue
     private Long id;
