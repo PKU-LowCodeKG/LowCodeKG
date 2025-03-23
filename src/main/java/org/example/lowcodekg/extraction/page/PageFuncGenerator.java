@@ -26,7 +26,7 @@ public class PageFuncGenerator extends KnowledgeExtractor {
                 Node node = result.next().get("n").asNode();
                 Optional<PageEntity> pageEntityOptional = pageRepo.findById(node.id());
                 pageEntityOptional.ifPresent(pageEntity -> {
-                    functionalityGenService.generatePageFunctionality(pageEntity);
+                    funcGenerateService.genPageFunc(pageEntity);
                 });
             }
         } catch (Exception e) {

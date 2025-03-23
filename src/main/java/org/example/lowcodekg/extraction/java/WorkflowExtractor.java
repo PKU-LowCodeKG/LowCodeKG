@@ -45,7 +45,7 @@ public class WorkflowExtractor extends KnowledgeExtractor {
                     workflowEntity = workflowRepo.save(workflowEntity);
 
                     // generate description
-                    functionalityGenService.genWorkflowFunc(workflowEntity);
+                    funcGenerateService.genWorkflowFunc(workflowEntity);
                 });
             }
             // generate workflow module tree

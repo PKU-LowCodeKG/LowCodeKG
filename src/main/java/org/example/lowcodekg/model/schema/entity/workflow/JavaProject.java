@@ -99,16 +99,6 @@ public class JavaProject {
             JavaClassEntity classEntity = classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName()));
 
             classEntityMap.put(classInfo.getFullName(), classEntity);
-
-            // vector store
-//            classInfo.setVid(classEntity.getVid());
-//            classInfo.setDescription(classEntity.getDescription());
-//            Document document = FormatUtil.entityToDocument(classEntity);
-//            try {
-//                elasticSearchService.indexDocument(document);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
         });
         // class -[extend | implement]-> class
         classMap.values().forEach(classInfo -> {
@@ -147,16 +137,6 @@ public class JavaProject {
                 WorkflowEntity workflowEntity = workflow.createWorkflowEntity(workflowRepo);
                 workflowRepo.createRelationOfContainedMethod(workflowEntity.getId(), methodEntity.getId());
             }
-
-            // vector store
-//            methodInfo.setVid(methodEntity.getVid());
-//            methodInfo.setDescription(methodEntity.getDescription());
-//            Document document = FormatUtil.entityToDocument(methodEntity);
-//            try {
-//                elasticSearchService.indexDocument(document);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
         });
         // class -[have_method]-> method
         classMap.values().forEach(classInfo -> {
@@ -196,16 +176,6 @@ public class JavaProject {
 
             JavaFieldEntity fieldEntity = fieldInfo.storeInNeo4j(javaFieldRepo, jsonMap.get(fieldInfo.getFullName()));
             fieldEntityMap.put(fieldInfo.getFullName(), fieldEntity);
-
-            // vector store
-//            fieldInfo.setVid(fieldEntity.getVid());
-//            fieldInfo.setDescription(fieldEntity.getDescription());
-//            Document document = FormatUtil.entityToDocument(fieldEntity);
-//            try {
-//                elasticSearchService.indexDocument(document);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
         });
         // class -[have_field]-> field
         classMap.values().forEach(classInfo -> {

@@ -1,12 +1,14 @@
 package org.example.lowcodekg.service;
 
 import org.example.lowcodekg.model.dao.es.document.Document;
+import org.example.lowcodekg.query.utils.EmbeddingUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,14 +24,14 @@ class ElasticSearchServiceTest {
     void setUp() throws IOException {
         esService.deleteIndex();
         // 确保索引存在
-        String result = esService.createIndex();
+        String result = esService.createIndex(Document.class);
         System.out.println("Index creation result: " + result);
     }
 
     @Test
     void testCreateIndex() throws IOException {
         // 测试重复创建索引
-        String result = esService.createIndex();
+        String result = esService.createIndex(Document.class);
         assertTrue(result.contains("已存在"));
     }
 
@@ -75,5 +77,23 @@ class ElasticSearchServiceTest {
         // 测试向量搜索（自定义参数）
         List<Document> results4 = esService.searchByVector(embedding2, 2, 0.7);
         System.out.println(results4);
+    }
+
+    @Test
+    public void testCalculateSimilarity() {
+        String text1 = "Hello, World!";
+        String text2 = "Goodbye, World!";
+        List<Float> vector1 = Arrays.asList(0.1f, 0.2f, 0.3f);
+        List<Float> vector2 = Arrays.asList(0.4f, 0.5f, 0.6f);
+
+        List<Float> embedding1 = EmbeddingUtil.embedText(text1);
+        List<Float> embedding2 = EmbeddingUtil.embedText(text2);
+        double sim = EmbeddingUtil.calculateSimilarity(text1, text2);
+        System.out.println(sim);
+
+        double expectedSimilarity = 0.9746318461970763; // 预期的余弦相似度值
+        double result = EmbeddingUtil.calculateSimilarity(text1, text2);
+
+        System.out.println("余弦相似度：" + result);
     }
 } 

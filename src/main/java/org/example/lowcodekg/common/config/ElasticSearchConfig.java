@@ -7,9 +7,9 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,24 +24,27 @@ public class ElasticSearchConfig {
     @Value("9200")
     private int port;
 
-    @Value("elastic")
+    @Value("${spring.elasticsearch.username}")
     private String username;
 
-    @Value("changeme")
+    @Value("${spring.elasticsearch.password}")
     private String password;
 
     @Bean
     public ElasticsearchClient elasticsearchClient() {
-        // 创建认证提供者
-        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY,
-                new UsernamePasswordCredentials(username, password));
+        // 创建 BasicCredentialsProvider 并设置用户名和密码
+        BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
 
-        // 创建低级客户端
-        RestClient restClient = RestClient.builder(new HttpHost(host, port, "http"))
-                .setHttpClientConfigCallback(httpClientBuilder -> 
-                    httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider))
-                .build();
+        // 创建 RestClientBuilder 并设置认证提供者
+        RestClientBuilder builder = RestClient.builder(
+                        new HttpHost(host, port, "http"))
+                .setHttpClientConfigCallback(httpClientBuilder ->
+                        httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
+                );
+
+        // 创建 RestClient
+        RestClient restClient = builder.build();
 
         // 创建传输层
         ElasticsearchTransport transport = new RestClientTransport(
