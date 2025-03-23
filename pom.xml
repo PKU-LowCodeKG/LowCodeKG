@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.3.4</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.example</groupId>
     <artifactId>LowCodeKG</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>LowCodeKG</name>
     <description>LowCodeKG</description>
-    <url/>
+    <url />
     <licenses>
-        <license/>
+        <license />
     </licenses>
     <developers>
-        <developer/>
+        <developer />
     </developers>
     <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
+        <connection />
+        <developerConnection />
+        <tag />
+        <url />
     </scm>
     <properties>
         <java.version>17</java.version>
@@ -92,17 +93,42 @@
             <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
             <version>1.0.0.M1</version>
         </dependency>
-        <!-- Elasticsearch REST High Level Client -->
+        <!-- Elasticsearch Dependencies -->
+<!--        <dependency>-->
+<!--            <groupId>org.elasticsearch.client</groupId>-->
+<!--            <artifactId>elasticsearch-rest-high-level-client</artifactId>-->
+<!--            <version>7.17.14</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.elasticsearch</groupId>-->
+<!--            <artifactId>elasticsearch</artifactId>-->
+<!--            <version>7.17.14</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.elasticsearch.client</groupId>-->
+<!--            <artifactId>elasticsearch-rest-client</artifactId>-->
+<!--            <version>7.17.14</version>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.10.2</version> <!-- 请根据你的Elasticsearch版本选择合适的客户端版本 -->
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+            <version>8.15.0</version>
         </dependency>
-        <!-- Apache HttpClient -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- Apache HttpClient Dependencies -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.13</version> <!-- 请根据需要选择合适的版本 -->
+            <version>4.5.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.16</version>
         </dependency>
 
         <dependency>
@@ -117,7 +143,8 @@
             <version>0.35.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-ollama-spring-boot-starter -->
+        <!--
+        https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-ollama-spring-boot-starter -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-ollama-spring-boot-starter</artifactId>

@@ -1,97 +1,172 @@
 package org.example.lowcodekg.service;
 
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.embedding.onnx.bgesmallzhv15q.BgeSmallZhV15QuantizedEmbeddingModel;
-import dev.langchain4j.store.embedding.elasticsearch.ElasticsearchConfigurationKnn;
-import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.store.embedding.EmbeddingMatch;
-import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.EmbeddingSearchResult;
-import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
-import dev.langchain4j.store.embedding.elasticsearch.ElasticsearchEmbeddingStore;
-import io.micrometer.common.util.StringUtils;
-import org.elasticsearch.client.RestClient;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.json.JsonData;
+import org.example.lowcodekg.model.dao.es.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.example.lowcodekg.model.schema.entity.workflow.JavaClass;
-import org.example.lowcodekg.model.schema.entity.workflow.JavaMethod;
-import org.example.lowcodekg.model.schema.entity.workflow.JavaField;
-
-
+/**
+ * @Description
+ * @Author Sherloque
+ * @Date 2025/3/23 14:08
+ */
 @Service
 public class ElasticSearchService {
 
-    private final RestClient client;
-    private final EmbeddingStore<TextSegment> embeddingStore;
-    private final EmbeddingModel embeddingModel;
-
+    private final ElasticsearchClient client;
+    private static final String INDEX_NAME = "documents";
 
     @Autowired
-    public ElasticSearchService(RestClient client) {
+    public ElasticSearchService(ElasticsearchClient client) {
         this.client = client;
-        this.embeddingStore = ElasticsearchEmbeddingStore.builder().restClient(client).configuration(ElasticsearchConfigurationKnn.builder().build()).build();
-        this.embeddingModel = new BgeSmallZhV15QuantizedEmbeddingModel();
-    }
-
-    public void storeJavaClassEmbedding(JavaClass javaClass) {
-        if (StringUtils.isNotEmpty(javaClass.getDescription())) {
-            TextSegment descriptionSegment = TextSegment.from(javaClass.getDescription());
-            TextSegment vidSegment = TextSegment.from(String.valueOf(javaClass.getVid()));
-            Embedding embedding = embeddingModel.embed(descriptionSegment).content();
-
-            embeddingStore.add(embedding, vidSegment);
-        } else {
-            System.out.println(javaClass.getFullName() + " description is null or empty");
-        }
-    }
-
-    public void storeJavaMethodEmbedding(JavaMethod javaMethod) {
-        if (StringUtils.isNotEmpty(javaMethod.getDescription())) {
-            TextSegment descriptionSegment = TextSegment.from(javaMethod.getDescription());
-            TextSegment vidSegment = TextSegment.from(String.valueOf(javaMethod.getVid()));
-            Embedding embedding = embeddingModel.embed(descriptionSegment).content();
-
-            embeddingStore.add(embedding, vidSegment);
-        } else {
-            System.out.println(javaMethod.getFullName() + " description is null or empty");
-        }
-    }
-    public void storeJavaFieldEmbedding(JavaField javaField) {
-        if (StringUtils.isNotEmpty(javaField.getDescription())) {
-            TextSegment descriptionSegment = TextSegment.from(javaField.getDescription());
-            TextSegment vidSegment = TextSegment.from(String.valueOf(javaField.getVid()));
-            Embedding embedding = embeddingModel.embed(descriptionSegment).content();
-
-            embeddingStore.add(embedding, vidSegment);
-        } else {
-//            System.out.println(javaField.getFullName() + " description is null or empty");
-        }
     }
 
     /**
-     * 查询嵌入数据
+     * 创建索引
+     * @return 创建结果信息
      */
-    public List<String> searchEmbedding(String query) {
-        if (query == null || query.isEmpty()) {
-            throw new IllegalArgumentException("Query cannot be null or empty");
+    public String createIndex() throws IOException {
+        // 首先检查索引是否存在
+        boolean indexExists = client.indices().exists(e -> e
+                .index(INDEX_NAME)
+        ).value();
+
+        // 如果索引已存在，返回提示信息
+        if (indexExists) {
+            return "索引 '" + INDEX_NAME + "' 已存在，无需重复创建";
         }
 
-        TextSegment querySegment = TextSegment.from(query);
-        Embedding queryEmbedding = embeddingModel.embed(querySegment).content();
-        EmbeddingSearchResult<TextSegment> relevant = embeddingStore.search(
-                EmbeddingSearchRequest.builder()
-                        .queryEmbedding(queryEmbedding)
-                        .maxResults(5)
-                        .build());
-        List<String> fullNames = new ArrayList<>();
-        for(EmbeddingMatch<TextSegment> match : relevant.matches()) {
-            fullNames.add(match.embedded().text());
+        // 索引不存在，创建新索引
+        String mapping = """
+        {
+          "mappings": {
+            "properties": {
+              "name": {
+                "type": "text",
+                "analyzer": "standard"
+              },
+              "content": {
+                "type": "text",
+                "analyzer": "standard"
+              },
+              "embedding": {
+                "type": "dense_vector",
+                "dims": 384,
+                "index": true,
+                "similarity": "cosine"
+              }
+            }
+          }
         }
-        return fullNames;
+        """;
+
+        try {
+            // 创建索引
+            boolean acknowledged = client.indices().create(c -> c
+                    .index(INDEX_NAME)
+                    .withJson(new StringReader(mapping))
+            ).acknowledged();
+
+            // 返回创建结果
+            return acknowledged
+                    ? "索引 '" + INDEX_NAME + "' 创建成功"
+                    : "索引 '" + INDEX_NAME + "' 创建失败";
+
+        } catch (Exception e) {
+            // 捕获可能的异常并返回错误信息
+            return "创建索引时发生错误: " + e.getMessage();
+        }
+    }
+
+    public void indexDocument(Document document) throws IOException {
+        client.index(i -> i
+                .index(INDEX_NAME)
+                .id(document.getId())
+                .document(document)
+        );
+    }
+
+    /**
+     * 基于文本内容搜索文档
+     * @param query 查询文本
+     * @param maxResults 最大返回结果数，默认为10
+     * @param minScore 最小相似度阈值，默认为0
+     * @return 匹配的文档列表
+     */
+    public List<Document> searchByText(String query, int maxResults, double minScore) throws IOException {
+        SearchResponse<Document> response = client.search(s -> s
+                        .index(INDEX_NAME)
+                        .query(q -> q
+                                .multiMatch(m -> m
+                                        .fields("name", "content")
+                                        .query(query)
+                                )
+                        )
+                        .size(maxResults),
+                Document.class
+        );
+
+        return extractHits(response, minScore);
+    }
+
+    /**
+     * 基于文本内容搜索文档（使用默认参数）
+     */
+    public List<Document> searchByText(String query) throws IOException {
+        return searchByText(query, 10, 0.0);
+    }
+
+    /**
+     * 基于向量搜索文档
+     * @param queryVector 查询向量
+     * @param maxResults 最大返回结果数，默认为10
+     * @param minScore 最小相似度阈值，默认为0
+     * @return 匹配的文档列表
+     */
+    public List<Document> searchByVector(float[] queryVector, int maxResults, double minScore) throws IOException {
+        SearchResponse<Document> response = client.search(s -> s
+                        .index(INDEX_NAME)
+                        .query(q -> q
+                                .scriptScore(ss -> ss
+                                        .query(qq -> qq.matchAll(m -> m))
+                                        .script(script -> script
+                                                .source("cosineSimilarity(params.queryVector, 'embedding') + 1.0")
+                                                .params("queryVector", JsonData.of(queryVector))
+                                        )
+                                )
+                        )
+                        .size(maxResults),
+                Document.class
+        );
+
+        return extractHits(response, minScore);
+    }
+
+    /**
+     * 基于向量搜索文档（使用默认参数）
+     */
+    public List<Document> searchByVector(float[] queryVector) throws IOException {
+        return searchByVector(queryVector, 10, 0.0);
+    }
+
+    /**
+     * 从搜索响应中提取命中结果
+     * @param response 搜索响应
+     * @param minScore 最小相似度阈值
+     * @return 文档列表
+     */
+    private List<Document> extractHits(SearchResponse<Document> response, double minScore) {
+        return response.hits().hits().stream()
+                .filter(hit -> hit.score() >= minScore)
+                .map(Hit::source)
+                .collect(Collectors.toList());
     }
 }

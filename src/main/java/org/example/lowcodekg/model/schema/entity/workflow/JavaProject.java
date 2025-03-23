@@ -12,8 +12,8 @@ import org.example.lowcodekg.model.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
-import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.common.util.JsonUtil;
+import org.example.lowcodekg.service.ElasticSearchService;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -101,9 +101,14 @@ public class JavaProject {
             classEntityMap.put(classInfo.getFullName(), classEntity);
 
             // vector store
-            classInfo.setVid(classEntity.getVid());
-            classInfo.setDescription(classEntity.getDescription());
-            elasticSearchService.storeJavaClassEmbedding(classInfo);
+//            classInfo.setVid(classEntity.getVid());
+//            classInfo.setDescription(classEntity.getDescription());
+//            Document document = FormatUtil.entityToDocument(classEntity);
+//            try {
+//                elasticSearchService.indexDocument(document);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
         });
         // class -[extend | implement]-> class
         classMap.values().forEach(classInfo -> {
@@ -144,9 +149,14 @@ public class JavaProject {
             }
 
             // vector store
-            methodInfo.setVid(methodEntity.getVid());
-            methodInfo.setDescription(methodEntity.getDescription());
-           elasticSearchService.storeJavaMethodEmbedding(methodInfo);
+//            methodInfo.setVid(methodEntity.getVid());
+//            methodInfo.setDescription(methodEntity.getDescription());
+//            Document document = FormatUtil.entityToDocument(methodEntity);
+//            try {
+//                elasticSearchService.indexDocument(document);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
         });
         // class -[have_method]-> method
         classMap.values().forEach(classInfo -> {
@@ -188,9 +198,14 @@ public class JavaProject {
             fieldEntityMap.put(fieldInfo.getFullName(), fieldEntity);
 
             // vector store
-            fieldInfo.setVid(fieldEntity.getVid());
-            fieldInfo.setDescription(fieldEntity.getDescription());
-            elasticSearchService.storeJavaFieldEmbedding(fieldInfo);
+//            fieldInfo.setVid(fieldEntity.getVid());
+//            fieldInfo.setDescription(fieldEntity.getDescription());
+//            Document document = FormatUtil.entityToDocument(fieldEntity);
+//            try {
+//                elasticSearchService.indexDocument(document);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
         });
         // class -[have_field]-> field
         classMap.values().forEach(classInfo -> {
