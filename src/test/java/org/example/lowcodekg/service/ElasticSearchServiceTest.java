@@ -22,14 +22,14 @@ class ElasticSearchServiceTest {
     void setUp() throws IOException {
         esService.deleteIndex();
         // 确保索引存在
-        String result = esService.createIndex();
+        String result = esService.createIndex(Document.class);
         System.out.println("Index creation result: " + result);
     }
 
     @Test
     void testCreateIndex() throws IOException {
         // 测试重复创建索引
-        String result = esService.createIndex();
+        String result = esService.createIndex(Document.class);
         assertTrue(result.contains("已存在"));
     }
 

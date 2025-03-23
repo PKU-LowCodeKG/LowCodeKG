@@ -6,13 +6,18 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import co.elastic.clients.json.JsonData;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -45,7 +50,7 @@ public class ElasticSearchService {
      * 创建索引
      * @return 创建结果信息
      */
-    public String createIndex() throws IOException {
+    public String createIndex(Class<Document> documentClass) throws IOException {
         // 首先检查索引是否存在
         boolean indexExists = client.indices().exists(e -> e
                 .index(INDEX_NAME)
@@ -56,35 +61,40 @@ public class ElasticSearchService {
             return "索引 '" + INDEX_NAME + "' 已存在，无需重复创建";
         }
 
-        // 索引不存在，创建新索引
-        String mapping = """
-        {
-          "mappings": {
-            "properties": {
-              "name": {
-                "type": "text",
-                "analyzer": "standard"
-              },
-              "content": {
-                "type": "text",
-                "analyzer": "standard"
-              },
-              "embedding": {
-                "type": "dense_vector",
-                "dims": 384,
-                "index": true,
-                "similarity": "cosine"
-              }
+        // 动态生成索引映射
+        Map<String, Object> properties = new HashMap<>();
+        for (Field field : documentClass.getDeclaredFields()) {
+            Map<String, Object> fieldMapping = new HashMap<>();
+            if (field.getType() == String.class) {
+                fieldMapping.put("type", "text");
+                fieldMapping.put("analyzer", "standard");
+            } else if (field.getType() == float[].class) {
+                fieldMapping.put("type", "dense_vector");
+                fieldMapping.put("dims", 384); // 假设维度固定为384
+                fieldMapping.put("index", true);
+                fieldMapping.put("similarity", "cosine");
             }
-          }
+            // 其他类型的字段可以在这里添加
+            properties.put(field.getName(), fieldMapping);
         }
-        """;
+
+        Map<String, Object> mappings = new HashMap<>();
+        mappings.put("properties", properties);
+
+        Map<String, Object> indexMapping = new HashMap<>();
+        indexMapping.put("mappings", mappings);
 
         try {
             // 创建索引
-            boolean acknowledged = client.indices().create(c -> c
-                    .index(INDEX_NAME)
-                    .withJson(new StringReader(mapping))
+            boolean acknowledged = client.indices().create(c -> {
+                        try {
+                            return c
+                                    .index(INDEX_NAME)
+                                    .withJson(new StringReader(new ObjectMapper().writeValueAsString(indexMapping)));
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
             ).acknowledged();
 
             // 返回创建结果
@@ -94,7 +104,7 @@ public class ElasticSearchService {
 
         } catch (Exception e) {
             // 捕获可能的异常并返回错误信息
-            return "创建索引时发生错误: " + e.getMessage();
+            return "创建索引时发生错误";
         }
     }
 
