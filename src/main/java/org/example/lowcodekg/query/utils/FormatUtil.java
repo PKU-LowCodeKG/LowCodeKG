@@ -2,8 +2,17 @@ package org.example.lowcodekg.query.utils;
 
 import org.example.lowcodekg.model.dao.Describable;
 import org.example.lowcodekg.model.dao.es.document.Document;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
+import org.example.lowcodekg.model.dto.Neo4jNode;
+import org.example.lowcodekg.query.model.Node;
+import org.neo4j.driver.QueryRunner;
+import org.neo4j.driver.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @Description 数据对象类型转换

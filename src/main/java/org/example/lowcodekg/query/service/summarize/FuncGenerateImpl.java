@@ -25,6 +25,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.example.lowcodekg.query.utils.Constants.PAGE_INDEX_NAME;
+import static org.example.lowcodekg.query.utils.Constants.WORKFLOW_INDEX_NAME;
+
 /**
  * @Description
  * @Author Sherloque
@@ -86,7 +89,7 @@ public class FuncGenerateImpl implements FuncGenerate {
             // create es index
             entity.setEmbedding(EmbeddingUtil.embedText(entity.getDescription()));
             Document document = FormatUtil.entityToDocument(entity);
-            esService.indexDocument(document);
+            esService.indexDocument(document, WORKFLOW_INDEX_NAME);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -145,7 +148,7 @@ public class FuncGenerateImpl implements FuncGenerate {
             // create es index
             entity.setEmbedding(EmbeddingUtil.embedText(entity.getDescription()));
             Document document = FormatUtil.entityToDocument(entity);
-            esService.indexDocument(document);
+            esService.indexDocument(document, PAGE_INDEX_NAME);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("generate PageFunctionality error, " + pageEntity.getFullName());

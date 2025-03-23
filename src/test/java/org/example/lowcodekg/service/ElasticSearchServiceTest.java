@@ -24,16 +24,16 @@ class ElasticSearchServiceTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        esService.deleteIndex();
+        esService.deleteIndex("test");
         // 确保索引存在
-        String result = esService.createIndex(Document.class);
+        String result = esService.createIndex(Document.class, "test");
         System.out.println("Index creation result: " + result);
     }
 
     @Test
     void testCreateIndex() throws IOException {
         // 测试重复创建索引
-        String result = esService.createIndex(Document.class);
+        String result = esService.createIndex(Document.class, "test");
         assertTrue(result.contains("已存在"));
     }
 
@@ -44,6 +44,7 @@ class ElasticSearchServiceTest {
         doc1.setId(UUID.randomUUID().toString());
         doc1.setName("Java Programming Guide");
         doc1.setContent("Java is a popular programming language. It is used for web development, Android apps, and enterprise software.");
+        doc1.setNeo4jId(1L);
         float[] embedding1 = FormatUtil.ListToArray(EmbeddingUtil.embedText(doc1.getName() + "\n" + doc1.getContent()));
         doc1.setEmbedding(embedding1);
 
@@ -55,22 +56,22 @@ class ElasticSearchServiceTest {
         doc2.setEmbedding(embedding2);
 
         // 索引文档
-        esService.indexDocument(doc1);
-        esService.indexDocument(doc2);
+        esService.indexDocument(doc1, "test");
+        esService.indexDocument(doc2, "test");
 
         // 等待索引刷新
         Thread.sleep(1000);
 
         // 测试文本搜索（自定义参数）
-        List<Document> results2 = esService.searchByText("Java programming", 1, 0);
-        System.out.println(results2);
+        List<Document> results2 = esService.searchByText("Java programming", 1, 0, "test");
+        System.out.println(results2.get(0).getNeo4jId());
 
         // 测试向量搜索
-        List<Document> results3 = esService.searchByVector(embedding1);
+        List<Document> results3 = esService.searchByVector(embedding1, 1, 0, "test");
         System.out.println(results3);
 
         // 测试向量搜索（自定义参数）
-        List<Document> results4 = esService.searchByVector(embedding2, 2, 0.7);
+        List<Document> results4 = esService.searchByVector(embedding2, 2, 0.7, "test");
         System.out.println(results4);
     }
 

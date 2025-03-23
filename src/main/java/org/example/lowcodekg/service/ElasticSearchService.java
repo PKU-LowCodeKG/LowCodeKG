@@ -29,25 +29,24 @@ import java.util.stream.Collectors;
 public class ElasticSearchService {
 
     private final ElasticsearchClient client;
-    private static final String INDEX_NAME = "documents";
 
     @Autowired
     public ElasticSearchService(ElasticsearchClient client) {
         this.client = client;
     }
 
-    public void setUp() {
-        deleteIndex();
+    public void setUp(String indexName) {
+        deleteIndex(indexName);
         try {
-            createIndex(Document.class);
+            createIndex(Document.class, indexName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteIndex() {
+    public void deleteIndex(String indexName) {
         try {
-            client.indices().delete(d -> d.index(ElasticSearchService.INDEX_NAME));
+            client.indices().delete(d -> d.index(indexName));
             System.out.println("Existing index deleted successfully.");
         } catch (Exception e) {
             // 忽略删除不存在的索引的异常
@@ -59,15 +58,15 @@ public class ElasticSearchService {
      * 创建索引
      * @return 创建结果信息
      */
-    public String createIndex(Class<Document> documentClass) throws IOException {
+    public String createIndex(Class<Document> documentClass, String indexName) throws IOException {
         // 首先检查索引是否存在
         boolean indexExists = client.indices().exists(e -> e
-                .index(INDEX_NAME)
+                .index(indexName)
         ).value();
 
         // 如果索引已存在，返回提示信息
         if (indexExists) {
-            return "索引 '" + INDEX_NAME + "' 已存在，无需重复创建";
+            return "索引 '" + indexName + "' 已存在，无需重复创建";
         }
 
         // 动态生成索引映射
@@ -82,8 +81,9 @@ public class ElasticSearchService {
                 fieldMapping.put("dims", 512); // 假设维度固定为384
                 fieldMapping.put("index", true);
                 fieldMapping.put("similarity", "cosine");
+            } else if(field.getType() == Long.class) {
+                fieldMapping.put("type", "long");
             }
-            // 其他类型的字段可以在这里添加
             properties.put(field.getName(), fieldMapping);
         }
 
@@ -98,7 +98,7 @@ public class ElasticSearchService {
             boolean acknowledged = client.indices().create(c -> {
                         try {
                             return c
-                                    .index(INDEX_NAME)
+                                    .index(indexName)
                                     .withJson(new StringReader(new ObjectMapper().writeValueAsString(indexMapping)));
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException(e);
@@ -108,8 +108,8 @@ public class ElasticSearchService {
 
             // 返回创建结果
             return acknowledged
-                    ? "索引 '" + INDEX_NAME + "' 创建成功"
-                    : "索引 '" + INDEX_NAME + "' 创建失败";
+                    ? "索引 '" + indexName + "' 创建成功"
+                    : "索引 '" + indexName + "' 创建失败";
 
         } catch (Exception e) {
             // 捕获可能的异常并返回错误信息
@@ -117,9 +117,12 @@ public class ElasticSearchService {
         }
     }
 
-    public void indexDocument(Document document) throws IOException {
+    /**
+     * 给定单个文档创建索引
+     */
+    public void indexDocument(Document document, String indexName) throws IOException {
         client.index(i -> i
-                .index(INDEX_NAME)
+                .index(indexName)
                 .id(document.getId())
                 .document(document)
         );
@@ -132,9 +135,10 @@ public class ElasticSearchService {
      * @param minScore 最小相似度阈值，默认为0
      * @return 匹配的文档列表
      */
-    public List<Document> searchByText(String query, int maxResults, double minScore) throws IOException {
+    public List<Document> searchByText(String query, int maxResults, double minScore, String indexName)
+            throws IOException {
         SearchResponse<Document> response = client.search(s -> s
-                        .index(INDEX_NAME)
+                        .index(indexName)
                         .query(q -> q
                                 .multiMatch(m -> m
                                         .fields("name", "content")
@@ -149,22 +153,16 @@ public class ElasticSearchService {
     }
 
     /**
-     * 基于文本内容搜索文档（使用默认参数）
-     */
-    public List<Document> searchByText(String query) throws IOException {
-        return searchByText(query, 10, 0.0);
-    }
-
-    /**
      * 基于向量搜索文档
      * @param queryVector 查询向量
      * @param maxResults 最大返回结果数，默认为10
      * @param minScore 最小相似度阈值，默认为0
      * @return 匹配的文档列表
      */
-    public List<Document> searchByVector(float[] queryVector, int maxResults, double minScore) throws IOException {
+    public List<Document> searchByVector(float[] queryVector, int maxResults, double minScore, String indexName)
+            throws IOException {
         SearchResponse<Document> response = client.search(s -> s
-                        .index(INDEX_NAME)
+                        .index(indexName)
                         .query(q -> q
                                 .scriptScore(ss -> ss
                                         .query(qq -> qq.matchAll(m -> m))
@@ -179,13 +177,6 @@ public class ElasticSearchService {
         );
 
         return extractHits(response, minScore);
-    }
-
-    /**
-     * 基于向量搜索文档（使用默认参数）
-     */
-    public List<Document> searchByVector(float[] queryVector) throws IOException {
-        return searchByVector(queryVector, 10, 0.0);
     }
 
     /**

@@ -19,8 +19,6 @@ import java.util.List;
 public class TaskSplitImpl implements TaskSplit {
     @Autowired
     private LLMGenerateService llmService;
-    @Autowired
-    private ElasticSearchService EsService;
 
     @Override
     public Result<TaskGraph> taskSplit(String query) {
