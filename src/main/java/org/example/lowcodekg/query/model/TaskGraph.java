@@ -16,19 +16,19 @@ import java.util.*;
 @NoArgsConstructor
 public class TaskGraph {
     // 存储所有任务节点
-    private Map<Long, Task> tasks;
+    private Map<String, Task> tasks;
     
     // 邻接表存储任务依赖关系（key任务 -> value依赖的任务列表）
-    private Map<Long, List<Task>> adjacencyList;
+    private Map<String, List<Task>> adjacencyList;
     
     /**
      * 添加任务节点
      * @param task 待添加的任务
      */
     public void addTask(Task task) {
-        tasks.put(task.getTaskId(), task);
-        if (!adjacencyList.containsKey(task.getTaskId())) {
-            adjacencyList.put(task.getTaskId(), new ArrayList<>());
+        tasks.put(task.getId(), task);
+        if (!adjacencyList.containsKey(task.getId())) {
+            adjacencyList.put(task.getId(), new ArrayList<>());
         }
     }
     
@@ -64,10 +64,10 @@ public class TaskGraph {
      * @return 是否存在循环依赖
      */
     public boolean hasCycle() {
-        Set<Long> visited = new HashSet<>();
-        Set<Long> recursionStack = new HashSet<>();
+        Set<String> visited = new HashSet<>();
+        Set<String> recursionStack = new HashSet<>();
         
-        for (Long taskId : tasks.keySet()) {
+        for (String taskId : tasks.keySet()) {
             if (hasCycleDFS(taskId, visited, recursionStack)) {
                 return true;
             }
@@ -75,7 +75,7 @@ public class TaskGraph {
         return false;
     }
     
-    private boolean hasCycleDFS(Long taskId, Set<Long> visited, Set<Long> recursionStack) {
+    private boolean hasCycleDFS(String taskId, Set<String> visited, Set<String> recursionStack) {
         if (recursionStack.contains(taskId)) {
             return true;
         }
@@ -88,7 +88,7 @@ public class TaskGraph {
         
         List<Task> dependencies = adjacencyList.get(taskId);
         for (Task dependency : dependencies) {
-            if (hasCycleDFS(dependency.getTaskId(), visited, recursionStack)) {
+            if (hasCycleDFS(dependency.getId(), visited, recursionStack)) {
                 return true;
             }
         }

@@ -1,5 +1,6 @@
 package org.example.lowcodekg.query.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,38 +13,15 @@ import java.util.List;
  * @Author Sherloque
  * @Date 2025/3/21 19:52
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
 public class Task {
 
-    private Long taskId;
+    private String id;
+
+    private String name;
 
     private String description;
 
     private List<DSL> dslList = new ArrayList<>();
-
-    // Getter and Setter methods
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<DSL> getDslList() {
-        return dslList;
-    }
-
-    public void setDslList(List<DSL> dslList) {
-        this.dslList = dslList;
-    }
 }

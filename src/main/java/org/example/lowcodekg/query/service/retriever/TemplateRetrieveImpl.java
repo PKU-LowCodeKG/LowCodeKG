@@ -106,6 +106,7 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
         org.neo4j.driver.Result result = runner.run(cypher);
         if(result.hasNext()) {
             org.neo4j.driver.types.Node n = result.next().get("n").asNode();
+
             node.setName(n.get("name").asString());
             node.setContent(n.get("content").asString());
             node.setDescription(n.get("description").asString());
