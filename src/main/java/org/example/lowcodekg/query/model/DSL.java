@@ -22,4 +22,13 @@ public class DSL {
 
     private String condition;
 
+    @Override
+    public String toString() {
+        return "{" +
+                "action='" + action + '\'' +
+                ", object='" + object + '\'' +
+                ", target='" + target + '\'' +
+                ", condition='" + condition + '\'' +
+                '}';
+    }
 }

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
+import org.example.lowcodekg.query.model.DSL;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.example.lowcodekg.query.utils.Prompt.IDENTIFY_TASK_DEPENDENCY_PROMPT;
 import static org.example.lowcodekg.query.utils.Prompt.TaskSplitPrompt;
 
 /**
@@ -44,14 +46,7 @@ public class TaskSplitImpl implements TaskSplit {
             List<Node> nodes = templateRetrieve.queryEntitiesByTask(query).getData();
 
             // 基于检索结果，构造提示让LLM进行任务分解
-            String codePrompt = buildCodePrompt(nodes);
-            String prompt = TaskSplitPrompt.replace("{code}", codePrompt).replace("{task}", query);
-            String answer = llmService.generateAnswer(prompt);
-            if(answer.contains("```json")) {
-                answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
-            } else {
-                throw new RuntimeException("Task split result json format error:\n" + answer);
-            }
+            String answer = getSplitTasks(query, nodes);
 
             // 将返回json格式字符串解析为Task对象
             List<Task> taskList = buildTaskList(answer);
@@ -59,10 +54,14 @@ public class TaskSplitImpl implements TaskSplit {
             // 针对每个子任务，生成相应的IR（功能原语），记录在Task属性中
             for(Task task : taskList) {
                 task.setDslList(dslGenerate.convertTaskToIR(task).getData());
+                graph.addTask(task);
             }
 
-            // 基于分解后的任务，让LLM判断子任务之间的依赖约束关系，形成子任务依赖图
+            // 基于分解后的任务，让LLM判断子任务之间的依赖约束关系
+            String result = identifyDependenciesBetweenTasks(graph, query);
 
+            // 构建子任务依赖图
+            buildDependencyGraph(graph, result);
 
             return Result.build(graph, ResultCodeEnum.SUCCESS);
 
@@ -72,7 +71,55 @@ public class TaskSplitImpl implements TaskSplit {
         }
     }
 
-    private String buildCodePrompt(List<Node> nodes) {
+    private void buildDependencyGraph(TaskGraph graph, String result) {
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(result);
+            JSONArray dependencies = jsonObject.getJSONArray("Dependencies");
+
+            for (int i = 0; i < dependencies.size(); i++) {
+                JSONObject dependency = dependencies.getJSONObject(i);
+                String desciption = "";
+                String sourceTaskId = "";
+                String targetTaskId = "";
+                for (String key : dependency.keySet()) {
+                    if ("dependency".equals(key)) {
+                        desciption = dependency.getString(key);
+                    } else {
+                        sourceTaskId = key;
+                        targetTaskId = dependency.getString(key);
+                    }
+                }
+                // 添加依赖关系以及对应的描述
+                graph.addDependency(sourceTaskId, targetTaskId, desciption);
+            }
+        } catch (JSONException e) {
+            System.err.println("Error parsing JSON in buildDependencyGraph: " + e.getMessage());
+            throw new RuntimeException("Error parsing JSON in : buildDependencyGraph" + e.getMessage());
+        }
+    }
+
+    private String identifyDependenciesBetweenTasks(TaskGraph graph, String query) {
+        try {
+            StringBuilder taskInfos = new StringBuilder();
+            for(Task task : graph.getTasks().values()) {
+                taskInfos.append(task.toString() + "\n");
+            }
+            String prompt = IDENTIFY_TASK_DEPENDENCY_PROMPT.replace("{query}", query).replace("{subTasks}", taskInfos.toString());
+            String result = llmService.generateAnswer(prompt);
+            if(result.contains("```json")) {
+                result = result.substring(result.indexOf("```json") + 7, result.lastIndexOf("```"));
+            } else {
+                throw new RuntimeException("Task dependency identify error:\n" + result);
+            }
+            return result;
+
+        } catch (Exception e) {
+            System.err.println("Error occurred while identifying dependencies between tasks: " + e.getMessage());
+            throw new RuntimeException("Error occurred while identifying dependencies between tasks: " + e.getMessage());
+        }
+    }
+
+    private String getSplitTasks(String query, List<Node> nodes) {
         JSONArray jsonArray = new JSONArray();
         for(Node node : nodes) {
             JSONObject jsonObject = new JSONObject();
@@ -82,7 +129,15 @@ public class TaskSplitImpl implements TaskSplit {
             jsonObject.put("description", node.getDescription());
             jsonArray.add(jsonObject);
         }
-        return jsonArray.toJSONString();
+        String codePrompt = jsonArray.toJSONString();
+        String prompt = TaskSplitPrompt.replace("{code}", codePrompt).replace("{task}", query);
+        String answer = llmService.generateAnswer(prompt);
+        if(answer.contains("```json")) {
+            answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
+        } else {
+            throw new RuntimeException("Task split result json format error:\n" + answer);
+        }
+        return answer;
     }
 
     private List<Task> buildTaskList(String answer) {
@@ -93,7 +148,7 @@ public class TaskSplitImpl implements TaskSplit {
             for(int i = 0; i < subtasksArray.size(); i++) {
                 JSONObject subtaskObject = subtasksArray.getJSONObject(i);
                 tasksList.add(new Task(
-                        subtaskObject.getString("id"),
+                        subtaskObject.getString("name") + "_" + subtaskObject.getString("id"),
                         subtaskObject.getString("name"),
                         subtaskObject.getString("description"),
                         new ArrayList<>()));
@@ -106,21 +161,14 @@ public class TaskSplitImpl implements TaskSplit {
     }
 
     public static void main(String[] args) {
-        // JSON字符串
-        String jsonString = "{\n" +
-                "                \"subtasks\": [\n" +
-                "                    {\n" +
-                "                        \"id\": 1,\n" +
-                "                        \"name\": \"subtask1\",\n" +
-                "                        \"description\": \"subtask1 description\"\n" +
-                "                    },\n" +
-                "                    {\n" +
-                "                        \"id\": 2,\n" +
-                "                        \"name\": \"subtask2\",\n" +
-                "                        \"description\": \"subtask2 description\"\n" +
-                "                    }\n" +
-                "                ]\n" +
-                "            }";
+        // 创建 DSL 对象
+        DSL dsl1 = new DSL("CREATE", "Entity1", "Database", "Condition1");
+        DSL dsl2 = new DSL("UPDATE", "Entity2", "Database", "Condition2");
 
+        // 创建 Task 对象
+        Task task = new Task("task1", "Create and Update Entities", "This task involves creating and updating entities", new ArrayList<>(List.of(dsl1, dsl2)));
+
+        // 打印 Task 对象
+        System.out.println(task.toString());
     }
 }

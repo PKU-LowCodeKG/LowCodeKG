@@ -19,7 +19,7 @@ public class TaskGraph {
     private Map<String, Task> tasks;
     
     // 邻接表存储任务依赖关系（key任务 -> value依赖的任务列表）
-    private Map<String, List<Task>> adjacencyList;
+    private Map<String, Map<Task, String>> adjacencyList;
     
     /**
      * 添加任务节点
@@ -28,7 +28,7 @@ public class TaskGraph {
     public void addTask(Task task) {
         tasks.put(task.getId(), task);
         if (!adjacencyList.containsKey(task.getId())) {
-            adjacencyList.put(task.getId(), new ArrayList<>());
+            adjacencyList.put(task.getId(), new HashMap<>());
         }
     }
     
@@ -38,14 +38,14 @@ public class TaskGraph {
      * @param targetTaskId 目标任务ID（源任务依赖于目标任务）
      * @return 是否添加成功
      */
-    public boolean addDependency(Long sourceTaskId, Long targetTaskId) {
+    public boolean addDependency(String sourceTaskId, String targetTaskId, String description) {
         if (!tasks.containsKey(sourceTaskId) || !tasks.containsKey(targetTaskId)) {
             return false;
         }
-        List<Task> dependencies = adjacencyList.get(sourceTaskId);
+        Map<Task, String> dependencies = adjacencyList.get(sourceTaskId);
         Task targetTask = tasks.get(targetTaskId);
-        if (!dependencies.contains(targetTask)) {
-            dependencies.add(targetTask);
+        if (!dependencies.containsKey(targetTask)) {
+            dependencies.put(targetTask, description);
         }
         return true;
     }
@@ -55,8 +55,8 @@ public class TaskGraph {
      * @param taskId 任务ID
      * @return 依赖任务列表
      */
-    public List<Task> getDependencies(Long taskId) {
-        return adjacencyList.getOrDefault(taskId, new ArrayList<>());
+    public Map<Task, String> getDependencies(String taskId) {
+        return adjacencyList.getOrDefault(taskId, new HashMap<>());
     }
     
     /**
@@ -86,8 +86,8 @@ public class TaskGraph {
         visited.add(taskId);
         recursionStack.add(taskId);
         
-        List<Task> dependencies = adjacencyList.get(taskId);
-        for (Task dependency : dependencies) {
+        Map<Task, String> dependencies = adjacencyList.get(taskId);
+        for (Task dependency : dependencies.keySet()) {
             if (hasCycleDFS(dependency.getId(), visited, recursionStack)) {
                 return true;
             }

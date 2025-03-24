@@ -23,5 +23,26 @@ public class Task {
 
     private String description;
 
-    private List<DSL> dslList = new ArrayList<>();
+    private List<DSL> dslList;
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Task: {")
+                .append("id='").append(id).append('\'')
+                .append(", name='").append(name).append('\'')
+                .append(", description='").append(description).append('\'')
+                .append(", dslList=[");
+
+        for (int i = 0; i < dslList.size(); i++) {
+            DSL dsl = dslList.get(i);
+            sb.append(dsl.toString());
+            if (i < dslList.size() - 1) {
+                sb.append(", ");
+            }
+        }
+
+        sb.append("]}");
+        return sb.toString();
+    }
 }
