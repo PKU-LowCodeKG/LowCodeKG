@@ -2,10 +2,7 @@ package org.example.lowcodekg.query.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +20,7 @@ public class Task {
 
     private String description;
 
-    private List<DSL> dslList;
+    private List<IR> dslList;
 
     @Override
     public String toString() {
@@ -35,7 +32,7 @@ public class Task {
                 .append(", dslList=[");
 
         for (int i = 0; i < dslList.size(); i++) {
-            DSL dsl = dslList.get(i);
+            IR dsl = dslList.get(i);
             sb.append(dsl.toString());
             if (i < dslList.size() - 1) {
                 sb.append(", ");

@@ -6,11 +6,11 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
-import org.example.lowcodekg.query.model.DSL;
+import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
-import org.example.lowcodekg.query.service.ir.DslGenerate;
+import org.example.lowcodekg.query.service.ir.IRGenerate;
 import org.example.lowcodekg.query.service.processor.TaskSplit;
 import org.example.lowcodekg.query.service.retriever.TemplateRetrieve;
 import org.example.lowcodekg.query.utils.FormatUtil;
@@ -36,7 +36,7 @@ public class TaskSplitImpl implements TaskSplit {
     @Autowired
     private TemplateRetrieve templateRetrieve;
     @Autowired
-    private DslGenerate dslGenerate;
+    private IRGenerate dslGenerate;
 
     @Override
     public Result<TaskGraph> taskSplit(String query) {
@@ -154,8 +154,8 @@ public class TaskSplitImpl implements TaskSplit {
 
     public static void main(String[] args) {
         // 创建 DSL 对象
-        DSL dsl1 = new DSL("CREATE", "Entity1", "Database", "Condition1");
-        DSL dsl2 = new DSL("UPDATE", "Entity2", "Database", "Condition2");
+        IR dsl1 = new IR("CREATE", "Entity1", "Database", "Condition1");
+        IR dsl2 = new IR("UPDATE", "Entity2", "Database", "Condition2");
 
         // 创建 Task 对象
         Task task = new Task("task1", "Create and Update Entities", "This task involves creating and updating entities", new ArrayList<>(List.of(dsl1, dsl2)));
