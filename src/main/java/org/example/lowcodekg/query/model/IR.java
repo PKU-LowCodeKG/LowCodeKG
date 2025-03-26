@@ -31,4 +31,8 @@ public class IR {
                 ", condition='" + condition + '\'' +
                 '}';
     }
+
+    public String toSentence() {
+        return "在" + condition + "的条件下，针对" + object + "执行" + action + "的操作，得到" + target + "的结果。";
+    }
 }

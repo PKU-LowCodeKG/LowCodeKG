@@ -1,10 +1,18 @@
 package org.example.lowcodekg.query.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.bgesmallzhv15q.BgeSmallZhV15QuantizedEmbeddingModel;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +25,36 @@ public class EmbeddingUtil {
 
     private static final EmbeddingModel embeddingModel = new BgeSmallZhV15QuantizedEmbeddingModel();
 
+    /**
+     * 调用本地ollama部署的模型进行文本嵌入表示
+     * @param text
+     * @return
+     * @throws Exception
+     */
+    public static float[] getEmbedding(String text) throws Exception {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost post = new HttpPost("http://localhost:5000/embed");
+
+            // 设置JSON请求体
+            String json = "{\"text\":\"" + text.replace("\"", "\\\"") + "\"}";
+            post.setEntity(new StringEntity(json));
+            post.setHeader("Content-Type", "application/json");
+
+            // 获取响应并解析
+            String response = client.execute(post, httpResponse ->
+                    new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()))
+                            .lines().collect(Collectors.joining("\n")));
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(response);
+            JsonNode embeddingNode = rootNode.get("embedding");
+            float[] embedding = new float[embeddingNode.size()];
+            for (int i = 0; i < embeddingNode.size(); i++) {
+                embedding[i] = embeddingNode.get(i).floatValue();
+            }
+            return embedding;
+        }
+    }
 
     /**
      * 对单个文本进行嵌入
@@ -70,4 +108,50 @@ public class EmbeddingUtil {
 
         return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
+
+    private static double cosineSimilarity(float[] vectorA, float[] vectorB) {
+        if (vectorA.length != vectorB.length) {
+            throw new IllegalArgumentException("Vectors must have the same length");
+        }
+
+        double dotProduct = 0.0;
+        double normA = 0.0;
+        double normB = 0.0;
+
+        for (int i = 0; i < vectorA.length; i++) {
+            dotProduct += vectorA[i] * vectorB[i];
+            normA += Math.pow(vectorA[i], 2);
+            normB += Math.pow(vectorB[i], 2);
+        }
+
+        normA = Math.sqrt(normA);
+        normB = Math.sqrt(normB);
+
+        if (normA == 0.0 || normB == 0.0) {
+            return 0.0; // 如果任意向量的范数为0，相似度为0
+        }
+
+        return dotProduct / (normA * normB);
+    }
+
+    public static void main(String[] args) {
+        String text1 = "点击提交按钮提交订单";
+        String text2 = "上传订单";
+        String text3 = "今天天气很好";
+        try {
+//            float[] embedding1 = getEmbedding(text1);
+//            float[] embedding2 = getEmbedding(text2);
+//            float[] embedding3 = getEmbedding(text3);
+//            System.out.println(cosineSimilarity(embedding1, embedding2));
+//            System.out.println(cosineSimilarity(embedding1, embedding3));
+//            System.out.println(cosineSimilarity(embedding2, embedding3));
+
+            System.out.println(calculateSimilarity(text1, text2));
+            System.out.println(calculateSimilarity(text1, text3));
+            System.out.println(calculateSimilarity(text2, text3));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
