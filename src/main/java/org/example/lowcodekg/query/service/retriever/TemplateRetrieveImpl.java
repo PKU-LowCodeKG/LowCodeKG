@@ -4,6 +4,7 @@ import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.Node;
+import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.utils.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.query.service.ElasticSearchService;
@@ -33,7 +34,7 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
 
 
     @Override
-    public Result<List<Node>> queryEntitiesByTask(String query) {
+    public Result<List<Node>> queryByTask(String query) {
         List<Node> nodes = new ArrayList<>();
         try {
             // 检索页面实体
@@ -57,8 +58,17 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
     }
 
     @Override
-    public Result<List<Node>> queryEntitiesBySubTask(String subQuery) {
-        return null;
+    public Result<List<Node>> queryBySubTask(Task task) {
+        try {
+
+
+
+            return Result.build(null, ResultCodeEnum.SUCCESS);
+
+        } catch (Exception e) {
+            System.err.println("Error in queryEntitiesBySubTask: " + e.getMessage());
+            return Result.build(null, ResultCodeEnum.FAIL);
+        }
     }
 
     private List<Node> queryCategoryEntitiesByTask(String query, String indexName) {

@@ -42,7 +42,7 @@ public class TaskSplitImpl implements TaskSplit {
             TaskGraph graph = new TaskGraph();
 
             // 根据需求检索相关资源
-            List<Node> nodes = templateRetrieve.queryEntitiesByTask(query).getData();
+            List<Node> nodes = templateRetrieve.queryByTask(query).getData();
 
             // 基于检索结果，构造提示让LLM进行任务分解
             String answer = getSplitTasks(query, nodes);

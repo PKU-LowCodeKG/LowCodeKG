@@ -3,6 +3,7 @@ package org.example.lowcodekg.query.service.retriever;
 import org.example.lowcodekg.model.dto.Neo4jNode;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.query.model.Node;
+import org.example.lowcodekg.query.model.Task;
 
 import java.util.List;
 
@@ -18,13 +19,13 @@ public interface TemplateRetrieve {
      * @param query
      * @return
      */
-    Result<List<Node>> queryEntitiesByTask(String query);
+    Result<List<Node>> queryByTask(String query);
 
     /**
-     * 根据用户需求从库中查询相关的模板资源
-     * @param subQuery
+     * 根据子任务描述从库中查询相关资源
+     * @param task
      * @return
      */
-    Result<List<Node>> queryEntitiesBySubTask(String subQuery);
+    Result<List<Node>> queryBySubTask(Task task);
 
 }
