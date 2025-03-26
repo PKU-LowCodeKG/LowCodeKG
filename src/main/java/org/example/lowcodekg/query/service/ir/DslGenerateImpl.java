@@ -8,6 +8,7 @@ import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.DSL;
 import org.example.lowcodekg.query.model.Task;
+import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,12 +34,7 @@ public class DslGenerateImpl implements DslGenerate {
 
         String taskInfo = task.getName() + "\n" + task.getDescription();
         String prompt = TASK_TO_IR_PROMPT.replace("{Task}", taskInfo);
-        String answer = llmService.generateAnswer(prompt);
-        if(answer.contains("```json")) {
-            answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
-        } else {
-            throw new RuntimeException("Task to IR result json format error:\n" + answer);
-        }
+        String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
         List<DSL> dslList = buildDslList(answer);
 
         return Result.build(dslList, ResultCodeEnum.SUCCESS);

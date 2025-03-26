@@ -1,10 +1,7 @@
-package org.example.lowcodekg.query.service.decomposer;
+package org.example.lowcodekg.query.service.processor;
 
 import org.example.lowcodekg.model.result.Result;
-import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
-
-import java.util.List;
 
 /**
  * @Description 将用户需求分解为子任务

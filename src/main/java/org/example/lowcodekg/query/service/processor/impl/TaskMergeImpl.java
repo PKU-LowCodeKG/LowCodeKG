@@ -1,4 +1,6 @@
-package org.example.lowcodekg.query.service.merge;
+package org.example.lowcodekg.query.service.processor.impl;
+
+import org.example.lowcodekg.query.service.processor.TaskMerge;
 
 /**
  * @Description

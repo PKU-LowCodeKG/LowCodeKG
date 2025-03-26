@@ -1,5 +1,8 @@
 package org.example.lowcodekg.query.service.retriever;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.BooleanUtils;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
@@ -8,6 +11,8 @@ import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.utils.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.query.service.ElasticSearchService;
+import org.example.lowcodekg.service.LLMGenerateService;
+import org.neo4j.cypher.internal.expressions.NODE_TYPE;
 import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -18,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.example.lowcodekg.query.utils.Constants.*;
+import static org.example.lowcodekg.query.utils.Prompt.TYPE_OF_RETRIEVED_ENTITY_PROMPT;
 
 /**
  * @Description
@@ -31,6 +37,8 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
     private ElasticSearchService esService;
     @Autowired
     private Neo4jClient neo4jClient;
+    @Autowired
+    private LLMGenerateService llmService;
 
 
     @Override
@@ -60,10 +68,48 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
     @Override
     public Result<List<Node>> queryBySubTask(Task task) {
         try {
+            List<Node> nodeList = new ArrayList<>();
+            List<Document> documents = new ArrayList<>();
 
+            // 根据task任务信息，判断检索的对象类型
+            String taskInfo = task.toString();
+            String prompt = TYPE_OF_RETRIEVED_ENTITY_PROMPT.replace("{Task}", taskInfo);
+            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            JSONObject jsonObject = JSON.parseObject(answer);
 
+            // 基于ES向量检索，获取候选列表
+            float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(taskInfo));
+            for(String key : jsonObject.keySet()) {
+                if("Page".equals(key)) {
+                    Boolean isPage = jsonObject.getBoolean(key);
+                    if(BooleanUtils.isTrue(isPage)) {
+                        documents.addAll(esService.searchByVector(
+                                vector, MAX_RESULTS, MIN_SCORE, PAGE_INDEX_NAME
+                                ));
+                    }
+                } else if("Workflow".equals(key)) {
+                    Boolean isWorkflow = jsonObject.getBoolean(key);
+                    if(BooleanUtils.isTrue(isWorkflow)) {
+                        documents.addAll(esService.searchByVector(
+                                vector, MAX_RESULTS, MIN_SCORE, WORKFLOW_INDEX_NAME
+                                ));
+                    }
+                } else if("DataObject".equals(key)) {
+                    Boolean isDataObject = jsonObject.getBoolean(key);
+                    if(BooleanUtils.isTrue(isDataObject)) {
+                        documents.addAll(esService.searchByVector(
+                                vector, MAX_RESULTS, MIN_SCORE, DATA_OBJECT_INDEX_NAME
+                                ));
+                    }
+                }
+            }
+            // 将 Document 转换为 Node 并返回 Result
+            nodeList = documents.stream()
+                    .map(this::convertToNeo4jNode)
+                    .collect(Collectors.toList());
+            System.out.println(String.format("SubTask {} retrieved results: {}", task.getName(), nodeList.size()));
 
-            return Result.build(null, ResultCodeEnum.SUCCESS);
+            return Result.build(nodeList, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
             System.err.println("Error in queryEntitiesBySubTask: " + e.getMessage());

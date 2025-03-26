@@ -195,9 +195,28 @@ public interface Prompt {
             """;
 
     /**
-     * 分析任务与模板资源之间的匹配程度
+     * 判断子任务的检索对象类型
      */
-    public static final String TASK_TEMPLATE_MATCH_PROMPT = """
+    public static final String TYPE_OF_RETRIEVED_ENTITY_PROMPT = """
+            You are an experienced software engineer who has expertise in analyzing development tasks. 
+            Here is a task description and an associated sequence of operations. 
+            {Task}
             
+            Your job is to determine the types of objects that need to be retrieved for this task. 
+            The possible object types are:
+            - Page
+            - Workflow
+            - DataObject
+            
+            Please carefully review the task description and the sequence of operations, and then identify which of the above object types are relevant for this task. Note that the task may require retrieval of multiple object types.
+            Return your answer in the following format:
+            
+            ```json
+            {
+              "Page": true/false,
+              "Workflow": true/false,
+              "DataObject": true/false
+            }
+            ```
             """;
 }

@@ -22,6 +22,18 @@ import java.util.Optional;
 public class FormatUtil {
 
     /**
+     * 将大模型返回结果中的json片段提取出来
+     */
+    public static String extractJson(String text) {
+        if(text.contains("```json")) {
+            text = text.substring(text.indexOf("```json") + 7, text.lastIndexOf("```"));
+        } else {
+            throw new RuntimeException("Json format error:\n" + text);
+        }
+        return text;
+    }
+
+    /**
      * 将实体对象转换为文档对象,以用于创建ES索引
      */
     public static Document entityToDocument(Describable entity) {

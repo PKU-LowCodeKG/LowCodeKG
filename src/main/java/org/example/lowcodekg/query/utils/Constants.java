@@ -14,4 +14,11 @@ public final class Constants {
     public static final String WORKFLOW_INDEX_NAME = "workflow";
     public static final String DATA_OBJECT_INDEX_NAME = "data_object";
 
+    /**
+     * 任务检索参数设置
+     */
+    public static final int MAX_RESULTS = 10;
+    public static final float MIN_SCORE = 0.5f;
+
+
 }

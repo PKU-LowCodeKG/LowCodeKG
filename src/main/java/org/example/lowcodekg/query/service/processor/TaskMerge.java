@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.merge;
+package org.example.lowcodekg.query.service.processor;
 
 /**
  * @Description 将子任务合并，并进行兼容性检查

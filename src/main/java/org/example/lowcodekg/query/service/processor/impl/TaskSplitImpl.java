@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.decomposer;
+package org.example.lowcodekg.query.service.processor.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -11,7 +11,9 @@ import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
 import org.example.lowcodekg.query.service.ir.DslGenerate;
+import org.example.lowcodekg.query.service.processor.TaskSplit;
 import org.example.lowcodekg.query.service.retriever.TemplateRetrieve;
+import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -104,12 +106,8 @@ public class TaskSplitImpl implements TaskSplit {
                 taskInfos.append(task.toString() + "\n");
             }
             String prompt = IDENTIFY_TASK_DEPENDENCY_PROMPT.replace("{query}", query).replace("{subTasks}", taskInfos.toString());
-            String result = llmService.generateAnswer(prompt);
-            if(result.contains("```json")) {
-                result = result.substring(result.indexOf("```json") + 7, result.lastIndexOf("```"));
-            } else {
-                throw new RuntimeException("Task dependency identify error:\n" + result);
-            }
+            String result = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+
             return result;
 
         } catch (Exception e) {
@@ -130,12 +128,7 @@ public class TaskSplitImpl implements TaskSplit {
         }
         String codePrompt = jsonArray.toJSONString();
         String prompt = TaskSplitPrompt.replace("{code}", codePrompt).replace("{task}", query);
-        String answer = llmService.generateAnswer(prompt);
-        if(answer.contains("```json")) {
-            answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
-        } else {
-            throw new RuntimeException("Task split result json format error:\n" + answer);
-        }
+        String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
         return answer;
     }
 
