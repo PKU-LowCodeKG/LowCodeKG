@@ -191,6 +191,13 @@ public interface Prompt {
             ### Notes
             - Ensure that the dependencies are identified based on the provided criteria, and the result must return **id** of tasks.
             - If no dependencies are found, return an empty list in the JSON output.
-            - The explanations for dependencies should be clear and concise, focusing on the specific reasons why one subtask depends on another.
+            - The explanations for dependencies should be clear and concise, focusing on the specific reasons why one subtask depends on another, and presented in Chinese.
+            """;
+
+    /**
+     * 分析任务与模板资源之间的匹配程度
+     */
+    public static final String TASK_TEMPLATE_MATCH_PROMPT = """
+            
             """;
 }
