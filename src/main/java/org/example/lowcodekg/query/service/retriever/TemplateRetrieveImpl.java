@@ -1,15 +1,12 @@
 package org.example.lowcodekg.query.service.retriever;
 
 import org.example.lowcodekg.model.dao.es.document.Document;
-import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
-import org.example.lowcodekg.model.dto.Neo4jNode;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.Node;
-import org.example.lowcodekg.query.utils.Constants;
 import org.example.lowcodekg.query.utils.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
-import org.example.lowcodekg.service.ElasticSearchService;
+import org.example.lowcodekg.query.service.ElasticSearchService;
 import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.example.lowcodekg.query.utils.Constants.*;

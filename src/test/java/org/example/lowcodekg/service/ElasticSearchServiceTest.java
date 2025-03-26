@@ -1,6 +1,7 @@
 package org.example.lowcodekg.service;
 
 import org.example.lowcodekg.model.dao.es.document.Document;
+import org.example.lowcodekg.query.service.ElasticSearchService;
 import org.example.lowcodekg.query.utils.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.junit.jupiter.api.Test;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;

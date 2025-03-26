@@ -180,6 +180,11 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>7.1.0.202411261347-r</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 

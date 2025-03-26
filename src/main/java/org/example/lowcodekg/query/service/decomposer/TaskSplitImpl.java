@@ -12,7 +12,6 @@ import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
 import org.example.lowcodekg.query.service.ir.DslGenerate;
 import org.example.lowcodekg.query.service.retriever.TemplateRetrieve;
-import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

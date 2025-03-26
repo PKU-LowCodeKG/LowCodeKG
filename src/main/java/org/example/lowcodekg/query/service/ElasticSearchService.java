@@ -1,4 +1,4 @@
-package org.example.lowcodekg.service;
+package org.example.lowcodekg.query.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.AcknowledgedResponse;

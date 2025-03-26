@@ -4,8 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.lowcodekg.model.dao.neo4j.repository.*;
 import org.example.lowcodekg.query.service.summarize.FuncGenerate;
-import org.example.lowcodekg.service.ElasticSearchService;
-import org.example.lowcodekg.service.FunctionalityGenService;
+import org.example.lowcodekg.query.service.ElasticSearchService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.data.neo4j.core.Neo4jClient;
 
