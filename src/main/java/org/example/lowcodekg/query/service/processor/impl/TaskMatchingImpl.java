@@ -6,10 +6,13 @@ import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.service.ir.IRGenerate;
 import org.example.lowcodekg.query.service.processor.TaskMatching;
+import org.example.lowcodekg.query.utils.EmbeddingUtil;
+import org.example.lowcodekg.query.utils.FormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Sherloque
@@ -29,7 +32,14 @@ public class TaskMatchingImpl implements TaskMatching {
             List<IR> templateIRList = irGenerate.convertTemplateToIR(node).getData();
 
             // 序列向量化表示
-
+            List<float[]> taskVectorList = taskIRList.stream()
+                    .map(ir -> ir.toSentence())
+                    .map(EmbeddingUtil::embedText)
+                    .map(FormatUtil::ListToArray).toList();
+            List<float[]> templateVectorList = templateIRList.stream()
+                    .map(ir -> ir.toSentence())
+                    .map(EmbeddingUtil::embedText)
+                    .map(FormatUtil::ListToArray).toList();
 
             // 基于DP计算序列转换成本
 

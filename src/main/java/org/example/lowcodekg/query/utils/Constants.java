@@ -18,7 +18,7 @@ public final class Constants {
      * 任务检索参数设置
      */
     public static final int MAX_RESULTS = 10;
-    public static final float MIN_SCORE = 0.5f;
+    public static final float MIN_SCORE = 0.65f;
 
 
 }
