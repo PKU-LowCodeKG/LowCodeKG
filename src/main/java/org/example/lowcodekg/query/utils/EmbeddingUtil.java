@@ -135,9 +135,9 @@ public class EmbeddingUtil {
     }
 
     public static void main(String[] args) {
-        String text1 = "点击提交按钮提交订单";
-        String text2 = "上传订单";
-        String text3 = "今天天气很好";
+        String text1 = "在null的条件下通过执行点击按钮的操作，处理订单数据，得到订单已提交的结果";
+        String text2 = "在null的条件下通过执行null的操作，处理订单，得到订单提交的结果";
+        String text3 = "在用户登录的条件下通过执行填写邮箱的操作，处理用户信息，得到用户通过邮箱注册的结果";
         try {
 //            float[] embedding1 = getEmbedding(text1);
 //            float[] embedding2 = getEmbedding(text2);
