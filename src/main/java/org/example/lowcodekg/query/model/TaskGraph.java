@@ -96,4 +96,44 @@ public class TaskGraph {
         recursionStack.remove(taskId);
         return false;
     }
+
+    /**
+     * 拓扑排序
+     * @return 拓扑排序后的任务列表
+     * @throws IllegalStateException 如果图中存在循环依赖
+     */
+    public List<Task> topologicalSort() {
+        if (hasCycle()) {
+            throw new IllegalStateException("Graph has a cycle, topological sort is not possible.");
+        }
+
+        Set<String> visited = new HashSet<>();
+        Stack<Task> stack = new Stack<>();
+
+        for (String taskId : tasks.keySet()) {
+            if (!visited.contains(taskId)) {
+                topologicalSortDFS(taskId, visited, stack);
+            }
+        }
+
+        List<Task> sortedTasks = new ArrayList<>();
+        while (!stack.isEmpty()) {
+            sortedTasks.add(stack.pop());
+        }
+
+        return sortedTasks;
+    }
+
+    private void topologicalSortDFS(String taskId, Set<String> visited, Stack<Task> stack) {
+        visited.add(taskId);
+
+        Map<Task, String> dependencies = adjacencyList.get(taskId);
+        for (Task dependency : dependencies.keySet()) {
+            if (!visited.contains(dependency.getId())) {
+                topologicalSortDFS(dependency.getId(), visited, stack);
+            }
+        }
+
+        stack.push(tasks.get(taskId));
+    }
 }

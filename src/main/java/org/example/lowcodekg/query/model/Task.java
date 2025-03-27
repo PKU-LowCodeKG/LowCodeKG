@@ -20,7 +20,23 @@ public class Task {
 
     private String description;
 
-    private List<IR> dslList;
+    /**
+     * 子任务转换得到的IR列表
+     */
+    private List<IR> irList;
+
+    /**
+     * 子任务推荐的资源列表
+     */
+    private List<Node> resourceList;
+
+
+    public Task(String id, String name, String description, List<IR> irList) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.irList = irList;
+    }
 
     @Override
     public String toString() {
@@ -31,10 +47,10 @@ public class Task {
                 .append(", description='").append(description).append('\'')
                 .append(", dslList=[");
 
-        for (int i = 0; i < dslList.size(); i++) {
-            IR dsl = dslList.get(i);
+        for (int i = 0; i < irList.size(); i++) {
+            IR dsl = irList.get(i);
             sb.append(dsl.toString());
-            if (i < dslList.size() - 1) {
+            if (i < irList.size() - 1) {
                 sb.append(", ");
             }
         }

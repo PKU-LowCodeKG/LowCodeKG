@@ -54,7 +54,7 @@ public class TaskSplitImpl implements TaskSplit {
 
             // 针对每个子任务，生成相应的IR（功能原语），记录在Task属性中
             for(Task task : taskList) {
-                task.setDslList(dslGenerate.convertTaskToIR(task).getData());
+                task.setIrList(dslGenerate.convertTaskToIR(task).getData());
                 graph.addTask(task);
             }
 
