@@ -91,7 +91,7 @@ public class EmbeddingUtil {
     /**
      * 手动计算余弦相似度
      */
-    private static double cosineSimilarity(List<Float> vector1, List<Float> vector2) {
+    public static double cosineSimilarity(List<Float> vector1, List<Float> vector2) {
         if (vector1.size() != vector2.size()) {
             throw new IllegalArgumentException("Vectors must be of the same length");
         }
@@ -109,7 +109,7 @@ public class EmbeddingUtil {
         return dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
 
-    private static double cosineSimilarity(float[] vectorA, float[] vectorB) {
+    public static double cosineSimilarity(float[] vectorA, float[] vectorB) {
         if (vectorA.length != vectorB.length) {
             throw new IllegalArgumentException("Vectors must have the same length");
         }
