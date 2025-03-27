@@ -1,6 +1,7 @@
 package org.example.lowcodekg.query.service.processor.impl;
 
 import org.example.lowcodekg.model.result.Result;
+import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
@@ -42,13 +43,14 @@ public class TaskMatchingImpl implements TaskMatching {
                     .map(FormatUtil::ListToArray).toList();
 
             // 基于DP计算序列转换成本
+            double transCost = minTransformCost(taskVectorList, templateVectorList);
 
+            return Result.build(transCost, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
             System.err.println("Error occurred while calculating subTaskMatchingScore: " + e.getMessage());
             throw new RuntimeException("Error occurred while calculating subTaskMatchingScore: " + e.getMessage());
         }
-        return null;
     }
 
     private Double minTransformCost(List<float[]> vectorList1, List<float[]> vectorList2) {
