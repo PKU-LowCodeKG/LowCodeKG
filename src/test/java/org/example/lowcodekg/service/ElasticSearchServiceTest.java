@@ -1,7 +1,7 @@
 package org.example.lowcodekg.service;
 
 import org.example.lowcodekg.model.dao.es.document.Document;
-import org.example.lowcodekg.query.service.ElasticSearchService;
+import org.example.lowcodekg.query.service.retriever.ElasticSearchService;
 import org.example.lowcodekg.query.utils.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.junit.jupiter.api.Test;

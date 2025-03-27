@@ -8,7 +8,7 @@ import org.example.lowcodekg.model.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
 import org.example.lowcodekg.query.utils.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
-import org.example.lowcodekg.query.service.ElasticSearchService;
+import org.example.lowcodekg.query.service.retriever.ElasticSearchService;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.neo4j.driver.QueryRunner;
 import org.neo4j.driver.Result;
