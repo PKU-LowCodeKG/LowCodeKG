@@ -6,6 +6,7 @@ import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
  * @Author Sherloque
  * @Date 2025/3/22 21:02
  */
+@Service
 public class TaskMergeImpl implements TaskMerge {
 
     @Override

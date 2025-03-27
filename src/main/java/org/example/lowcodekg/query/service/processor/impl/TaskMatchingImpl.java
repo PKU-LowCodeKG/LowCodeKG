@@ -12,8 +12,12 @@ import org.example.lowcodekg.query.utils.FormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.example.lowcodekg.query.utils.Constants.MAX_RESOURCE_RECOMMEND_NUM;
 
 /**
  * @author Sherloque
@@ -24,6 +28,36 @@ public class TaskMatchingImpl implements TaskMatching {
 
     @Autowired
     private IRGenerate irGenerate;
+
+    @Override
+    public Result<Void> rerankResource(Task task) {
+        try {
+            List<Node> nodeList = task.getResourceList();
+            Map<Node, Double> nodeScoreMap = new HashMap<>();
+            for(Node node : nodeList) {
+                Result<Double> scoreResult = subTaskMatchingScore(task, node);
+                if(scoreResult.getCode() == ResultCodeEnum.SUCCESS.getCode()) {
+                    nodeScoreMap.put(node, scoreResult.getData());
+                }
+            }
+            // 根据资源与任务相似度进行重排序
+            List<Node> sortedNodeList = nodeScoreMap.entrySet()
+                    .stream()
+                    .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()))
+                    .map(Map.Entry::getKey)
+                    .limit(MAX_RESOURCE_RECOMMEND_NUM)
+                    .collect(Collectors.toList());
+
+            // 更新任务资源列表
+            task.setResourceList(sortedNodeList);
+
+            return Result.build(null, ResultCodeEnum.SUCCESS);
+
+        } catch (Exception e) {
+            System.err.println("Error occurred while reranking resources: " + e.getMessage());
+            throw new RuntimeException("Error occurred while reranking resources: " + e.getMessage());
+        }
+    }
 
     @Override
     public Result<Double> subTaskMatchingScore(Task task, Node node) {

@@ -20,5 +20,9 @@ public final class Constants {
     public static final int MAX_RESULTS = 10;
     public static final float MIN_SCORE = 0.65f;
 
+    /**
+     * 子任务推荐候选资源重排序后的个数
+     */
+    public static final int MAX_RESOURCE_RECOMMEND_NUM = 3;
 
 }
