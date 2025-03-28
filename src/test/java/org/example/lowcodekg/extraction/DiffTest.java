@@ -1,4 +1,4 @@
-package org.example.lowcodekg;
+package org.example.lowcodekg.extraction;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;

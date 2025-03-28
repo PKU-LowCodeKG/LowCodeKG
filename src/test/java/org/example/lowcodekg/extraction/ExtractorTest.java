@@ -1,4 +1,4 @@
-package org.example.lowcodekg;
+package org.example.lowcodekg.extraction;
 
 import com.alibaba.fastjson.JSONObject;
 import dev.langchain4j.model.ollama.OllamaChatModel;

@@ -1,4 +1,4 @@
-package org.example.lowcodekg;
+package org.example.lowcodekg.extraction;
 
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaFieldEntity;

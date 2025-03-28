@@ -1,4 +1,4 @@
-package org.example.lowcodekg;
+package org.example.lowcodekg.extraction;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.JavaCore;
