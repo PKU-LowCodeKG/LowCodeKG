@@ -28,7 +28,7 @@ public class MainServiceImpl implements MainService {
     @Override
     public Result<List<Node>> recommend(String query) {
         try {
-            List<Node> resourceList = new ArrayList<>();
+            List<Node> resourceList;
 
             // 检索增强的需求分解
             TaskGraph taskGraph = taskSplit.taskSplit(query).getData();

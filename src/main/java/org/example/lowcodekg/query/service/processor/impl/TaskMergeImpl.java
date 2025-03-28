@@ -34,8 +34,7 @@ public class TaskMergeImpl implements TaskMerge {
                     String dependencyDescription = entry.getValue();
                     // 获取当前下游任务的首资源输入
                     Node headResource = dependencyTask.getResourceList().get(0);
-
-                    // 判断上下游任务的输出-输入是否兼容
+                    // 判断上下游任务的输出-输入类型是否兼容
 
                 }
             }

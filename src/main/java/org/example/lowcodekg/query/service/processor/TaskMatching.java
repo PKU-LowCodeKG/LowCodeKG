@@ -15,7 +15,7 @@ import java.util.Map;
 public interface TaskMatching {
 
     /**
-     * 子任务与资源的匹配度计算
+     * 子任务与资源的匹配度计算，值越小，匹配度越高
      * @param task
      * @param node
      * @return

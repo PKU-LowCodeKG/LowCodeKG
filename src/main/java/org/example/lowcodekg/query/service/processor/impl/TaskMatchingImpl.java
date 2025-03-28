@@ -40,10 +40,10 @@ public class TaskMatchingImpl implements TaskMatching {
                     nodeScoreMap.put(node, scoreResult.getData());
                 }
             }
-            // 根据资源与任务相似度进行重排序
+            // 根据资源与任务相似度进行重排序(升序)
             List<Node> sortedNodeList = nodeScoreMap.entrySet()
                     .stream()
-                    .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()))
+                    .sorted((entry1, entry2) -> entry1.getValue().compareTo(entry2.getValue()))
                     .map(Map.Entry::getKey)
                     .limit(MAX_RESOURCE_RECOMMEND_NUM)
                     .collect(Collectors.toList());
@@ -87,6 +87,12 @@ public class TaskMatchingImpl implements TaskMatching {
         }
     }
 
+    /**
+     * 序列2转换为序列1的最低成本
+     * @param vectorList1
+     * @param vectorList2
+     * @return
+     */
     private Double minTransformCost(List<float[]> vectorList1, List<float[]> vectorList2) {
         int m = vectorList1.size(); // vectorList1 的长度
         int n = vectorList2.size(); // vectorList2 的长度
@@ -121,6 +127,6 @@ public class TaskMatchingImpl implements TaskMatching {
         }
 
         // 返回最终的最小成本
-        return dp[m][n];
+        return dp[m][n] / m;
     }
 }
