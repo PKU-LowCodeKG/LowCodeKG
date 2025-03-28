@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 
 import static org.example.lowcodekg.query.utils.Constants.PAGE_INDEX_NAME;
 import static org.example.lowcodekg.query.utils.Constants.WORKFLOW_INDEX_NAME;
+import static org.example.lowcodekg.query.utils.Prompt.PAGE_SUMMARIZE_PROMPT;
+import static org.example.lowcodekg.query.utils.Prompt.WORKFLOW_SUMMARIZE_PROMPT;
 
 /**
  * @Description
@@ -52,38 +54,10 @@ public class FuncGenerateImpl implements FuncGenerate {
     @Override
     public void genWorkflowFunc(WorkflowEntity workflowEntity) {
         try {
-            String prompt = """
-                    You are an expert in programming with a thorough understanding of software projects.
-                    The content below provides the method calls and data objects involved in implementing a certain function request within a software project.
-                    Based on the code provided, please summarize the implemented function and the technological frameworks, third-party libraries, etc., used during the implementation.
-                    Your results should address three aspects: "功能概括," "执行逻辑," and "技术特征." Specifically:
-                    * **功能概括**: Provide a concise description of the implemented function without involving technical details, keep it as short as possible.
-                    * **执行逻辑**: Describe the overall process of code execution, minimizing technical details.
-                    * **技术特征**: Mention any technological frameworks, third-party libraries, tools, etc., involved during the code execution.
-                    
-                    The code content you need to explain is as follows:
-                    {codeContent}
-                    
-                    Please ensure the output is concise and not too lengthy, also in Chinese, while strictly following the JSON format below without including any additional content:
-                    ```json
-                    {
-                        "功能概括": "",
-                        "执行逻辑": "",
-                        "技术特征": ""
-                    }
-                    ```
-                    """;
-            prompt = prompt.replace("{codeContent}", workflowEntity.getContent());
-            String result = llmGenerateService.generateAnswer(prompt);
-            Pattern p = Pattern.compile("```json\\s*(\\{[.\\d\\w\\s\\n\\D]*\\})\\s*```");
-            Matcher m = p.matcher(result);
-            if (m.find()) {
-                result = m.group(1);
-            } else {
-                throw new RuntimeException("LLM generate functionality: format error, " + result);
-            }
+            String prompt = WORKFLOW_SUMMARIZE_PROMPT.replace("{code}", workflowEntity.getContent());
+            String result = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
             JSONObject jsonObject = JSONObject.parseObject(result);
-            workflowEntity.setDescription(jsonObject.toString());
+            workflowEntity.setDescription(jsonObject.getString("functionality"));
             WorkflowEntity entity = workflowRepo.save(workflowEntity);
 
             // create es index
@@ -128,19 +102,11 @@ public class FuncGenerateImpl implements FuncGenerate {
             });
 
             // construct final prompt
-            String prompt = """
-                    以下给定一个前端Vue页面的代码内容，请你为其生成简短的功能概括描述，字数不超过100字。
-                    {code}
-                    
-                    请重点关注以下关键词内容作为生成功能描述的参考。
-                    {keywords}                    
-                    """;
-            prompt = prompt.replace("{code}", codeContent.toString());
-            prompt = prompt.replace("{keywords}", keywords.toString());
-            String description = llmGenerateService.generateAnswer(prompt);
+            String prompt = PAGE_SUMMARIZE_PROMPT
+                    .replace("{code}", codeContent.toString())
+                    .replace("{keywords}", keywords.toString());
+            String description = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
 
-//            System.out.println(prompt);
-//            System.out.println(description);
             // save modification to description of pageEntity
             pageEntity.setDescription(description);
             PageEntity entity = pageRepo.save(pageEntity);

@@ -6,6 +6,8 @@ import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 
+import java.util.List;
+
 /**
  * @Description 检索得到的实体类型
  * @Author Sherloque
@@ -24,6 +26,8 @@ public class Node {
     private String content;
 
     private String description;
+
+    private List<IR> irList;
 
     public Node(PageEntity entity) {
         this.id = entity.getId();

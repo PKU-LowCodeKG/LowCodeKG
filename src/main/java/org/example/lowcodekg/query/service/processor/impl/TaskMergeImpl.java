@@ -8,6 +8,7 @@ import org.example.lowcodekg.query.model.TaskGraph;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class TaskMergeImpl implements TaskMerge {
     @Override
     public Result<List<Node>> mergeTask(TaskGraph graph) {
         try {
+            List<Node> result = new ArrayList<>();
             // 任务依赖图拓扑遍历
             List<Task> sortedTasks = graph.topologicalSort();
             for(Task task : sortedTasks) {
@@ -37,9 +39,11 @@ public class TaskMergeImpl implements TaskMerge {
                     // 判断上下游任务的输出-输入类型是否兼容
 
                 }
+                // 当前任务满足兼容性要求，加入结果集
+                result.addAll(task.getResourceList());
             }
 
-            return Result.build(null, ResultCodeEnum.SUCCESS);
+            return Result.build(result, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
             System.err.println("Error in mergeTask: " + e.getMessage());
