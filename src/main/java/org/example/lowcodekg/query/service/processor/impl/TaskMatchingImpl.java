@@ -1,5 +1,7 @@
 package org.example.lowcodekg.query.service.processor.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.IR;
@@ -7,17 +9,19 @@ import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.service.ir.IRGenerate;
 import org.example.lowcodekg.query.service.processor.TaskMatching;
+import org.example.lowcodekg.query.service.retriever.TemplateRetrieve;
 import org.example.lowcodekg.query.utils.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
+import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.example.lowcodekg.query.utils.Constants.MAX_RESOURCE_RECOMMEND_NUM;
+import static org.example.lowcodekg.query.utils.Prompt.FILTER_BY_DEPENDENCY_PROMPT;
 
 /**
  * @author Sherloque
@@ -28,12 +32,23 @@ public class TaskMatchingImpl implements TaskMatching {
 
     @Autowired
     private IRGenerate irGenerate;
+    @Autowired
+    private TemplateRetrieve templateRetrieve;
+    @Autowired
+    private LLMGenerateService llmService;
 
     @Override
     public Result<Void> rerankResource(Task task) {
         try {
-            List<Node> nodeList = task.getResourceList();
+            // 类别路由的资源检索策略
+            List<Node> nodeList = templateRetrieve.queryBySubTask(task).getData();
             Map<Node, Double> nodeScoreMap = new HashMap<>();
+
+            // 根据任务上下游依赖进行初步过滤
+            nodeList = filterByDependency(task, nodeList);
+            task.setResourceList(nodeList);
+
+            // 相似度计算
             for(Node node : nodeList) {
                 Result<Double> scoreResult = subTaskMatchingScore(task, node);
                 if(scoreResult.getCode() == ResultCodeEnum.SUCCESS.getCode()) {
@@ -84,6 +99,51 @@ public class TaskMatchingImpl implements TaskMatching {
         } catch (Exception e) {
             System.err.println("Error occurred while calculating subTaskMatchingScore: " + e.getMessage());
             throw new RuntimeException("Error occurred while calculating subTaskMatchingScore: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 根据任务上下游依赖进行检索资源列表的初步过滤
+     * @param task
+     * @param nodeList
+     */
+    private List<Node> filterByDependency(Task task, List<Node> nodeList) {
+        try {
+            String upstreamDependency = task.getUpstreamDependency();
+            String downstreamDependency = task.getDownstreamDependency();
+            String taskInfo = task.getName() + "\n" + task.getDescription();
+            StringBuilder nodeInfos = new StringBuilder();
+            for(Node node: nodeList) {
+                nodeInfos.append(node.toString()).append("\n");
+            }
+
+            String prompt = FILTER_BY_DEPENDENCY_PROMPT
+                    .replace("{task}", taskInfo)
+                    .replace("{upstreamDependency}", upstreamDependency)
+                    .replace("{downstreamDependency}", downstreamDependency)
+                    .replace("{nodeList}", nodeInfos.toString());
+
+            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            JSONObject jsonObject = JSONObject.parseObject(answer);
+            JSONArray jsonArray = jsonObject.getJSONArray("reserved_resources");
+            Set<String> reservedIds = new HashSet<>();
+
+            for(int i = 0; i < jsonArray.size(); i++) {
+                JSONObject item = jsonArray.getJSONObject(i);
+                String taskId = item.getString("id");
+                reservedIds.add(taskId);
+            }
+
+            List<Node> filteredNodeList = nodeList.stream()
+                    .filter(node -> reservedIds.contains(node.getId()))
+                    .collect(Collectors.toList());
+            nodeList.clear();
+
+            return filteredNodeList;
+
+        } catch (Exception e) {
+            System.err.println("Error occurred while filtering by dependency: " + e.getMessage());
+            throw new RuntimeException("Error occurred while filtering by dependency: " + e.getMessage());
         }
     }
 

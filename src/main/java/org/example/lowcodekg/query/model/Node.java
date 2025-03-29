@@ -53,4 +53,15 @@ public class Node {
         this.description = entity.getDescription();
     }
 
+    @Override
+    public String toString() {
+        return "Resource {" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", label='" + label + '\'' +
+                ", content='" + content + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
+
 }

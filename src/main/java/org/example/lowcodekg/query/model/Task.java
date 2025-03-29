@@ -2,6 +2,7 @@ package org.example.lowcodekg.query.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -30,12 +31,34 @@ public class Task {
      */
     private List<Node> resourceList;
 
+    /**
+     * 任务的上下游依赖
+     */
+    private String upstreamDependency;
+    private String downstreamDependency;
+
 
     public Task(String id, String name, String description, List<IR> irList) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.irList = irList;
+    }
+
+    public void setUpstreamDependency(String description) {
+        if(StringUtils.isEmpty(description)) {
+            this.upstreamDependency = description;
+        } else {
+            this.upstreamDependency += description;
+        }
+    }
+
+    public void setDownstreamDependency(String description) {
+        if(StringUtils.isEmpty(description)) {
+            this.downstreamDependency = description;
+        } else {
+            this.downstreamDependency += description;
+        }
     }
 
     @Override

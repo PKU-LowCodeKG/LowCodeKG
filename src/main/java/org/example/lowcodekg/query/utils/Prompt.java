@@ -361,4 +361,51 @@ public interface Prompt {
             }
             ```
             """;
+
+    /**
+     * 根据任务的上下游依赖对检索结果进行初步筛选
+     */
+    public static final String FILTER_BY_DEPENDENCY_PROMPT = """
+            **Prompt:** 
+            You are tasked with filtering a list of retrieved resources based on the dependencies of a software development task. 
+            Your goal is to ensure that only resources relevant to the task's upstream and downstream dependencies are retained. 
+            
+            **Input Data:** 
+            1. **Task Description**: A description of the user's software development task.
+            2. **Upstream Dependencies**: Tasks that must be completed before this task can begin. 
+            3. **Downstream Dependencies**: Tasks that depend on the completion of this task. 
+            4. **Retrieved Resources**: A list of resources retrieved for the task. The format is as follows:
+                Resource { id="", name="", label="", content="", description="" }     
+           
+            **Instructions:** 
+            - Analyze the task description, upstream dependencies, and downstream dependencies, and pay more attention to the type of input and output of dependent tasks. 
+            - Filter the retrieved resources to retain only those that are relevant to the task's dependencies. 
+            - Exclude resources that do not address the upstream or downstream dependencies. 
+            - Return the filtered resources in the following JSON format: 
+            
+            ```json
+            {
+              "reserved_resources": [
+                {
+                  "id": ""
+                },
+                ...
+              ]
+            }
+            ```
+            
+            The task Description is:
+            {task}
+            
+            The upstream dependencies is:
+            {upstreamDependency}
+            
+            And the downstream dependencies is:
+            {downstreamDependency}
+            
+            The retrieved resource list is as follows:
+            {nodeList}
+            
+            Please return the Ids of reserved tasks in the specified JSON format.
+            """;
 }

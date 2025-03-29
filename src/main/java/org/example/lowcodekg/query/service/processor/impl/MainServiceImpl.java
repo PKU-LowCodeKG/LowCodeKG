@@ -38,7 +38,7 @@ public class MainServiceImpl implements MainService {
                 taskMatching.rerankResource(task);
             }
 
-            // 任务合并-依赖检查
+            // 任务合并
             resourceList = taskMerge.mergeTask(taskGraph).getData();
 
             return Result.build(resourceList, ResultCodeEnum.SUCCESS);

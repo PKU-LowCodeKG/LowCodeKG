@@ -33,7 +33,7 @@ public class TaskGraph {
     }
     
     /**
-     * 添加任务依赖关系
+     * 添加任务依赖关系，并设置上下游依赖属性
      * @param sourceTaskId 源任务ID
      * @param targetTaskId 目标任务ID（源任务依赖于目标任务）
      * @return 是否添加成功
@@ -43,9 +43,13 @@ public class TaskGraph {
             return false;
         }
         Map<Task, String> dependencies = adjacencyList.get(sourceTaskId);
+        Task sourceTask = tasks.get(sourceTaskId);
         Task targetTask = tasks.get(targetTaskId);
         if (!dependencies.containsKey(targetTask)) {
             dependencies.put(targetTask, description);
+            // 设置上下游依赖描述
+            targetTask.setUpstreamDependency(description);
+            sourceTask.setDownstreamDependency(description);
         }
         return true;
     }
