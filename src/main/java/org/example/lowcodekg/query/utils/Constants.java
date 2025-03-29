@@ -25,4 +25,9 @@ public final class Constants {
      */
     public static final int MAX_RESOURCE_RECOMMEND_NUM = 3;
 
+    /**
+     * 保存结果的本地路径
+     */
+    public static final String resultSavePath = "D:\\Master\\result.json";
+
 }
