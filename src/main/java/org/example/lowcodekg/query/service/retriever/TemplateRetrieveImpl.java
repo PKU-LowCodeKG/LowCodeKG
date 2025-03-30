@@ -3,6 +3,7 @@ package org.example.lowcodekg.query.service.retriever;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.BooleanUtils;
+import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
@@ -37,6 +38,8 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
     private Neo4jClient neo4jClient;
     @Autowired
     private LLMGenerateService llmService;
+    @Autowired
+    private DebugConfig debugConfig;
 
 
     @Override
@@ -71,8 +74,14 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
 
             // 根据task任务信息，判断检索的对象类型
             String taskInfo = task.toString();
+            if(debugConfig.isDebugMode()) {
+                System.out.println("子任务检索信息：" + taskInfo);
+            }
             String prompt = TYPE_OF_RETRIEVED_ENTITY_PROMPT.replace("{Task}", taskInfo);
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            if(debugConfig.isDebugMode()) {
+                System.out.println("retrieval category: " + answer);
+            }
             JSONObject jsonObject = JSON.parseObject(answer);
 
             // 基于ES向量检索，获取候选列表

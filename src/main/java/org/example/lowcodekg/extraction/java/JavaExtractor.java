@@ -28,7 +28,7 @@ public class JavaExtractor extends KnowledgeExtractor {
     @Override
     public void extraction() {
         for(String filePath: this.getDataDir()) {
-            JavaProject javaProject = new JavaProject();
+            JavaProject javaProject = new JavaProject(funcGenerateService);
             javaProject.init();
             javaProject.setElasticSearchService(elasticSearchService);
 

@@ -12,6 +12,7 @@ import org.example.lowcodekg.model.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
 import org.example.lowcodekg.extraction.java.JavaASTVisitor;
 import org.example.lowcodekg.model.schema.entity.workflow.JavaProject;
+import org.example.lowcodekg.query.service.summarize.FuncGenerate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,12 +35,14 @@ public class JDTParserTest {
     private JavaFieldRepo javaFieldRepo;
     @Autowired
     private WorkflowRepo workflowRepo;
+    @Autowired
+    private FuncGenerate funcGenerate;
 
 
     @Test
     public void test() {
         String filePath = "/Users/chang/Documents/projects/data_projects/aurora/aurora-springboot";
-        JavaProject javaProject = new JavaProject();
+        JavaProject javaProject = new JavaProject(funcGenerate);
         javaProject.init();
 
         String projectName = filePath.split("/")[filePath.split("/").length - 1];
@@ -89,7 +92,7 @@ public class JDTParserTest {
         String filePath = "/Users/chang/Documents/projects/data_projects/aurora/aurora-springboot/src/main/java/com/aurora/controller/ArticleController.java";
         try {
             String content = FileUtils.readFileToString(new File(filePath), "utf-8");
-            JavaProject javaProject = new JavaProject();
+            JavaProject javaProject = new JavaProject(funcGenerate);
             ASTParser parser = ASTParser.newParser(AST.JLS10);
             parser.setResolveBindings(true);
             parser.setKind(ASTParser.K_COMPILATION_UNIT);

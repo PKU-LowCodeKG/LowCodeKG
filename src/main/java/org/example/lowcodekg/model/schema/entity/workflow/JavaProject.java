@@ -14,6 +14,9 @@ import org.example.lowcodekg.model.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
 import org.example.lowcodekg.common.util.JsonUtil;
 import org.example.lowcodekg.query.service.retriever.ElasticSearchService;
+import org.example.lowcodekg.query.service.summarize.FuncGenerate;
+import org.example.lowcodekg.query.service.summarize.FuncGenerateImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -23,6 +26,7 @@ import java.util.*;
 public class JavaProject {
 
     private final String jsonFilePath = "/src/main/resources/data/javaInfo_1210.json";
+    private final FuncGenerate funcGenerate;
     private Map<String, JSONObject> jsonMap = new HashMap<>();
 
     @Setter
@@ -42,6 +46,10 @@ public class JavaProject {
     private Map<String, JavaFieldEntity> fieldEntityMap = new HashMap<>();
 
     private Map<IMethodBinding, JavaMethod> methodBindingMap = new HashMap<>();
+
+    public JavaProject(FuncGenerate funcGenerate) {
+        this.funcGenerate = funcGenerate;
+    }
 
 
     public void init() {
@@ -97,7 +105,10 @@ public class JavaProject {
             classInfo.getSuperClassList().addAll(findJavaClassInfo(classInfo.getSuperClassType()));
             classInfo.getSuperInterfaceList().addAll(findJavaClassInfo(classInfo.getSuperInterfaceType()));
             JavaClassEntity classEntity = classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName()));
-
+            // 判定为数据实体类，生成描述信息并添加索引
+            if(classInfo.getIsData()) {
+                funcGenerate.genDataObjectFunc(classEntity);
+            }
             classEntityMap.put(classInfo.getFullName(), classEntity);
         });
         // class -[extend | implement]-> class

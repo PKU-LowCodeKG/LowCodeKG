@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.IR;
@@ -37,6 +38,8 @@ public class TaskSplitImpl implements TaskSplit {
     private TemplateRetrieve templateRetrieve;
     @Autowired
     private IRGenerate dslGenerate;
+    @Autowired
+    private DebugConfig debugConfig;
 
     @Override
     public Result<TaskGraph> taskSplit(String query) {
@@ -45,9 +48,15 @@ public class TaskSplitImpl implements TaskSplit {
 
             // 根据需求检索相关资源
             List<Node> nodes = templateRetrieve.queryByTask(query).getData();
+            if(debugConfig.isDebugMode()) {
+                System.out.println("初步检索资源: " + nodes);
+            }
 
             // 基于检索结果，构造提示让LLM进行任务分解
             String answer = getSplitTasks(query, nodes);
+            if(debugConfig.isDebugMode()) {
+                System.out.println("LLM任务分解：" + answer);
+            }
 
             // 将返回json格式字符串解析为Task对象
             List<Task> taskList = buildTaskList(answer);
@@ -56,10 +65,16 @@ public class TaskSplitImpl implements TaskSplit {
             for(Task task : taskList) {
                 task.setIrList(dslGenerate.convertTaskToIR(task).getData());
                 graph.addTask(task);
+                if(debugConfig.isDebugMode()) {
+                    System.out.println("Task: " + task.getName() + " IR: " + task.getIrList());
+                }
             }
 
             // 基于分解后的任务，让LLM判断子任务之间的依赖约束关系
             String result = identifyDependenciesBetweenTasks(graph, query);
+            if(debugConfig.isDebugMode()) {
+                System.out.println("任务依赖关系识别: " + result);
+            }
 
             // 构建子任务依赖图
             buildDependencyGraph(graph, result);
@@ -121,13 +136,15 @@ public class TaskSplitImpl implements TaskSplit {
         for(Node node : nodes) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("name", node.getName());
-            jsonObject.put("label", node.getLabel());
             jsonObject.put("content", node.getContent());
             jsonObject.put("description", node.getDescription());
             jsonArray.add(jsonObject);
         }
         String codePrompt = jsonArray.toJSONString();
         String prompt = TaskSplitPrompt.replace("{code}", codePrompt).replace("{task}", query);
+        if(debugConfig.isDebugMode()) {
+            System.out.println("Task split prompt:\n" + prompt);
+        }
         String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
         return answer;
     }

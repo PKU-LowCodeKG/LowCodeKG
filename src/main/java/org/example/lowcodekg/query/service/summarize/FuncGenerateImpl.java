@@ -2,8 +2,10 @@ package org.example.lowcodekg.query.service.summarize;
 
 import com.alibaba.fastjson.JSONObject;
 import org.example.lowcodekg.model.dao.es.document.Document;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
+import org.example.lowcodekg.model.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
 import org.example.lowcodekg.query.utils.EmbeddingUtil;
@@ -25,8 +27,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.example.lowcodekg.query.utils.Constants.PAGE_INDEX_NAME;
-import static org.example.lowcodekg.query.utils.Constants.WORKFLOW_INDEX_NAME;
+import static org.example.lowcodekg.query.utils.Constants.*;
 import static org.example.lowcodekg.query.utils.Prompt.PAGE_SUMMARIZE_PROMPT;
 import static org.example.lowcodekg.query.utils.Prompt.WORKFLOW_SUMMARIZE_PROMPT;
 
@@ -50,7 +51,26 @@ public class FuncGenerateImpl implements FuncGenerate {
     private WorkflowRepo workflowRepo;
     @Autowired
     private PageRepo pageRepo;
+    @Autowired
+    private JavaClassRepo classRepo;
 
+    @Override
+    public void genDataObjectFunc(JavaClassEntity classEntity) {
+        try {
+            String prompt = WORKFLOW_SUMMARIZE_PROMPT.replace("{code}", classEntity.getContent());
+            String result = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
+            JSONObject jsonObject = JSONObject.parseObject(result);
+            classEntity.setDescription(jsonObject.getString("functionality"));
+            JavaClassEntity entity = classRepo.save(classEntity);
+
+            // create es index
+            entity.setEmbedding(EmbeddingUtil.embedText(entity.getDescription()));
+            Document document = FormatUtil.entityToDocument(entity);
+            esService.indexDocument(document, DATA_OBJECT_INDEX_NAME);
+        } catch (Exception e) {
+            System.err.println("Error in genDataObjectFunc");
+        }
+    }
     @Override
     public void genWorkflowFunc(WorkflowEntity workflowEntity) {
         try {

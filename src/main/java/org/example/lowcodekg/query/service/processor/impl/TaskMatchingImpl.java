@@ -2,6 +2,7 @@ package org.example.lowcodekg.query.service.processor.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.IR;
@@ -36,17 +37,25 @@ public class TaskMatchingImpl implements TaskMatching {
     private TemplateRetrieve templateRetrieve;
     @Autowired
     private LLMGenerateService llmService;
+    @Autowired
+    private DebugConfig debugConfig;
 
     @Override
     public Result<Void> rerankResource(Task task) {
         try {
             // 类别路由的资源检索策略
             List<Node> nodeList = templateRetrieve.queryBySubTask(task).getData();
+            if(debugConfig.isDebugMode()) {
+                System.out.println("类别路由策略检索资源: " + nodeList);
+            }
             Map<Node, Double> nodeScoreMap = new HashMap<>();
 
             // 根据任务上下游依赖进行初步过滤
             nodeList = filterByDependency(task, nodeList);
             task.setResourceList(nodeList);
+            if(debugConfig.isDebugMode()) {
+                System.out.println("根据依赖关系过滤后资源: " + nodeList);
+            }
 
             // 相似度计算
             for(Node node : nodeList) {
@@ -65,6 +74,9 @@ public class TaskMatchingImpl implements TaskMatching {
 
             // 更新任务资源列表
             task.setResourceList(sortedNodeList);
+            if(debugConfig.isDebugMode()) {
+                System.out.println("重排序后的资源：" + sortedNodeList);
+            }
 
             return Result.build(null, ResultCodeEnum.SUCCESS);
 

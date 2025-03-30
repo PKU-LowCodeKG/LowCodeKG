@@ -49,8 +49,11 @@ public interface Prompt {
      * 任务拆分Prompt
      */
     public final static String TaskSplitPrompt = """
-            You are an expert in Software Engineering and have extensive experience in understanding complex software projects and analyzing source code. Your task is to decompose a given task description into multiple subtasks based on the potentially relevant code snippets and corresponding description provided.
+            You are an expert in Software Engineering and have extensive experience in understanding complex software projects and analyzing source code. 
+            Your task is to decompose a given task description into multiple subtasks based on the potentially relevant code snippets and corresponding description provided.
+            You should focus on the split point of the function, for example, for a “user login” query, the specific split should be the user to fill in the login information, send a login request, user information verification, return to the login success of such a process.
             
+            The code content is:
             {code}
             
             The task description is:

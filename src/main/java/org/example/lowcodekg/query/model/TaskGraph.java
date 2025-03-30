@@ -16,10 +16,10 @@ import java.util.*;
 @NoArgsConstructor
 public class TaskGraph {
     // 存储所有任务节点
-    private Map<String, Task> tasks;
+    private Map<String, Task> tasks = new HashMap<>();
     
     // 邻接表存储任务依赖关系（key任务 -> value依赖的任务列表）
-    private Map<String, Map<Task, String>> adjacencyList;
+    private Map<String, Map<Task, String>> adjacencyList = new HashMap<>();
     
     /**
      * 添加任务节点

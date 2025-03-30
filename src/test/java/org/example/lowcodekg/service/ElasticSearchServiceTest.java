@@ -1,19 +1,29 @@
 package org.example.lowcodekg.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.BooleanUtils;
 import org.example.lowcodekg.model.dao.es.document.Document;
+import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.service.retriever.ElasticSearchService;
 import org.example.lowcodekg.query.utils.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static org.example.lowcodekg.query.utils.Constants.*;
+import static org.example.lowcodekg.query.utils.Prompt.TYPE_OF_RETRIEVED_ENTITY_PROMPT;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -21,6 +31,10 @@ public class ElasticSearchServiceTest {
 
     @Autowired
     private ElasticSearchService esService;
+    @Autowired
+    private LLMGenerateService llmService;
+    @Autowired
+    private Neo4jClient neo4jClient;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -92,5 +106,69 @@ public class ElasticSearchServiceTest {
         double result = EmbeddingUtil.calculateSimilarity(text1, text2);
 
         System.out.println("余弦相似度：" + result);
+    }
+
+    @Test
+    void testSubTaskRetrieval() throws IOException {
+        String taskInfo = """
+                
+                """;
+        String prompt = TYPE_OF_RETRIEVED_ENTITY_PROMPT.replace("{Task}", taskInfo);
+        String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+        System.out.println("retrieval category: " + answer);
+        JSONObject jsonObject = JSON.parseObject(answer);
+
+        // 基于ES向量检索，获取候选列表
+        List<Document> documents = new ArrayList<>();
+        float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(taskInfo));
+        for(String key : jsonObject.keySet()) {
+            if("Page".equals(key)) {
+                Boolean isPage = jsonObject.getBoolean(key);
+                if(BooleanUtils.isTrue(isPage)) {
+                    documents.addAll(esService.searchByVector(
+                            vector, MAX_RESULTS, MIN_SCORE, PAGE_INDEX_NAME
+                    ));
+                }
+            } else if("Workflow".equals(key)) {
+                Boolean isWorkflow = jsonObject.getBoolean(key);
+                if(BooleanUtils.isTrue(isWorkflow)) {
+                    documents.addAll(esService.searchByVector(
+                            vector, MAX_RESULTS, MIN_SCORE, WORKFLOW_INDEX_NAME
+                    ));
+                }
+            } else if("DataObject".equals(key)) {
+                Boolean isDataObject = jsonObject.getBoolean(key);
+                if(BooleanUtils.isTrue(isDataObject)) {
+                    documents.addAll(esService.searchByVector(
+                            vector, MAX_RESULTS, MIN_SCORE, DATA_OBJECT_INDEX_NAME
+                    ));
+                }
+            }
+        }
+        List<Node> nodeList = documents.stream()
+                .map(this::convertToNeo4jNode)
+                .collect(Collectors.toList());
+        for(Node node : nodeList) {
+            System.out.println(node.toString());
+        }
+    }
+
+    private Node convertToNeo4jNode(Document document) {
+        // 根据 Document 的属性创建 Neo4jNode
+        Node node = new Node();
+        Long id = Long.valueOf(document.getId());
+        String cypher = "MATCH (n) WHERE ID(n) = " + id + " RETURN n";
+        QueryRunner runner = neo4jClient.getQueryRunner();
+        org.neo4j.driver.Result result = runner.run(cypher);
+        if(result.hasNext()) {
+            org.neo4j.driver.types.Node n = result.next().get("n").asNode();
+
+            node.setName(n.get("name").asString());
+            node.setContent(n.get("content").asString());
+            node.setDescription(n.get("description").asString());
+        } else {
+            return null;
+        }
+        return node;
     }
 } 

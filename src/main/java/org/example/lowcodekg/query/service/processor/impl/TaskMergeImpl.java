@@ -1,11 +1,13 @@
 package org.example.lowcodekg.query.service.processor.impl;
 
+import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ import java.util.Map;
  */
 @Service
 public class TaskMergeImpl implements TaskMerge {
+    @Autowired
+    private DebugConfig debugConfig;
 
     @Override
     public Result<List<Node>> mergeTask(TaskGraph graph) {
