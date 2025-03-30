@@ -27,7 +27,7 @@ public class RecommendTest {
 
     @Test
     public void test() {
-        String query = "我希望实现一个用户注册的功能，能够通过邮箱注册一个新用户";
+        String query = "我想要能够更新博客的置顶文章的状态";
 
         // 检索增强的需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();

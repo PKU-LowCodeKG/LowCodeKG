@@ -9,6 +9,7 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -28,29 +29,29 @@ public class WorkflowExtractor extends KnowledgeExtractor {
                     """;
             QueryRunner runner = neo4jClient.getQueryRunner();
             Result result = runner.run(cypher);
-            // iterate all the initial workflow entities
             while(result.hasNext()) {
                 Node node = result.next().get("n").asNode();
                 Optional<WorkflowEntity> optional = workflowRepo.findById(node.id());
                 optional.ifPresent(workflowEntity -> {
-                    // get start method entity
+                    // 获取入口方法实体
                     JavaMethodEntity startMethodEntity = getStartMethodEntity(workflowEntity);
-                    // get method invoke chain(dfs)
-                    getMethodInvokeChain(workflowEntity, startMethodEntity);
-                    // concatenate method content
-                    String content = concatenateMethodContent(workflowEntity);
-                    // set property
-                    workflowEntity.setContent(content);
-                    // remove redundant relations
-                    workflowEntity.getContainedMethodList().clear();
-                    workflowEntity = workflowRepo.save(workflowEntity);
+                    if(!Objects.isNull(startMethodEntity)) {
+                        getMethodInvokeChain(workflowEntity, startMethodEntity);
 
-                    // generate description
-                    funcGenerateService.genWorkflowFunc(workflowEntity);
+                        // 将方法和数据对象内容拼接并设置属性
+                        String content = concatenateContent(workflowEntity);
+                        workflowEntity.setContent(content);
+
+                        // 在图上只保留邻近的入口方法的关联
+                        workflowEntity.getContainedMethodList().clear();
+                        workflowEntity.getContainedMethodList().add(startMethodEntity);
+                        workflowEntity = workflowRepo.save(workflowEntity);
+
+                        // 生成功能描述
+                         funcGenerateService.genWorkflowFunc(workflowEntity);
+                    }
                 });
             }
-            // generate workflow module tree
-//            functionalityGenService.genWorkflowModule();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,10 +121,18 @@ public class WorkflowExtractor extends KnowledgeExtractor {
         }
     }
 
-    private String concatenateMethodContent(WorkflowEntity workflowEntity) {
+    /**
+     * 将工作流涉及的方法和数据对象内容进行拼接作为content属性
+     * @param workflowEntity
+     * @return
+     */
+    private String concatenateContent(WorkflowEntity workflowEntity) {
         StringBuilder str = new StringBuilder();
         for(JavaMethodEntity methodEntity : workflowEntity.getContainedMethodList()) {
             str.append(methodEntity.getContent() + "\n");
+        }
+        for(JavaClassEntity classEntity : workflowEntity.getRelatedDataObjectList()) {
+            str.append(classEntity.getContent() + "\n");
         }
         return str.toString();
     }

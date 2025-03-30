@@ -12,7 +12,7 @@ public interface Prompt {
      */
     public static final String WORKFLOW_SUMMARIZE_PROMPT = """
             You are an expert in software development and code analysis. 
-            Your task is to analyze a given code snippet and provide a concise summary of its functionality. 
+            Your task is to analyze a given code snippet and provide a concise and brief summary of its functionality in Chinese. 
             Please focus on the core logic and purpose of the code, and present your summary in the following JSON format:
             ```json
             {
@@ -29,7 +29,7 @@ public interface Prompt {
      */
     public static final String PAGE_SUMMARIZE_PROMPT = """
             You are an expert in software development and code analysis. 
-            Your task is to analyze a given code snippet in a **Front-End** project and provide a concise summary of its functionality. 
+            Your task is to analyze a given code snippet in a **Front-End** project and provide a concise and brief summary of its functionality in Chinese. 
             Please focus on the core functionality of the code, and present your summary in the following JSON format:
             ```json
             {
