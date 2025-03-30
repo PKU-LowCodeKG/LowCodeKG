@@ -47,6 +47,9 @@ public class TaskMergeImpl implements TaskMerge {
                 result.addAll(task.getResourceList());
             }
 
+            if(debugConfig.isDebugMode()) {
+                System.out.println("合并后的结果集:\n" + result + "\n");
+            }
             return Result.build(result, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {

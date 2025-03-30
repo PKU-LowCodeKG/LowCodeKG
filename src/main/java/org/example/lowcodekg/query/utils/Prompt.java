@@ -384,31 +384,30 @@ public interface Prompt {
             - Analyze the task description, upstream dependencies, and downstream dependencies, and pay more attention to the type of input and output of dependent tasks. 
             - Filter the retrieved resources to retain only those that are relevant to the task's dependencies. 
             - Exclude resources that do not address the upstream or downstream dependencies. 
-            - Return the filtered resources in the following JSON format: 
-            
-            ```json
-            {
-              "reserved_resources": [
-                {
-                  "id": ""
-                },
-                ...
-              ]
-            }
-            ```
+            - Return the filtered resources in the JSON format: 
             
             The task Description is:
             {task}
             
-            The upstream dependencies is:
+            The upstream dependencies is(may be null):
             {upstreamDependency}
             
-            And the downstream dependencies is:
+            And the downstream dependencies is(may be null):
             {downstreamDependency}
             
             The retrieved resource list is as follows:
             {nodeList}
             
-            Please return the Ids of reserved tasks in the specified JSON format.
+            Please return the names of reserved tasks in the following JSON format.
+            ```json
+            {
+              "reserved_resources": [
+                {
+                  "name": ""
+                },
+                ...
+              ]
+            }
+            ```
             """;
 }

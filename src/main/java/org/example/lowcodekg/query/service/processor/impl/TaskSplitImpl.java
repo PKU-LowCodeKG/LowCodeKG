@@ -49,13 +49,13 @@ public class TaskSplitImpl implements TaskSplit {
             // 根据需求检索相关资源
             List<Node> nodes = templateRetrieve.queryByTask(query).getData();
             if(debugConfig.isDebugMode()) {
-                System.out.println("初步检索资源: " + nodes);
+                System.out.println("初步检索资源:\n" + nodes + "\n");
             }
 
             // 基于检索结果，构造提示让LLM进行任务分解
             String answer = getSplitTasks(query, nodes);
             if(debugConfig.isDebugMode()) {
-                System.out.println("LLM任务分解：" + answer);
+                System.out.println("LLM任务分解:\n" + answer + "\n");
             }
 
             // 将返回json格式字符串解析为Task对象
@@ -106,6 +106,9 @@ public class TaskSplitImpl implements TaskSplit {
                     }
                 }
                 // 添加依赖关系以及对应的描述
+                if(debugConfig.isDebugMode()) {
+                    System.out.println("Dependency: " + sourceTaskId + " -> " + targetTaskId + " : " + desciption);
+                }
                 graph.addDependency(sourceTaskId, targetTaskId, desciption);
             }
         } catch (JSONException e) {

@@ -2,6 +2,7 @@ package org.example.lowcodekg.query.service.processor.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import io.micrometer.common.util.StringUtils;
 import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
@@ -46,7 +47,8 @@ public class TaskMatchingImpl implements TaskMatching {
             // 类别路由的资源检索策略
             List<Node> nodeList = templateRetrieve.queryBySubTask(task).getData();
             if(debugConfig.isDebugMode()) {
-                System.out.println("类别路由策略检索资源: " + nodeList);
+                System.out.println("类别路由策略检索结果:\n" + nodeList.size() + "\n");
+                System.out.println("类别路由策略检索资源:\n" + nodeList + "\n");
             }
             Map<Node, Double> nodeScoreMap = new HashMap<>();
 
@@ -54,7 +56,8 @@ public class TaskMatchingImpl implements TaskMatching {
             nodeList = filterByDependency(task, nodeList);
             task.setResourceList(nodeList);
             if(debugConfig.isDebugMode()) {
-                System.out.println("根据依赖关系过滤后资源: " + nodeList);
+                System.out.println("依赖关系过滤前资源个数:\n" + nodeList.size() + "\n");
+                System.out.println("根据依赖关系过滤后资源:\n" + nodeList + "\n");
             }
 
             // 相似度计算
@@ -75,13 +78,14 @@ public class TaskMatchingImpl implements TaskMatching {
             // 更新任务资源列表
             task.setResourceList(sortedNodeList);
             if(debugConfig.isDebugMode()) {
-                System.out.println("重排序后的资源：" + sortedNodeList);
+                System.out.println("重排序后的资源:\n" + sortedNodeList + "\n");
             }
 
             return Result.build(null, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
             System.err.println("Error occurred while reranking resources: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Error occurred while reranking resources: " + e.getMessage());
         }
     }
@@ -110,6 +114,7 @@ public class TaskMatchingImpl implements TaskMatching {
 
         } catch (Exception e) {
             System.err.println("Error occurred while calculating subTaskMatchingScore: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Error occurred while calculating subTaskMatchingScore: " + e.getMessage());
         }
     }
@@ -123,6 +128,11 @@ public class TaskMatchingImpl implements TaskMatching {
         try {
             String upstreamDependency = task.getUpstreamDependency();
             String downstreamDependency = task.getDownstreamDependency();
+            // no dependency -> return all nodes
+            if(StringUtils.isEmpty(upstreamDependency) && StringUtils.isEmpty(downstreamDependency)) {
+                return nodeList;
+            }
+
             String taskInfo = task.getName() + "\n" + task.getDescription();
             StringBuilder nodeInfos = new StringBuilder();
             for(Node node: nodeList) {
@@ -131,11 +141,18 @@ public class TaskMatchingImpl implements TaskMatching {
 
             String prompt = FILTER_BY_DEPENDENCY_PROMPT
                     .replace("{task}", taskInfo)
-                    .replace("{upstreamDependency}", upstreamDependency)
-                    .replace("{downstreamDependency}", downstreamDependency)
+                    .replace("{upstreamDependency}", StringUtils.isBlank(upstreamDependency) ? "null" : upstreamDependency)
+                    .replace("{downstreamDependency}", StringUtils.isBlank(downstreamDependency) ? "null" : downstreamDependency)
                     .replace("{nodeList}", nodeInfos.toString());
-
+            if(debugConfig.isDebugMode()) {
+                System.out.println("根据依赖关系过滤prompt:\n" + prompt + "\n");
+            }
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            if(debugConfig.isDebugMode()) {
+                System.out.println("根据依赖关系过滤prompt:\n" + prompt + "\n");
+                System.out.println("根据依赖关系过滤资源:\n" + answer + "\n");
+            }
+
             JSONObject jsonObject = JSONObject.parseObject(answer);
             JSONArray jsonArray = jsonObject.getJSONArray("reserved_resources");
             Set<String> reservedIds = new HashSet<>();
@@ -155,6 +172,7 @@ public class TaskMatchingImpl implements TaskMatching {
 
         } catch (Exception e) {
             System.err.println("Error occurred while filtering by dependency: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Error occurred while filtering by dependency: " + e.getMessage());
         }
     }

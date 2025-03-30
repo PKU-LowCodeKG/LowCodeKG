@@ -75,12 +75,12 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
             // 根据task任务信息，判断检索的对象类型
             String taskInfo = task.toString();
             if(debugConfig.isDebugMode()) {
-                System.out.println("子任务检索信息：" + taskInfo);
+                System.out.println("子任务检索信息:\n" + taskInfo + "\n");
             }
             String prompt = TYPE_OF_RETRIEVED_ENTITY_PROMPT.replace("{Task}", taskInfo);
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
             if(debugConfig.isDebugMode()) {
-                System.out.println("retrieval category: " + answer);
+                System.out.println("检索对象类型:\n" + answer + "\n");
             }
             JSONObject jsonObject = JSON.parseObject(answer);
 
@@ -114,12 +114,12 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
             nodeList = documents.stream()
                     .map(this::convertToNeo4jNode)
                     .collect(Collectors.toList());
-            System.out.println(String.format("SubTask {} retrieved results: {}", task.getName(), nodeList.size()));
 
             return Result.build(nodeList, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
             System.err.println("Error in queryEntitiesBySubTask: " + e.getMessage());
+            e.printStackTrace();
             return Result.build(null, ResultCodeEnum.FAIL);
         }
     }
@@ -165,8 +165,8 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
         org.neo4j.driver.Result result = runner.run(cypher);
         if(result.hasNext()) {
             org.neo4j.driver.types.Node n = result.next().get("n").asNode();
-
-            node.setName(n.get("name").asString());
+            node.setId(id);
+            node.setName(n.get("name").asString() + "_" + id);
             node.setContent(n.get("content").asString());
             node.setDescription(n.get("description").asString());
         } else {

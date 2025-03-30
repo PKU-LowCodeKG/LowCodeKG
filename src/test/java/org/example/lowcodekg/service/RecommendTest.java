@@ -9,6 +9,7 @@ import org.example.lowcodekg.query.service.processor.TaskMatching;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
 import org.example.lowcodekg.query.service.processor.TaskSplit;
 import org.example.lowcodekg.query.service.retriever.ElasticSearchService;
+import org.example.lowcodekg.query.utils.FilePrintStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +41,20 @@ public class RecommendTest {
 
     @Test
     void testConfig() {
+        String logFilePath = "D://Master//log.txt";
+        FilePrintStream filePrintStream = null;
+        try {
+            filePrintStream = new FilePrintStream(logFilePath);
+            System.setOut(filePrintStream); // 替换 System.out
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         boolean debugMode = debugConfig.isDebugMode();
         System.out.println("debugMode = " + debugMode);
     }
 
-//    @BeforeEach
+    @BeforeEach
     void setUp() throws IOException {
         esService.deleteIndex("test");;
         // 确保索引存在
@@ -55,6 +65,16 @@ public class RecommendTest {
 
     @Test
     void test() {
+        // 设置输出到本地日志文件
+        String logFilePath = "D://Master//log.txt";
+        FilePrintStream filePrintStream = null;
+        try {
+            filePrintStream = new FilePrintStream(logFilePath);
+            System.setOut(filePrintStream); // 替换 System.out
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         String query = "我想要能够更新博客的置顶文章的状态";
 
         // 检索增强的需求分解
@@ -62,12 +82,14 @@ public class RecommendTest {
 
         // 基于IR的需求-资源匹配并重排序
         for(Task task : taskGraph.getTasks().values()) {
+            System.out.println("task = " + task.toString());
             taskMatching.rerankResource(task);
         }
 
         // 任务合并
         List<Node> resourceList = taskMerge.mergeTask(taskGraph).getData();
 
+        System.out.println("推荐的资源列表为：\n");
         for(Node node : resourceList) {
             System.out.println(node.toString());
         }

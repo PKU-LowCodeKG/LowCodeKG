@@ -59,7 +59,7 @@ public class Node {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", label='" + label + '\'' +
-                ", content='" + content + '\'' +
+//                ", content='" + content + '\'' +
                 ", description='" + description + '\'' +
                 '}';
     }
