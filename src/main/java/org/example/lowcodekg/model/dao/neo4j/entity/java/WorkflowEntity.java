@@ -46,4 +46,7 @@ public class WorkflowEntity implements Describable {
      */
     @Relationship(type = "CONTAIN", direction = Relationship.Direction.OUTGOING)
     private List<JavaMethodEntity> containedMethodList = new ArrayList<>();
+
+    @Relationship(type = "CONTAIN", direction = Relationship.Direction.OUTGOING)
+    private List<JavaClassEntity> relatedDataObjectList = new ArrayList<>();
 }

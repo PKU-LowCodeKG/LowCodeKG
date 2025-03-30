@@ -1,5 +1,6 @@
 package org.example.lowcodekg.extraction.java;
 
+import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaMethodEntity;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
@@ -75,6 +76,12 @@ public class WorkflowExtractor extends KnowledgeExtractor {
         return null;
     }
 
+    /**
+     * 获取工作流的方法调用链，以及涉及的数据实体类
+     * 以Controller直接关联的方法为入口
+     * @param workflowEntity
+     * @param startMethodEntity
+     */
     private void getMethodInvokeChain(WorkflowEntity workflowEntity, JavaMethodEntity startMethodEntity) {
         try {
             workflowEntity.getContainedMethodList().add(startMethodEntity);
@@ -82,12 +89,26 @@ public class WorkflowExtractor extends KnowledgeExtractor {
             startMethodEntity.setCid(workflowEntity.getId());
             javaMethodRepo.save(startMethodEntity);
 
+            // data object access relation
             String cypher = MessageFormat.format("""
+                    MATCH (n:JavaMethod)-[:PARAM_TYPE]->(m:DataObject)
+                    WHERE id(n) = {0}
+                    RETURN m
+                    """, String.format("%d", startMethodEntity.getId()));
+            Result result = neo4jClient.getQueryRunner().run(cypher);
+            while (result.hasNext()) {
+                Node node = result.next().get("m").asNode();
+                JavaClassEntity relatedDataObject = javaClassRepo.findById(node.id()).get();
+                workflowEntity.getRelatedDataObjectList().add(relatedDataObject);
+            }
+
+            // method call relation
+            cypher = MessageFormat.format("""
                 MATCH (n:JavaMethod)-[:METHOD_CALL]->(m:JavaMethod)
                     WHERE id(n) = {0}
                     RETURN m
                 """, String.format("%d", startMethodEntity.getId()));
-            Result result = neo4jClient.getQueryRunner().run(cypher);
+            result = neo4jClient.getQueryRunner().run(cypher);
             while(result.hasNext()) {
                 Node node = result.next().get("m").asNode();
                 JavaMethodEntity invokedMethodEntity = javaMethodRepo.findById(node.id()).get();
