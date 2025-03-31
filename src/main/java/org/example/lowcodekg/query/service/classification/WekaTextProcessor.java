@@ -8,6 +8,7 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.*;
 
 import com.google.gson.Gson;
@@ -16,82 +17,139 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class WekaTextProcessor {
+    // 内部配置类
+    private static class Config {
+        static final String MODEL_SAVE_PATH = "D:\\Master\\Data\\classification\\";
+        static final String MODEL_FILE = MODEL_SAVE_PATH + "text_classifier.model";
+        static final int WORDS_TO_KEEP = 3000;
+        static final int MIN_TERM_FREQ = 1;
+        static final double CONFIDENCE_THRESHOLD = 0.4;
+        static final String RANDOM_FOREST_OPTIONS = "-I 100 -K 0 -depth 0";
+    }
+
     private Map<String, Classifier> labelClassifiers;
     private StringToWordVector filter;
     private Instances dataStructure;
     private List<String> labels;
-    private double threshold = 0.5;
-    private List<TextClassificationData> trainingData; // 新增成员变量
-
-    // 在类的成员变量部分添加模型保存路径
-    private static final String MODEL_SAVE_PATH = "D:\\Master\\Data\\classification\\";
-    private static final String FILTER_FILE = MODEL_SAVE_PATH + "filter.model";
-    private static final String LABELS_FILE = MODEL_SAVE_PATH + "labels.json";
+    private double threshold = Config.CONFIDENCE_THRESHOLD;
+    private List<TextClassificationData> trainingData;
 
     public WekaTextProcessor() {
         labelClassifiers = new HashMap<>();
+        initializeFilter();
+    }
+
+    private void initializeFilter() {
         filter = new StringToWordVector();
-        // 优化文本预处理参数
-        filter.setWordsToKeep(3000);  // 增加特征词数量
+        filter.setWordsToKeep(Config.WORDS_TO_KEEP);
         filter.setOutputWordCounts(true);
         filter.setTFTransform(true);
         filter.setIDFTransform(true);
         filter.setLowerCaseTokens(true);
         filter.setDoNotOperateOnPerClassBasis(true);
-        filter.setMinTermFreq(1);  // 降低词频阈值，保留更多特征
-        filter.setStemmer(new weka.core.stemmers.IteratedLovinsStemmer());  // 添加词干提取
-        filter.setStopwordsHandler(new weka.core.stopwords.WordsFromFile());  // 添加停用词
-        filter.setTokenizer(new weka.core.tokenizers.NGramTokenizer());  // 使用N-gram特征
-        threshold = 0.4;  // 调整预测阈值
+        filter.setMinTermFreq(Config.MIN_TERM_FREQ);
+        filter.setPeriodicPruning(-1); // 禁用周期性剪枝
+        
+        // 禁用文档长度归一化，避免"Average document length is not set!"错误
+        filter.setNormalizeDocLength(new SelectedTag(StringToWordVector.FILTER_NONE, StringToWordVector.TAGS_FILTER));
+        
+        // 使用字符级分词器，对中文更友好
+        weka.core.tokenizers.CharacterNGramTokenizer tokenizer = new weka.core.tokenizers.CharacterNGramTokenizer();
+        try {
+            // 设置为1-2gram，捕获单字和双字组合
+            tokenizer.setOptions(weka.core.Utils.splitOptions("-min 1 -max 2"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        filter.setTokenizer(tokenizer);
+        
+        // 使用中文停用词表
+        try {
+            weka.core.stopwords.WordsFromFile stopwords = new weka.core.stopwords.WordsFromFile();
+            stopwords.setStopwords(new File(Config.MODEL_SAVE_PATH + "chinese_stopwords.txt"));
+            filter.setStopwordsHandler(stopwords);
+        } catch (Exception e) {
+            System.out.println("警告: 无法加载中文停用词表，将不使用停用词过滤: " + e.getMessage());
+            filter.setStopwordsHandler(new weka.core.stopwords.Null());
+        }
     }
 
     public void buildClassifier(List<TextClassificationData> trainingData) throws Exception {
-        this.trainingData = trainingData; // 保存训练数据的引用
-        // Prepare data structure and labels
+        this.trainingData = trainingData;
         prepareDataStructure(trainingData);
         
         // Create training instances
         Instances trainInstances = createInstances(trainingData);
         
-        // Apply filter
+        // Apply filter and store the filtered data structure
         filter.setInputFormat(trainInstances);
         Instances filteredData = Filter.useFilter(trainInstances, filter);
         
         // Train a classifier for each label
         for (String label : labels) {
             RandomForest classifier = new RandomForest();
-            // Set RandomForest options
-            classifier.setOptions(weka.core.Utils.splitOptions("-I 100 -K 0 -depth 0"));
-            Instances labelData = createBinaryLabelData(filteredData, label);
+            classifier.setOptions(weka.core.Utils.splitOptions(Config.RANDOM_FOREST_OPTIONS));
+            
+            // 为每个标签创建二元分类数据
+            Instances labelData = new Instances(filteredData);
+            for (int i = 0; i < labelData.numInstances(); i++) {
+                TextClassificationData originalItem = trainingData.get(i);
+                boolean hasLabel = originalItem.getLabels().contains(label);
+                labelData.instance(i).setClassValue(hasLabel ? 1.0 : 0.0);
+            }
+            
             classifier.buildClassifier(labelData);
             labelClassifiers.put(label, classifier);
         }
     }
 
     public List<String> predict(String text) throws Exception {
-        // Create test instance
+        // 创建测试实例（未过滤）
         Instance instance = createInstance(text);
-        
-        // Apply filter
-        Instances testInstances = new Instances(dataStructure, 0);
+
+        // 创建一个包含单个实例的数据集
+        Instances testInstances = new Instances(dataStructure);
         testInstances.add(instance);
-        Instances filteredTest = Filter.useFilter(testInstances, filter);
         
-        // Predict for each label
+        // 使用已经训练好的过滤器对整个数据集进行过滤
+        Instances filteredInstances;
+        try {
+            filter.setInputFormat(testInstances);
+            filteredInstances = Filter.useFilter(testInstances, filter);
+        } catch (Exception e) {
+            System.err.println("过滤实例时出错: " + e.getMessage());
+            // 尝试使用备用方法
+            filter.input(instance);
+            Instance filteredInstance = filter.output();
+            filteredInstances = new Instances(dataStructure, 1);
+            filteredInstances.add(filteredInstance);
+        }
+        
+        if (filteredInstances.numInstances() == 0) {
+            System.err.println("警告: 过滤后没有实例，无法进行预测");
+            return new ArrayList<>();
+        }
+        
+        Instance filteredInstance = filteredInstances.firstInstance();
+
+        // 预测每个标签
         List<String> predictedLabels = new ArrayList<>();
         System.out.println("预测置信度:");
+
         for (String label : labels) {
-            Instances labelData = createBinaryLabelData(filteredTest, label);
-            double[] distribution = labelClassifiers.get(label).distributionForInstance(labelData.get(0));
-            double confidence = distribution[1];  // 获取正类的概率
+            Classifier classifier = labelClassifiers.get(label);
+            double[] distribution = classifier.distributionForInstance(filteredInstance);
+            double confidence = distribution[1];
+
             if (confidence >= threshold) {
                 predictedLabels.add(label);
             }
             System.out.printf("  %s: %.2f%%\n", label, confidence * 100);
         }
-        
+
         return predictedLabels;
     }
+
 
     private void prepareDataStructure(List<TextClassificationData> data) {
         // Collect unique labels
@@ -135,65 +193,22 @@ public class WekaTextProcessor {
         return instances;
     }
 
-    private Instances createBinaryLabelData(Instances data, String targetLabel) {
-        // 创建新的数据结构，保持与输入数据相同的属性
-        ArrayList<Attribute> attributes = new ArrayList<>();
-        for (int i = 0; i < data.numAttributes(); i++) {
-            attributes.add((Attribute) data.attribute(i).copy());
-        }
-        
-        // 创建新的Instances对象
-        Instances labelData = new Instances("BinaryLabel", attributes, data.numInstances());
-        labelData.setClassIndex(data.classIndex());
-        
-        // 复制实例并设置标签值
-        for (int i = 0; i < data.numInstances(); i++) {
-            DenseInstance newInst = new DenseInstance(data.instance(i));
-            newInst.setDataset(labelData);
-            labelData.add(newInst);
-            
-            // 如果是训练阶段，使用训练数据的标签
-            if (trainingData != null) {
-                TextClassificationData originalItem = trainingData.get(i);
-                boolean hasLabel = originalItem.getLabels().contains(targetLabel);
-                labelData.instance(i).setClassValue(hasLabel ? 1.0 : 0.0);
-            } else {
-                // 预测阶段，设置默认值
-                labelData.instance(i).setClassValue(0.0);
-            }
-        }
-        
-        return labelData;
-    }
-
-    // 添加保存模型的方法
+    // 修改保存模型方法
     public void saveModel() throws Exception {
-        // 创建保存目录
-        new File(MODEL_SAVE_PATH).mkdirs();
+        new File(Config.MODEL_SAVE_PATH).mkdirs();
         
-        // 保存过滤器
-        weka.core.SerializationHelper.write(FILTER_FILE, filter);
-        
-        // 保存每个标签的分类器
-        for (Map.Entry<String, Classifier> entry : labelClassifiers.entrySet()) {
-            String classifierFile = MODEL_SAVE_PATH + entry.getKey() + ".model";
-            weka.core.SerializationHelper.write(classifierFile, entry.getValue());
-        }
-        
-        // 保存标签列表
-        Files.write(Paths.get(LABELS_FILE), new Gson().toJson(labels).getBytes());
+        // 创建模型包装对象
+        ModelWrapper wrapper = new ModelWrapper(filter, labelClassifiers, labels);
+        weka.core.SerializationHelper.write(Config.MODEL_FILE, wrapper);
     }
 
-    // 添加加载模型的方法
+    // 修改加载模型方法
     public void loadModel() throws Exception {
-        // 加载过滤器
-        filter = (StringToWordVector) weka.core.SerializationHelper.read(FILTER_FILE);
+        ModelWrapper wrapper = (ModelWrapper) weka.core.SerializationHelper.read(Config.MODEL_FILE);
         
-        // 加载标签列表
-        labels = new Gson().fromJson(
-            new String(Files.readAllBytes(Paths.get(LABELS_FILE))),
-            new TypeToken<List<String>>(){}.getType()
-        );
+        this.filter = wrapper.getFilter();
+        this.labelClassifiers = wrapper.getLabelClassifiers();
+        this.labels = wrapper.getLabels();
         
         // 初始化数据结构
         ArrayList<Attribute> attributes = new ArrayList<>();
@@ -201,26 +216,72 @@ public class WekaTextProcessor {
         attributes.add(new Attribute("class", Arrays.asList("0", "1")));
         dataStructure = new Instances("TextClassification", attributes, 0);
         dataStructure.setClassIndex(1);
-        
-        // 加载每个标签的分类器
-        labelClassifiers = new HashMap<>();
-        for (String label : labels) {
-            String classifierFile = MODEL_SAVE_PATH + label + ".model";
-            Classifier classifier = (Classifier) weka.core.SerializationHelper.read(classifierFile);
-            labelClassifiers.put(label, classifier);
+    }
+
+    // 添加模型评估方法
+    public void evaluateModel() throws Exception {
+        if (trainingData == null) {
+            throw new IllegalStateException("没有训练数据可供评估");
         }
+
+        System.out.println("\n=== 模型评估结果 ===");
+        for (String label : labels) {
+            // Create and filter instances
+            Instances trainInstances = createInstances(trainingData);
+            filter.setInputFormat(trainInstances);
+            Instances filteredData = Filter.useFilter(trainInstances, filter);
+            
+            // Create binary label data
+            Instances labelData = new Instances(filteredData);
+            for (int i = 0; i < labelData.numInstances(); i++) {
+                TextClassificationData originalItem = trainingData.get(i);
+                boolean hasLabel = originalItem.getLabels().contains(label);
+                labelData.instance(i).setClassValue(hasLabel ? 1.0 : 0.0);
+            }
+            
+            // Perform cross-validation
+            weka.classifiers.Evaluation eval = new weka.classifiers.Evaluation(labelData);
+            eval.crossValidateModel(labelClassifiers.get(label), labelData, 10, new Random(1));
+            
+            System.out.printf("\n标签 '%s' 的评估结果:\n", label);
+            System.out.printf("准确率: %.2f%%\n", eval.pctCorrect());
+            System.out.printf("F1值: %.3f\n", eval.weightedFMeasure());
+        }
+    }
+
+    // 内部模型包装类
+    private static class ModelWrapper implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private final StringToWordVector filter;
+        private final Map<String, Classifier> labelClassifiers;
+        private final List<String> labels;
+        
+        public ModelWrapper(StringToWordVector filter, Map<String, Classifier> labelClassifiers, List<String> labels) {
+            this.filter = filter;
+            this.labelClassifiers = labelClassifiers;
+            this.labels = labels;
+        }
+        
+        public StringToWordVector getFilter() { return filter; }
+        public Map<String, Classifier> getLabelClassifiers() { return labelClassifiers; }
+        public List<String> getLabels() { return labels; }
     }
 
     public static void main(String[] args) {
         try {
             WekaTextProcessor processor = new WekaTextProcessor();
-            File modelFile = new File(MODEL_SAVE_PATH + "workflow.model");
+            File modelFile = new File(Config.MODEL_FILE);
+            
+            // 强制重新训练模型，因为我们修改了过滤器配置
+            if (modelFile.exists()) {
+                System.out.println("删除现有模型以重新训练...");
+                modelFile.delete();
+            }
             
             if (!modelFile.exists()) {
-                // 如果模型不存在，进行训练
-                System.out.println("模型不存在，开始训练...");
+                System.out.println("=== 开始模型训练 ===");
                 
-                // 从JSON文件加载训练数据
+                // 加载训练数据
                 String dataPath = "D:\\Master\\Data\\classification\\dataset.json";
                 List<TextClassificationData> trainingData = new Gson().fromJson(
                     new String(Files.readAllBytes(Paths.get(dataPath))),
@@ -228,16 +289,47 @@ public class WekaTextProcessor {
                 );
                 
                 System.out.println("加载训练数据: " + trainingData.size() + " 条记录");
+                
+                // 检查标签分布
+                Map<String, Integer> labelCounts = new HashMap<>();
+                for (TextClassificationData item : trainingData) {
+                    for (String label : item.getLabels()) {
+                        labelCounts.put(label, labelCounts.getOrDefault(label, 0) + 1);
+                    }
+                }
+                System.out.println("标签分布:");
+                for (Map.Entry<String, Integer> entry : labelCounts.entrySet()) {
+                    System.out.printf("  %s: %d 条记录 (%.1f%%)\n", 
+                        entry.getKey(), 
+                        entry.getValue(), 
+                        100.0 * entry.getValue() / trainingData.size());
+                }
+                
+                // 检查数据集是否足够大
+                if (trainingData.size() < 50) {
+                    System.out.println("警告: 训练数据集较小，可能影响模型性能");
+                }
+                
+                // 检查是否有标签数据不平衡问题
+                int maxCount = Collections.max(labelCounts.values());
+                int minCount = Collections.min(labelCounts.values());
+                if ((double)maxCount / minCount > 5) {
+                    System.out.println("警告: 标签分布严重不平衡，可能影响模型性能");
+                }
+                
                 processor.buildClassifier(trainingData);
                 System.out.println("分类器训练完成");
                 
+                // 评估模型
+                System.out.println("\n执行模型评估...");
+                processor.evaluateModel();
+                
                 // 保存模型
-                System.out.println("保存模型...");
+                System.out.println("\n保存模型...");
                 processor.saveModel();
                 System.out.println("模型保存完成");
             } else {
-                // 如果模型存在，直接加载
-                System.out.println("加载已有模型...");
+                System.out.println("=== 加载已有模型 ===");
                 processor.loadModel();
                 System.out.println("模型加载完成");
             }
@@ -246,24 +338,28 @@ public class WekaTextProcessor {
             String[] testQueries = {
                 "在用户管理系统中增加权限分配功能,管理员可以通过页面操作管理权限",
                 "创建一个新的数据表用于存储客户信息",
+                "设计一个工作流程用于审批请假申请",
                 "实现一个用户登录界面，包含用户名密码输入框和登录按钮",
+                "开发数据统计报表页面，展示销售数据分析结果",
                 "设计员工信息管理的数据库表结构",
                 "创建一个支持拖拽的自定义仪表盘页面",
                 "实现用户注册流程，包括邮箱验证和手机号验证",
+                "设计一个数据库存储过程来处理订单数据",
                 "开发一个文件上传组件，支持图片预览和大小限制",
                 "实现一个工作流引擎，支持自定义审批流程",
                 "创建数据库视图用于统计月度销售数据",
                 "开发一个富文本编辑器组件",
-                "实现一个动态表单生成器，支持拖拽配置",
-                "新增博客实体的置顶状态字段"
+                "设计API接口用于处理用户认证",
+                "实现一个动态表单生成器，支持拖拽配置"
             };
             
-            // 进行预测
-            System.out.println("\n测试预测结果:");
+            // 进行预测测试
+            System.out.println("\n=== 测试预测结果 ===");
             for (String query : testQueries) {
-                List<String> predictedLabels = processor.predict(query);
                 System.out.println("\n查询文本: " + query);
-                System.out.println("预测标签: " + predictedLabels);
+                List<String> predictedLabels = processor.predict(query);
+                System.out.println("预测标签: " + String.join(", ", predictedLabels));
+                System.out.println("-------------------");
             }
             
         } catch (Exception e) {
