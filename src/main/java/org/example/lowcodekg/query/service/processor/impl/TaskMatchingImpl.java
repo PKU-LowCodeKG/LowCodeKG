@@ -154,7 +154,7 @@ public class TaskMatchingImpl implements TaskMatching {
             }
 
             JSONObject jsonObject = JSONObject.parseObject(answer);
-            JSONArray jsonArray = jsonObject.getJSONArray("reserved_resources");
+            JSONArray jsonArray = jsonObject.getJSONArray("resources");
             Set<String> reservedNames = new HashSet<>();
 
             for(int i = 0; i < jsonArray.size(); i++) {

@@ -51,7 +51,8 @@ public class TaskMergeImpl implements TaskMerge {
             if(debugConfig.isDebugMode()) {
                 System.out.println("合并后的结果集:\n" + result + "\n");
             }
-            return Result.build(result, ResultCodeEnum.SUCCESS);
+            List<Node> nodeList = new ArrayList<>(result);
+            return Result.build(nodeList, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
             System.err.println("Error in mergeTask: " + e.getMessage());

@@ -49,35 +49,44 @@ public interface Prompt {
      * 任务拆分Prompt
      */
     public final static String TaskSplitPrompt = """
-            You are an expert in Software Engineering and have extensive experience in understanding complex software projects and analyzing source code. 
-            Your task is to decompose a given task description into multiple subtasks based on the potentially relevant code snippets and corresponding description provided.
-            You should focus on the split point of the function, for example, for a “user login” query, the specific split should be the user to fill in the login information, send a login request, user information verification, return to the login success of such a process.
+            You are an expert in Software Engineering with extensive experience in analyzing complex software projects and source code. 
             
-            The code content is:
-            {code}
+            Your task is to break down the given task description into multiple logical subtasks based on the provided code snippets and descriptions. Focus on identifying appropriate split points within the function. 
             
-            The task description is:
-            {task}
+            For example, for a "user login" task, the process can be decomposed into: 
+            1. User fills in login credentials. 
+            2. Login request is sent. 
+            3. User credentials are verified. 
+            4. Login success response is returned. 
             
-            Please return the subtasks in the following JSON format:
-            ```json
-            {
-                "subtasks": [
-                    {
-                        "id": 1,
-                        "name": "subtask1",
-                        "description": "subtask1 description"
-                    },
-                    {
-                        "id": 2,
-                        "name": "subtask2",
-                        "description": "subtask2 description"
-                    }
-                ]
-            }
-            ```
+            **Provided Code:** 
+            {code} 
             
-            Note that the result should be in Chinese.
+            **Task Description:** 
+            {task} 
+            
+            ### **Output Format (in Chinese):** 
+            Please return the subtasks in the following JSON format: 
+            ```json 
+            { 
+                "subtasks": [ 
+                    { 
+                        "id": 1, 
+                        "name": "子任务1", 
+                        "description": "子任务1的详细描述" 
+                    }, 
+                    { 
+                        "id": 2, 
+                        "name": "子任务2", 
+                        "description": "子任务2的详细描述" 
+                    } 
+                ] 
+            } 
+     
+            Ensure that:
+             - The output is in Chinese.
+             - Each subtask is logical, granular, and sequentially meaningful.
+             - The breakdown should follow the flow of functionality implementation.     
             """;
 
     /**
@@ -290,71 +299,82 @@ public interface Prompt {
      * 识别子任务之间的依赖关系
      */
     public static final String IDENTIFY_TASK_DEPENDENCY_PROMPT = """
-            ## Role of the AI Assistant
-            You act as a smart analytical assistant to help identify potential dependencies between subtasks in a software development context. Your task is to analyze the provided subtasks and their details to identify dependencies between them, and then explain the reasons why these dependencies exist.
+            ## AI Assistant's Role
+            You are an intelligent analytical assistant designed to identify potential dependencies between subtasks in a software development context. Your task is to analyze the provided subtasks and their details, determine dependencies between them, and explain why these dependencies exist.
             
-            ## Input
-            - **Overall Task Description**: A comprehensive description of the entire task that encompasses all subtasks. This description typically originates from user requirements or product specifications.
-            - **Subtask Details**: Multiple subtasks described in natural language. Each subtask contains the following information:
+            ## Input Format
+            - **Overall Task Description**: A comprehensive summary of the entire task, derived from user requirements or product specifications.
+            - **Subtask Details**: A list of subtasks, each described in natural language and structured as follows:
               - `id`: A unique identifier for the subtask.
               - `name`: The name of the subtask.
-              - `description`: A detailed description of what the subtask accomplishes. This is often derived from user stories or technical specifications.
-              - `DslList`: A list of intermediate representations (IR) for the subtask. Each IR is defined as follows:
-                - `action`: *Required* - The core verb or operation (e.g., "filter", "sort", "export").
-                - `object`: *Required* - The entity being manipulated (e.g., "raw_data", "user_logs").
-                - `target`: *Optional* - The output destination or format (e.g., "CSV_file", "database_table").
-                - `condition`: *Optional* - Environmental constraints or prerequisites (e.g., "if_errors_detected", "during_nightly_maintenance").
+              - `description`: A detailed explanation of what the subtask accomplishes, typically based on user stories or technical specifications.
+              - `DslList`: A list of intermediate representations (IRs) for the subtask, each containing:
+                - `action` (Required): The core operation (e.g., "filter", "sort", "export").
+                - `object` (Required): The entity being manipulated (e.g., "raw_data", "user_logs").
+                - `target` (Optional): The output destination or format (e.g., "CSV_file", "database_table").
+                - `condition` (Optional): Constraints or prerequisites (e.g., "if_errors_detected", "during_nightly_maintenance").
             
-            ## Criteria for Identifying Dependencies
-            To identify dependencies between subtasks, use the following criteria:
-            1. **Semantic Associations**: Look for relationships in the natural language descriptions of the subtasks. Pay attention to references to shared data or sequential processes.
-            2. **IR Sequence Logic**: Analyze the sequence of operations in the IRs. Focus on how the `object` and `target` fields might serve as input or output parameters that create dependencies between upstream and downstream tasks.
-            3. **Development Workflow**: Consider typical software development workflows, such as data processing pipelines, API integrations, or user interface sequences. Identify logical dependencies based on these workflows.
+            ## Dependency Identification Criteria
+            To determine dependencies between subtasks, consider the following factors:
+            1. **Semantic Relationships**: Analyze the natural language descriptions to identify references to shared data, processes, or sequential operations.
+            2. **IR Sequence Logic**: Examine the `DslList` fields, especially how `object` and `target` may indicate dependencies where one subtask produces an output that another subtask consumes.
+            3. **Development Workflow**: Consider typical software development workflows, such as data processing pipelines, API integrations, or user interface sequences, to identify logical dependencies.
             
+            ## Input Content
             The overall task description is:
             {query}
             
             And the detail of subtasks is as follow:
             {subTasks}
-            
-            Please return a JSON-formatted result listing pairs of subtasks' ID that have dependencies, along with the reason for each dependency. The format should be as follows:
+           
+            ## Expected Output
+            Your response should be a JSON object listing dependent subtask pairs, with explanations in Chinese. The format is:
             ```json
             {
                 "Dependencies": [
                     {
-                        "taskId1": "taskId2", // Indicates a directed edge from task1 to task2, meaning task2 depends on task1
-                        "dependency": "task2 needs to use the computational results output by task1" // Explanation of why the two subtasks are dependent
+                        "taskId1": "taskId2",
+                        "dependency": "task2 需要使用 task1 产生的计算结果"
                     },
                     {
                         "taskId3": "taskId4",
-                        "dependency": "task3 requires the output of task4 as input"
+                        "dependency": "task3 依赖 task4 生成的输入数据"
                     }
                 ]
             }
             ```
             
-            ### Notes
-            - Ensure that the dependencies are identified based on the provided criteria, and the result must return **id** of tasks.
-            - If no dependencies are found, return an empty list in the JSON output.
-            - The explanations for dependencies should be clear and concise, focusing on the specific reasons why one subtask depends on another, and presented in Chinese.
+            ### Additional Guidelines
+            - The dependencies should be determined strictly based on the provided criteria.
+            - Always return task **IDs**, not names.
+            - If no dependencies are found, return an empty list (`"Dependencies": []`).
+            - Explanations should be clear, precise, and written in **Chinese**.
             """;
 
     /**
      * 判断子任务的检索对象类型
      */
     public static final String TYPE_OF_RETRIEVED_ENTITY_PROMPT = """
-            You are an experienced software engineer who has expertise in analyzing development tasks. 
-            Here is a task description and an associated sequence of operations. 
+            You are an experienced software engineer with expertise in analyzing development tasks and identifying relevant system objects. 
+            
+            ### Task Overview 
+            You will be provided with: 
+            1. A task description that outlines a specific development-related goal. 
+            2. A sequence of operations that detail the steps involved in executing the task. 
+            
+            ### Your Objective 
+            Your job is to determine which types of objects need to be retrieved for this task. The possible object types are: 
+            - **Page**: Represents a UI page or interface that users interact with. 
+            - **Workflow**: Represents a predefined sequence of steps or processes executed in the system. 
+            - **DataObject**: Represents structured data entities that store and manage information. 
+            
+            Carefully analyze both the task description and the sequence of operations to determine which of the above object types are required. The task may involve multiple object types. 
+            
+            ### Input Content
             {Task}
             
-            Your job is to determine the types of objects that need to be retrieved for this task. 
-            The possible object types are:
-            - Page
-            - Workflow
-            - DataObject
-            
-            Please carefully review the task description and the sequence of operations, and then identify which of the above object types are relevant for this task. Note that the task may require retrieval of multiple object types.
-            Return your answer in the following format:
+            ### Response Format 
+            Return your answer as a JSON object with boolean values indicating whether each object type is relevant: 
             
             ```json
             {
@@ -362,7 +382,8 @@ public interface Prompt {
               "Workflow": true/false,
               "DataObject": true/false
             }
-            ```
+            
+            Ensure your classification is based strictly on the provided information. If the task does not explicitly or implicitly require a certain object type, mark it as false.
             """;
 
     /**
@@ -401,7 +422,7 @@ public interface Prompt {
             Please return the names of reserved tasks in the following JSON format(case sensitive).
             ```json
             {
-              "reserved_resources": [
+              "resources": [
                 {
                   "name": ""
                 },
