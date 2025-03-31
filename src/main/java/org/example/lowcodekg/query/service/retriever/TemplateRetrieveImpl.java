@@ -80,6 +80,7 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
             String prompt = TYPE_OF_RETRIEVED_ENTITY_PROMPT.replace("{Task}", taskInfo);
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
             if(debugConfig.isDebugMode()) {
+                System.out.println("判断检索对象类型prompt:\n" + prompt + "\n");
                 System.out.println("检索对象类型:\n" + answer + "\n");
             }
             JSONObject jsonObject = JSON.parseObject(answer);
@@ -131,14 +132,14 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
         try {
             float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(query));
             if(indexName.equals(PAGE_INDEX_NAME)) {
-                documentsByText = esService.searchByText(query, 3, 0, PAGE_INDEX_NAME);
-                documentsByVector = esService.searchByVector(vector, 3, 0, PAGE_INDEX_NAME);
+                documentsByText = esService.searchByText(query, MAX_RESULTS, 0, PAGE_INDEX_NAME);
+                documentsByVector = esService.searchByVector(vector, MAX_RESULTS, 0, PAGE_INDEX_NAME);
             } else if(indexName.equals(WORKFLOW_INDEX_NAME)) {
-                documentsByText = esService.searchByText(query, 3, 0, WORKFLOW_INDEX_NAME);
-                documentsByVector = esService.searchByVector(vector, 3, 0, WORKFLOW_INDEX_NAME);
+                documentsByText = esService.searchByText(query, MAX_RESULTS, 0, WORKFLOW_INDEX_NAME);
+                documentsByVector = esService.searchByVector(vector, MAX_RESULTS, 0, WORKFLOW_INDEX_NAME);
             } else if(indexName.equals(DATA_OBJECT_INDEX_NAME)) {
-                documentsByText = esService.searchByText(query, 3, 0, DATA_OBJECT_INDEX_NAME);
-                documentsByVector = esService.searchByVector(vector, 3, 0, DATA_OBJECT_INDEX_NAME);
+                documentsByText = esService.searchByText(query, MAX_RESULTS, 0, DATA_OBJECT_INDEX_NAME);
+                documentsByVector = esService.searchByVector(vector, MAX_RESULTS, 0, DATA_OBJECT_INDEX_NAME);
             }
 
             List<Document> intersection = documentsByText.stream()

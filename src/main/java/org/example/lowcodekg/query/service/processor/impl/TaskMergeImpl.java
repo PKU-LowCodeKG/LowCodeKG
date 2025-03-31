@@ -10,9 +10,7 @@ import org.example.lowcodekg.query.service.processor.TaskMerge;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description
@@ -27,10 +25,13 @@ public class TaskMergeImpl implements TaskMerge {
     @Override
     public Result<List<Node>> mergeTask(TaskGraph graph) {
         try {
-            List<Node> result = new ArrayList<>();
+            Set<Node> result = new HashSet<>();
             // 任务依赖图拓扑遍历
             List<Task> sortedTasks = graph.topologicalSort();
             for(Task task : sortedTasks) {
+                if(task.getResourceList().size() == 0) {
+                    continue;
+                }
                 // 获取当前任务的尾资源输出
                 Node tailResource = task.getResourceList().get(task.getResourceList().size() - 1);
 

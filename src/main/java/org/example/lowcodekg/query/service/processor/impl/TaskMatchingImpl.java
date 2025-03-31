@@ -56,7 +56,7 @@ public class TaskMatchingImpl implements TaskMatching {
             nodeList = filterByDependency(task, nodeList);
             task.setResourceList(nodeList);
             if(debugConfig.isDebugMode()) {
-                System.out.println("依赖关系过滤前资源个数:\n" + nodeList.size() + "\n");
+                System.out.println("依赖关系过滤后资源个数:\n" + nodeList.size() + "\n");
                 System.out.println("根据依赖关系过滤后资源:\n" + nodeList + "\n");
             }
 
@@ -126,8 +126,8 @@ public class TaskMatchingImpl implements TaskMatching {
      */
     private List<Node> filterByDependency(Task task, List<Node> nodeList) {
         try {
-            String upstreamDependency = task.getUpstreamDependency();
-            String downstreamDependency = task.getDownstreamDependency();
+            String upstreamDependency = StringUtils.isBlank(task.getUpstreamDependency()) ? "null" : task.getUpstreamDependency();
+            String downstreamDependency = StringUtils.isBlank(task.getDownstreamDependency()) ? "null" : task.getDownstreamDependency();
             // no dependency -> return all nodes
             if(StringUtils.isEmpty(upstreamDependency) && StringUtils.isEmpty(downstreamDependency)) {
                 return nodeList;
@@ -141,8 +141,8 @@ public class TaskMatchingImpl implements TaskMatching {
 
             String prompt = FILTER_BY_DEPENDENCY_PROMPT
                     .replace("{task}", taskInfo)
-                    .replace("{upstreamDependency}", StringUtils.isBlank(upstreamDependency) ? "null" : upstreamDependency)
-                    .replace("{downstreamDependency}", StringUtils.isBlank(downstreamDependency) ? "null" : downstreamDependency)
+                    .replace("{upstreamDependency}", upstreamDependency)
+                    .replace("{downstreamDependency}", downstreamDependency)
                     .replace("{nodeList}", nodeInfos.toString());
             if(debugConfig.isDebugMode()) {
                 System.out.println("根据依赖关系过滤prompt:\n" + prompt + "\n");
@@ -155,16 +155,16 @@ public class TaskMatchingImpl implements TaskMatching {
 
             JSONObject jsonObject = JSONObject.parseObject(answer);
             JSONArray jsonArray = jsonObject.getJSONArray("reserved_resources");
-            Set<String> reservedIds = new HashSet<>();
+            Set<String> reservedNames = new HashSet<>();
 
             for(int i = 0; i < jsonArray.size(); i++) {
                 JSONObject item = jsonArray.getJSONObject(i);
-                String taskId = item.getString("id");
-                reservedIds.add(taskId);
+                String taskName = item.getString("name");
+                reservedNames.add(taskName);
             }
 
             List<Node> filteredNodeList = nodeList.stream()
-                    .filter(node -> reservedIds.contains(node.getId()))
+                    .filter(node -> reservedNames.contains(node.getName()))
                     .collect(Collectors.toList());
             nodeList.clear();
 

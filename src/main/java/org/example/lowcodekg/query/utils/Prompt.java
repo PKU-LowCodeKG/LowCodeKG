@@ -398,7 +398,7 @@ public interface Prompt {
             The retrieved resource list is as follows:
             {nodeList}
             
-            Please return the names of reserved tasks in the following JSON format.
+            Please return the names of reserved tasks in the following JSON format(case sensitive).
             ```json
             {
               "reserved_resources": [

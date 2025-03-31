@@ -7,6 +7,7 @@ import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Description 检索得到的实体类型
@@ -64,4 +65,16 @@ public class Node {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return Objects.equals(name, node.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
 }

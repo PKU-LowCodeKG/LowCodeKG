@@ -54,7 +54,7 @@ public class RecommendTest {
         System.out.println("debugMode = " + debugMode);
     }
 
-    @BeforeEach
+//    @BeforeEach
     void setUp() throws IOException {
         esService.deleteIndex("test");;
         // 确保索引存在
@@ -89,7 +89,6 @@ public class RecommendTest {
         // 任务合并
         List<Node> resourceList = taskMerge.mergeTask(taskGraph).getData();
 
-        System.out.println("推荐的资源列表为：\n");
         for(Node node : resourceList) {
             System.out.println(node.toString());
         }
