@@ -16,6 +16,7 @@ public interface TaskMatching {
 
     /**
      * 子任务与资源的匹配度计算，值越小，匹配度越高
+     * 针对node类别进行路由，采取针对性的策略
      * @param task
      * @param node
      * @return

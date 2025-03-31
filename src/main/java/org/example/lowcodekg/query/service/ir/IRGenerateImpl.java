@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.IR;
@@ -30,6 +31,8 @@ public class IRGenerateImpl implements IRGenerate {
 
     @Autowired
     private LLMGenerateService llmService;
+    @Autowired
+    private DebugConfig debugConfig;
 
     @Override
     public Result<List<IR>> convertTaskToIR(Task task) {
@@ -46,7 +49,7 @@ public class IRGenerateImpl implements IRGenerate {
     }
 
     @Override
-    public Result<List<IR>> convertTemplateToIR(Node template) {
+    public Result<List<IR>>  convertTemplateToIR(Node template) {
         try {
             StringBuilder templateInfo = new StringBuilder();
             templateInfo.append("模板名称：").append(template.getName()).append("\n")
@@ -54,6 +57,10 @@ public class IRGenerateImpl implements IRGenerate {
                     .append("模板代码：").append(template.getContent()).append("\n");
             String prompt = RESOURCE_TO_IR_PROMPT.replace("{Task}", templateInfo.toString());
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            if(debugConfig.isDebugMode()) {
+                System.out.println("模板转换prompt:\n" + prompt + "\n");
+                System.out.println("模板转换结果:\n" + answer + "\n");
+            }
             List<IR> irList = buildIRList(answer);
 
             return Result.build(irList, ResultCodeEnum.SUCCESS);

@@ -217,71 +217,17 @@ public interface Prompt {
            
             **Guidelines:**
            
-            1. **DSL Field Definitions**:
+            **DSL Field Definitions**:
                - `action`: *Required* - The core verb/operation (e.g., "filter", "sort", "export").
                - `object`: *Required* - The entity being manipulated (e.g., "raw_data", "user_logs").
                - `target`: *Optional* - The output destination/format (e.g., "CSV_file", "database_table").
                - `condition`: *Optional* - Environmental constraints or prerequisites (e.g., "if_errors_detected", "during_nightly_maintenance").
           
-            2. **Input**:
-               - You will be provided with a natural language description that describes a functional requirement, and possibly relevant code concerning to the implementation.
-           
-            3. **Output**:
+            **Output**:
                - Your task is to identify and extract the relevant information from the description and organize it into DSL objects.
-               - Return the extracted DSL objects in the following JSON format:
+               - Return the extracted DSL objects in the JSON format:
            
-            ```json
-            {
-                "IR": [
-                    {
-                        "action": "<action_1>",
-                        "object": "<object_1>",
-                        "target": "<target_1>",
-                        "condition": "<condition_1>"
-                    },
-                    {
-                        "action": "<action_2>",
-                        "object": "<object_2>",
-                        "target": "<target_2>",
-                        "condition": "<condition_2>"
-                    },
-                    ...
-                ]
-            }
-            ```
-           
-            4. **Example**:
-               - **Natural Language Description**:
-                 ```
-                 The system needs to validate the user input. If the input is correct, it should store the data in the database. If the input is incorrect, it should display an error message.
-                 ```
-               - **Expected JSON Output**:
-                 ```json
-                 {
-                     "IR": [
-                         {
-                             "action": "validate",
-                             "object": "user input",
-                             "target": "validation result",
-                             "condition": "N/A"
-                         },
-                         {
-                             "action": "store",
-                             "object": "data",
-                             "target": "database",
-                             "condition": "input is correct"
-                         },
-                         {
-                             "action": "display",
-                             "object": "error message",
-                             "target": "user interface",
-                             "condition": "input is incorrect"
-                         }
-                     ]
-                 }
-                 ```
-           
-            5. **Instructions**:
+            **Instructions**:
                - Carefully read the natural language description to identify actions, objects, targets, and conditions.
                - Ensure that each extracted DSL object accurately reflects the information in the description.
                - If any component (action, object, target, condition) is not explicitly mentioned, use "N/A" or an appropriate placeholder.

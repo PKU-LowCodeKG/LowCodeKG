@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.example.lowcodekg.query.utils.Constants.*;
@@ -56,8 +57,10 @@ public class RecommendTest {
     }
 
 //    @BeforeEach
+    @Test
     void setUp() throws IOException {
-        esService.deleteIndex("test");;
+//        esService.deleteIndex("test");;
+        esService.deleteAllIndices();
         // 确保索引存在
         esService.createIndex(Document.class, PAGE_INDEX_NAME);
         esService.createIndex(Document.class, WORKFLOW_INDEX_NAME);
@@ -88,11 +91,20 @@ public class RecommendTest {
         }
 
         // 任务合并
-        List<Node> resourceList = taskMerge.mergeTask(taskGraph).getData();
+//        List<Node> resourceList = taskMerge.mergeTask(taskGraph).getData();
 
-        System.out.println("推荐资源结果列表:\n");
-        for(Node node : resourceList) {
-            System.out.println(node.toString());
+        System.out.println("推荐资源结果列表:");
+        List<Task> sortedTasks = taskGraph.topologicalSort();
+        for(Task task : sortedTasks) {
+            if(task.getResourceList().size() == 0) {
+                continue;
+            }
+            System.out.println("当前任务：" + task.getName());
+            for(Node node : task.getResourceList()) {
+                System.out.println("资源名称：" + node.getName());
+                System.out.println("资源描述：" + node.getDescription());
+            }
+            System.out.println("\n");
         }
     }
 

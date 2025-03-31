@@ -93,8 +93,9 @@ public class TaskMatchingImpl implements TaskMatching {
     @Override
     public Result<Double> subTaskMatchingScore(Task task, Node node) {
         try {
-            // 获取task和node对应的IR序列
+            // 获取task对应的IR序列
             List<IR> taskIRList = irGenerate.convertTaskToIR(task).getData();
+            // 获取node对应的IR序列
             List<IR> templateIRList = irGenerate.convertTemplateToIR(node).getData();
 
             // 序列向量化表示

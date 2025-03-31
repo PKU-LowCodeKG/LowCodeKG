@@ -3,9 +3,12 @@ package org.example.lowcodekg.query.service.retriever;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
+import co.elastic.clients.elasticsearch.indices.IndexState;
 import co.elastic.clients.json.JsonData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.elasticsearch.client.RequestOptions;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +44,28 @@ public class ElasticSearchService {
             throw new RuntimeException(e);
         }
     }
+
+    public void deleteAllIndices() {
+        try {
+            // 获取所有索引
+            Map<String, IndexState> indices = client.indices()
+                    .get(i -> i.index("*"))
+                    .result();
+
+            // 逐个删除索引
+            for (String indexName : indices.keySet()) {
+                try {
+                    client.indices().delete(d -> d.index(indexName));
+                    System.out.println("Deleted index: " + indexName);
+                } catch (Exception e) {
+                    System.err.println("Failed to delete index: " + indexName + ", error: " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error while deleting all indices: " + e.getMessage());
+        }
+    }
+
 
     public void deleteIndex(String indexName) {
         try {
