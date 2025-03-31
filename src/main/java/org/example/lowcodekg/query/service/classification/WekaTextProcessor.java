@@ -1,5 +1,6 @@
 package org.example.lowcodekg.query.service.classification;
 
+import org.example.lowcodekg.query.model.TextClassificationData;
 import weka.classifiers.Classifier;
 import weka.classifiers.trees.RandomForest;
 import weka.core.*;

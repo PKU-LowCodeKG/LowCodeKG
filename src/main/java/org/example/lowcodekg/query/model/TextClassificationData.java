@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.classification;
+package org.example.lowcodekg.query.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
