@@ -1,16 +1,15 @@
 package org.example.lowcodekg.service;
 
 import org.example.lowcodekg.common.config.DebugConfig;
-import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
+import org.example.lowcodekg.query.service.classification.WekaTextProcessor;
 import org.example.lowcodekg.query.service.processor.TaskMatching;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
 import org.example.lowcodekg.query.service.processor.TaskSplit;
 import org.example.lowcodekg.query.service.retriever.ElasticSearchService;
 import org.example.lowcodekg.query.utils.FilePrintStream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,11 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.example.lowcodekg.query.utils.Constants.*;
-import static org.example.lowcodekg.query.utils.WekaTextClassifier.classifyText;
 
 /**
  * 测试需求推荐模板相关功能
@@ -93,13 +87,14 @@ public class RecommendTest {
     }
 
     @Test
-    void testClassification() {
-        String query = "将博客文章置顶";
-        try {
-            System.out.println(classifyText(query));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    void testClassification() throws Exception {
+        String query = "新增博客实体的置顶状态字段";
+        WekaTextProcessor processor = new WekaTextProcessor();
+        processor.loadModel();
 
+        List<String> predictedLabels = processor.predict(query);
+        System.out.println("查询文本: " + query);
+        System.out.println("预测标签: " + predictedLabels);
+
+    }
 }

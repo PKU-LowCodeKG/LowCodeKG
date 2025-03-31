@@ -78,6 +78,7 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
             if(debugConfig.isDebugMode()) {
                 System.out.println("子任务检索信息:\n" + taskInfo + "\n");
             }
+            // LLM标签路由
             String prompt = TYPE_OF_RETRIEVED_ENTITY_PROMPT.replace("{Task}", taskInfo);
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
             if(debugConfig.isDebugMode()) {
