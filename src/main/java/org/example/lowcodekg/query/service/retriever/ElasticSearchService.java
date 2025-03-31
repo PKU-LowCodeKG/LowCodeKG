@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.example.lowcodekg.query.utils.Constants.*;
+
 /**
  * @Description
  * @Author Sherloque
@@ -40,6 +42,16 @@ public class ElasticSearchService {
         deleteIndex(indexName);
         try {
             createIndex(Document.class, indexName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void createDefaultIndex() {
+        try {
+            createIndex(Document.class, PAGE_INDEX_NAME);
+            createIndex(Document.class, WORKFLOW_INDEX_NAME);
+            createIndex(Document.class, DATA_OBJECT_INDEX_NAME);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

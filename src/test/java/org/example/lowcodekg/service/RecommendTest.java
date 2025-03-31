@@ -41,26 +41,11 @@ public class RecommendTest {
     @Autowired
     private DebugConfig debugConfig;
 
-    @Test
-    void testConfig() {
-        String logFilePath = "D://Master//log.txt";
-        FilePrintStream filePrintStream = null;
-        try {
-            filePrintStream = new FilePrintStream(logFilePath);
-            System.setOut(filePrintStream); // 替换 System.out
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        boolean debugMode = debugConfig.isDebugMode();
-        System.out.println("debugMode = " + debugMode);
-    }
-
 //    @BeforeEach
     @Test
     void setUp() throws IOException {
 //        esService.deleteIndex("test");;
-        esService.deleteAllIndices();
+//        esService.deleteAllIndices();
         // 确保索引存在
         esService.createIndex(Document.class, PAGE_INDEX_NAME);
         esService.createIndex(Document.class, WORKFLOW_INDEX_NAME);

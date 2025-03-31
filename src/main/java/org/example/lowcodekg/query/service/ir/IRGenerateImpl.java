@@ -51,17 +51,31 @@ public class IRGenerateImpl implements IRGenerate {
     @Override
     public Result<List<IR>>  convertTemplateToIR(Node template) {
         try {
-            StringBuilder templateInfo = new StringBuilder();
-            templateInfo.append("模板名称：").append(template.getName()).append("\n")
-                    .append("模板描述：").append(template.getDescription()).append("\n")
-                    .append("模板代码：").append(template.getContent()).append("\n");
-            String prompt = RESOURCE_TO_IR_PROMPT.replace("{Task}", templateInfo.toString());
-            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
-            if(debugConfig.isDebugMode()) {
-                System.out.println("模板转换prompt:\n" + prompt + "\n");
-                System.out.println("模板转换结果:\n" + answer + "\n");
+            String label = template.getLabel();
+            List<IR> irList = new ArrayList<>();
+            if("Workflow".equals(label)) {
+                StringBuilder templateInfo = new StringBuilder();
+                templateInfo.append("模板名称：").append(template.getName()).append("\n")
+                        .append("模板描述：").append(template.getDescription()).append("\n")
+                        .append("模板代码：").append(template.getContent()).append("\n");
+                String prompt = RESOURCE_TO_IR_PROMPT.replace("{Task}", templateInfo.toString());
+                String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+                if(debugConfig.isDebugMode()) {
+                    System.out.println("模板转换prompt:\n" + prompt + "\n");
+                    System.out.println("模板转换结果:\n" + answer + "\n");
+                }
+                irList = buildIRList(answer);
+            } else if("PageTemplate".equals(label)) {
+                IR ir = new IR();
+                ir.setObject(template.getName());
+                ir.setCondition(template.getDescription());
+                irList.add(ir);
+            } else if("DataObject".equals(label)) {
+                IR ir  = new IR();
+                ir.setObject(template.getName());
+                ir.setCondition(template.getDescription());
+                irList.add(ir);
             }
-            List<IR> irList = buildIRList(answer);
 
             return Result.build(irList, ResultCodeEnum.SUCCESS);
         } catch (Exception e) {

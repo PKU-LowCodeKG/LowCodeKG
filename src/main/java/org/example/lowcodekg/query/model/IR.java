@@ -33,6 +33,10 @@ public class IR {
     }
 
     public String toSentence() {
-        return "在" + condition + "的条件下，针对" + object + "执行" + action + "的操作，得到" + target + "的结果。";
+        String conditionPart = condition == null ? "" : "在" + condition + "的条件下, ";
+        String objectPart = action == null ? "对象是" + object : "针对" + object + " ";
+        String actionPart = action == null ? "" : "执行" + action + "操作 ";
+        String targetPart = target == null ? "" : ",得到" + target + "的结果";
+        return conditionPart + objectPart + actionPart + targetPart;
     }
 }
