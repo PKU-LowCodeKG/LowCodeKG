@@ -74,6 +74,8 @@ public class KnowledgeExtractorService {
             String nodeCypher = "MATCH (n) DETACH DELETE n";
             QueryRunner runner = neo4jClient.getQueryRunner();
             runner.run(nodeCypher);
+
+            elasticSearchService.deleteDefaultIndex();
         }
         KnowledgeExtractor.execute(configs);
     }

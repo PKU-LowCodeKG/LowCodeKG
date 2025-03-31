@@ -11,10 +11,13 @@ import dev.langchain4j.store.embedding.EmbeddingSearchResult;
 import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
 import dev.langchain4j.store.embedding.elasticsearch.ElasticsearchEmbeddingStore;
 import io.micrometer.common.util.StringUtils;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,5 +96,19 @@ public class ElasticSearchService {
             fullNames.add(match.embedded().text());
         }
         return fullNames;
+    }
+
+    public void deleteDefaultIndex() {
+        try {
+            // 构建 DELETE 请求
+            Request request = new Request("DELETE", "/default");
+            Response response = client.performRequest(request);
+
+            // 打印响应状态
+            System.out.println("ES delete response status: " + response.getStatusLine());
+        } catch (IOException e) {
+            System.err.println("Error while deleting index data: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
