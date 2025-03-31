@@ -90,6 +90,7 @@ public class RecommendTest {
         // 任务合并
         List<Node> resourceList = taskMerge.mergeTask(taskGraph).getData();
 
+        System.out.println("推荐资源结果列表:\n");
         for(Node node : resourceList) {
             System.out.println(node.toString());
         }

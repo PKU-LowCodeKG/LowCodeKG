@@ -53,12 +53,12 @@ public class TaskMatchingImpl implements TaskMatching {
             Map<Node, Double> nodeScoreMap = new HashMap<>();
 
             // 根据任务上下游依赖进行初步过滤
-            nodeList = filterByDependency(task, nodeList);
-            task.setResourceList(nodeList);
-            if(debugConfig.isDebugMode()) {
-                System.out.println("依赖关系过滤后资源个数:\n" + nodeList.size() + "\n");
-                System.out.println("根据依赖关系过滤后资源:\n" + nodeList + "\n");
-            }
+//            nodeList = filterByDependency(task, nodeList);
+//            task.setResourceList(nodeList);
+//            if(debugConfig.isDebugMode()) {
+//                System.out.println("依赖关系过滤后资源个数:\n" + nodeList.size() + "\n");
+//                System.out.println("根据依赖关系过滤后资源:\n" + nodeList + "\n");
+//            }
 
             // 相似度计算
             for(Node node : nodeList) {

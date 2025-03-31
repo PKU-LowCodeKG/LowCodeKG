@@ -46,47 +46,59 @@ public interface Prompt {
             """;
 
     /**
-     * 任务拆分Prompt
+     * 任务拆分Prompt（关键！！！）
      */
     public final static String TaskSplitPrompt = """
-            You are an expert in Software Engineering with extensive experience in analyzing complex software projects and source code. 
+            You are an expert in Software Engineering with extensive experience in analyzing functional implementations in software projects.
             
-            Your task is to break down the given task description into multiple logical subtasks based on the provided code snippets and descriptions. Focus on identifying appropriate split points within the function. 
+            Your task is to break down the given requirement into functional implementation-oriented subtasks based on the provided code context. Focus specifically on core functional components rather than technical details or non-functional aspects.
             
-            For example, for a "user login" task, the process can be decomposed into: 
-            1. User fills in login credentials. 
-            2. Login request is sent. 
-            3. User credentials are verified. 
-            4. Login success response is returned. 
+            **Key Focus Areas:**
+                1.Entity fields/data structure changes (e.g.,adding/modifying database fields)
+                2.Service layer method implementation (e.g.,creating/updating domain service methods)
+                3.Interface/API definition (e.g.,adding REST endpoints)
+                4.Business logic flow (e.g.,state change rules)
+                5.Domain object relationship adjustments
             
-            **Provided Code:** 
-            {code} 
+            **Negative Examples (to avoid):**
+            × Cache handling × Test case writing × Performance optimization × Deployment configuration × Monitoring logs
             
-            **Task Description:** 
-            {task} 
+            **Example Breakdown for "Pin Blog Post":**
+                1.Add an "is pinned"boolean field to the blog entity
+                2.Create a blog update service method to handle pinning status
+                3.Implement persistence of pinning status to the database
+                4.Add an interface for querying the pinning status of a post
+                5.Write business rules for validating pinning status
             
-            ### **Output Format (in Chinese):** 
-            Please return the subtasks in the following JSON format: 
-            ```json 
-            { 
-                "subtasks": [ 
-                    { 
-                        "id": 1, 
-                        "name": "子任务1", 
-                        "description": "子任务1的详细描述" 
-                    }, 
-                    { 
-                        "id": 2, 
-                        "name": "子任务2", 
-                        "description": "子任务2的详细描述" 
-                    } 
-                ] 
-            } 
-     
-            Ensure that:
-             - The output is in Chinese.
-             - Each subtask is logical, granular, and sequentially meaningful.
-             - The breakdown should follow the flow of functionality implementation.     
+            **Provided Code:**
+            {code}
+            
+            **Requirement Description:**
+            {task}
+            
+            ### **Output Format (in Chinese):**
+            Please return the breakdown results in the following JSON format:
+            ```json
+            {
+                "subtasks": [
+                    {
+                        "id": 1,
+                        "name": "子任务1",
+                        "description": "子任务1的详细描述"
+                    },
+                    {
+                        "id": 2,
+                        "name": "子任务2",
+                        "description": "子任务2的详细描述"
+                    }
+                ]
+            }
+            
+            Ensure:
+            - Output in Chinese
+            - Each subtask focuses on a single functional component
+            - No specific code details in the description of subtask
+            - Excludes non-functional requirements
             """;
 
     /**

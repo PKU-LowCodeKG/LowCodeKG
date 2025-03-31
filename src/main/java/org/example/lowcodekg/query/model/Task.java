@@ -46,17 +46,13 @@ public class Task {
     }
 
     public void setUpstreamDependency(String description) {
-        if(StringUtils.isEmpty(description)) {
-            this.upstreamDependency = description;
-        } else {
+        if(StringUtils.isNotBlank(description) && !"null".equals(description)) {
             this.upstreamDependency += description;
         }
     }
 
     public void setDownstreamDependency(String description) {
-        if(StringUtils.isEmpty(description)) {
-            this.downstreamDependency = description;
-        } else {
+        if(StringUtils.isNotBlank(description) && !"null".equals(description)) {
             this.downstreamDependency += description;
         }
     }
