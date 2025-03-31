@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.example.lowcodekg.query.utils.Constants.*;
+import static org.example.lowcodekg.query.utils.WekaTextClassifier.classifyText;
 
 /**
  * 测试需求推荐模板相关功能
@@ -47,9 +48,7 @@ public class RecommendTest {
 //        esService.deleteIndex("test");;
 //        esService.deleteAllIndices();
         // 确保索引存在
-        esService.createIndex(Document.class, PAGE_INDEX_NAME);
-        esService.createIndex(Document.class, WORKFLOW_INDEX_NAME);
-        esService.createIndex(Document.class, DATA_OBJECT_INDEX_NAME);
+        esService.createDefaultIndex();
     }
 
     @Test
@@ -90,6 +89,16 @@ public class RecommendTest {
                 System.out.println("资源描述：" + node.getDescription());
             }
             System.out.println("\n");
+        }
+    }
+
+    @Test
+    void testClassification() {
+        String query = "将博客文章置顶";
+        try {
+            System.out.println(classifyText(query));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
