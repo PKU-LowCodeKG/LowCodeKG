@@ -33,6 +33,9 @@ public class FormatParseUtil {
 
         // 将拆分后的部分转换成 Integer 并存入 List
         for (String part : parts) {
+            if (part.trim().isEmpty()) {
+                continue;
+            }
             try {
                 result.add(Integer.parseInt(part));
             } catch (NumberFormatException e) {
