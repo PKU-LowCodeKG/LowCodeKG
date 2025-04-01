@@ -2,6 +2,7 @@ package org.example.lowcodekg.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.example.lowcodekg.query.service.util.LLMService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,8 @@ import java.util.Set;
 public class PromptTest {
     @Autowired
     private LLMGenerateService llmService;
+    @Autowired
+    private LLMService llm;
 
     @Test
     void test() {
@@ -92,8 +95,14 @@ public class PromptTest {
               - Excludes non-functional requirements
             """;
 
-        String answer = llmService.generateAnswer(prompt);
+        long startTime1 = System.currentTimeMillis();
+        System.out.println(llmService.generateAnswer(prompt));
+        long endTime1 = System.currentTimeMillis();
+        System.out.println("llmService.generateAnswer(prompt) 执行时间: " + (endTime1 - startTime1) + " ms");
 
-        System.out.println(answer);
+        long startTime2 = System.currentTimeMillis();
+        System.out.println(llm.chat(prompt));
+        long endTime2 = System.currentTimeMillis();
+        System.out.println("llm.chat(prompt) 执行时间: " + (endTime2 - startTime2) + " ms");
     }
 }

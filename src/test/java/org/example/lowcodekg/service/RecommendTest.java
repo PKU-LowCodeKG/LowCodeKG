@@ -93,6 +93,9 @@ public class RecommendTest {
     @Test
     void testRetrieval() {
         String query = "我想要能够更新博客的置顶文章的状态";
+        long startTime1 = System.currentTimeMillis();
         llmService.chat(query);
+        long endTime1 = System.currentTimeMillis();
+        System.out.println("llmService.generateAnswer(prompt) 执行时间: " + (endTime1 - startTime1) + " ms");
     }
 }
