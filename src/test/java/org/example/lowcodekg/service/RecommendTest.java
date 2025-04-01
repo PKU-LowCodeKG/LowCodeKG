@@ -92,6 +92,7 @@ public class RecommendTest {
 
     @Test
     void testRetrieval() {
-
+        String query = "我想要能够更新博客的置顶文章的状态";
+        llmService.chat(query);
     }
 }
