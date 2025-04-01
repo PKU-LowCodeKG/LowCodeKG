@@ -36,7 +36,7 @@ public class WorkflowExtractor extends KnowledgeExtractor {
                     // 获取入口方法实体
                     JavaMethodEntity startMethodEntity = getStartMethodEntity(workflowEntity);
                     if(!Objects.isNull(startMethodEntity)) {
-                        getMethodInvokeChain(workflowEntity, startMethodEntity);
+                        getMethodInvokeChain(workflowEntity, startMethodEntity, 0);
 
                         // 将方法和数据对象内容拼接并设置属性
                         String content = concatenateContent(workflowEntity);
@@ -83,7 +83,11 @@ public class WorkflowExtractor extends KnowledgeExtractor {
      * @param workflowEntity
      * @param startMethodEntity
      */
-    private void getMethodInvokeChain(WorkflowEntity workflowEntity, JavaMethodEntity startMethodEntity) {
+    private void getMethodInvokeChain(WorkflowEntity workflowEntity, JavaMethodEntity startMethodEntity, int recursionDepth) {
+        // reach max recursive depth, return
+        if(recursionDepth > 6) {
+            return;
+        }
         try {
             workflowEntity.getContainedMethodList().add(startMethodEntity);
             // set workflow id property of method entity
@@ -113,7 +117,7 @@ public class WorkflowExtractor extends KnowledgeExtractor {
             while(result.hasNext()) {
                 Node node = result.next().get("m").asNode();
                 JavaMethodEntity invokedMethodEntity = javaMethodRepo.findById(node.id()).get();
-                getMethodInvokeChain(workflowEntity, invokedMethodEntity);
+                getMethodInvokeChain(workflowEntity, invokedMethodEntity, recursionDepth + 1);
             }
         } catch (Exception e) {
             e.printStackTrace();
