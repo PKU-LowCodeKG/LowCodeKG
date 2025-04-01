@@ -2,6 +2,7 @@ package org.example.lowcodekg.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import org.example.lowcodekg.model.dto.Neo4jNode;

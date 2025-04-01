@@ -16,7 +16,8 @@
 //import java.nio.file.Files;
 //import java.nio.file.Paths;
 //
-//public class WekaTextProcessor {
+@Deprecated
+public class WekaTextProcessor {
 //    // 内部配置类
 //    private static class Config {
 //        static final String MODEL_SAVE_PATH = "D:\\Master\\Data\\classification\\";
@@ -367,4 +368,4 @@
 //            e.printStackTrace();
 //        }
 //    }
-//}
+}

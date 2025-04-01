@@ -31,7 +31,8 @@
 //import org.nd4j.linalg.learning.config.Adam;
 //import org.nd4j.linalg.lossfunctions.LossFunctions;
 //
-//public class BertTextProcessor {
+@Deprecated
+public class BertTextProcessor {
 //    // 内部配置类
 //    private static class Config {
 //        static final String MODEL_SAVE_PATH = "D:\\Master\\Data\\classification\\";
@@ -597,4 +598,4 @@
 //            e.printStackTrace();
 //        }
 //    }
-//}
+}

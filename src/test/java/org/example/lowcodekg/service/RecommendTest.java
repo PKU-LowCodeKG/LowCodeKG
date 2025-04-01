@@ -8,6 +8,7 @@ import org.example.lowcodekg.query.service.processor.TaskMatching;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
 import org.example.lowcodekg.query.service.processor.TaskSplit;
 import org.example.lowcodekg.query.service.util.ElasticSearchService;
+import org.example.lowcodekg.query.service.util.LLMService;
 import org.example.lowcodekg.query.utils.FilePrintStream;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class RecommendTest {
     private DebugConfig debugConfig;
     @Autowired
     private LLMGenerateService llmGenerateService;
+    @Autowired
+    private LLMService llmService;
 
 //    @BeforeEach
     @Test
@@ -88,12 +91,7 @@ public class RecommendTest {
     }
 
     @Test
-    void testClassification() {
-        String prompt = "软件工程的关键问题是什么？";
-        try {
-            System.out.println(llmGenerateService.generateAnswer(prompt));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    void testRetrieval() {
+
     }
 }
