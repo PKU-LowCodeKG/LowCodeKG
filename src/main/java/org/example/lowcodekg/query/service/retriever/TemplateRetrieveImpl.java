@@ -79,40 +79,26 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
                 System.out.println("子任务检索信息:\n" + taskInfo + "\n");
             }
             // LLM标签路由
-            String prompt = TYPE_OF_RETRIEVED_ENTITY_PROMPT.replace("{Task}", taskInfo);
-            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
-            if(debugConfig.isDebugMode()) {
-                System.out.println("判断检索对象类型prompt:\n" + prompt + "\n");
-                System.out.println("检索对象类型:\n" + answer + "\n");
-            }
-            JSONObject jsonObject = JSON.parseObject(answer);
+//            String prompt = TYPE_OF_RETRIEVED_ENTITY_PROMPT.replace("{Task}", taskInfo);
+//            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+//            if(debugConfig.isDebugMode()) {
+//                System.out.println("判断检索对象类型prompt:\n" + prompt + "\n");
+//                System.out.println("检索对象类型:\n" + answer + "\n");
+//            }
+//            JSONObject jsonObject = JSON.parseObject(answer);
 
             // 基于ES向量检索，获取候选列表
             float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(taskInfo));
-            for(String key : jsonObject.keySet()) {
-                if("Page".equals(key)) {
-                    Boolean isPage = jsonObject.getBoolean(key);
-                    if(BooleanUtils.isTrue(isPage)) {
-                        documents.addAll(esService.searchByVector(
-                                vector, MAX_RESULTS, MIN_SCORE, PAGE_INDEX_NAME
-                                ));
-                    }
-                } else if("Workflow".equals(key)) {
-                    Boolean isWorkflow = jsonObject.getBoolean(key);
-                    if(BooleanUtils.isTrue(isWorkflow)) {
-                        documents.addAll(esService.searchByVector(
-                                vector, MAX_RESULTS, MIN_SCORE, WORKFLOW_INDEX_NAME
-                                ));
-                    }
-                } else if("DataObject".equals(key)) {
-                    Boolean isDataObject = jsonObject.getBoolean(key);
-                    if(BooleanUtils.isTrue(isDataObject)) {
-                        documents.addAll(esService.searchByVector(
-                                vector, MAX_RESULTS, MIN_SCORE, DATA_OBJECT_INDEX_NAME
-                                ));
-                    }
-                }
-            }
+            documents.addAll(esService.searchByVector(
+                    vector, MAX_PAGE_NUM, MIN_SCORE, PAGE_INDEX_NAME
+                    ));
+            documents.addAll(esService.searchByVector(
+                    vector, MAX_WORKFLOW_NUM, MIN_SCORE, WORKFLOW_INDEX_NAME
+            ));
+            documents.addAll(esService.searchByVector(
+                    vector, MAX_DATA_OBJECT_NUM, MIN_SCORE, DATA_OBJECT_INDEX_NAME
+            ));
+
             // 将 Document 转换为 Node 并返回 Result
             nodeList = documents.stream()
                     .map(this::convertToNeo4jNode)

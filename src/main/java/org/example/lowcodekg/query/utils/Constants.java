@@ -17,7 +17,9 @@ public final class Constants {
     /**
      * 任务检索参数设置
      */
+    // 初步检索
     public static final int MAX_RESULTS = 5;
+    // 子任务检索
     public static final int MAX_DATA_OBJECT_NUM = 3;
     public static final int MAX_PAGE_NUM = 3;
     public static final int MAX_WORKFLOW_NUM = 3;

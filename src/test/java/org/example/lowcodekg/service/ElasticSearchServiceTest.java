@@ -77,35 +77,31 @@ public class ElasticSearchServiceTest {
         Thread.sleep(1000);
 
         // 测试文本搜索（自定义参数）
-        List<Document> results2 = esService.searchByText("Java programming", 1, 0, "test");
-        System.out.println(results2.get(0).getNeo4jId());
+//        List<Document> results2 = esService.searchByText("Java programming", 1, 0, "test");
+//        System.out.println(results2.get(0).getNeo4jId());
 
         // 测试向量搜索
-        List<Document> results3 = esService.searchByVector(embedding1, 1, 0, "test");
+        float[] queryVector = FormatUtil.ListToArray(EmbeddingUtil.embedText("Java programming"));
+        List<Document> results3 = esService.searchByVector(queryVector, 1, 0.65, "test");
         System.out.println(results3);
-
-        // 测试向量搜索（自定义参数）
-        List<Document> results4 = esService.searchByVector(embedding2, 2, 0.7, "test");
-        System.out.println(results4);
     }
 
     @Test
     public void testCalculateSimilarity() {
-        String text1 = "Hello, World!";
-        String text2 = "Goodbye, World!";
-        List<Float> vector1 = Arrays.asList(0.1f, 0.2f, 0.3f);
-        List<Float> vector2 = Arrays.asList(0.4f, 0.5f, 0.6f);
+        String text1 = "实现用户注册流程，包括邮箱验证和手机号验证";
+        String text2 = "我要实现一个用户通过邮箱注册的功能";
+        String text3 = "我要开发一个允许用户取消收藏夹商品的功能";
 
         List<Float> embedding1 = EmbeddingUtil.embedText(text1);
-        System.out.println(embedding1.size());
         List<Float> embedding2 = EmbeddingUtil.embedText(text2);
-        double sim = EmbeddingUtil.calculateSimilarity(text1, text2);
-        System.out.println(sim);
-
-        double expectedSimilarity = 0.9746318461970763; // 预期的余弦相似度值
-        double result = EmbeddingUtil.calculateSimilarity(text1, text2);
-
-        System.out.println("余弦相似度：" + result);
+        List<Float> embedding3 = EmbeddingUtil.embedText(text3);
+        System.out.println(embedding1.size());
+        double sim1 = EmbeddingUtil.calculateSimilarity(text1, text2);
+        double sim2 = EmbeddingUtil.calculateSimilarity(text1, text3);
+        double sim3 = EmbeddingUtil.calculateSimilarity(text2, text3);
+        System.out.println(sim1);
+        System.out.println(sim2);
+        System.out.println(sim3);
     }
 
     @Test
