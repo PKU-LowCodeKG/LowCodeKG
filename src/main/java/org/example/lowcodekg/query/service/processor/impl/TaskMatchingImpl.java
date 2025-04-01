@@ -12,12 +12,11 @@ import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.service.ir.IRGenerate;
 import org.example.lowcodekg.query.service.processor.TaskMatching;
 import org.example.lowcodekg.query.service.retriever.TemplateRetrieve;
-import org.example.lowcodekg.query.utils.EmbeddingUtil;
+import org.example.lowcodekg.query.service.util.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 
 import java.util.*;
 import java.util.stream.Collectors;

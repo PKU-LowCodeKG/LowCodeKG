@@ -13,10 +13,8 @@ import org.example.lowcodekg.model.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
 import org.example.lowcodekg.common.util.JsonUtil;
-import org.example.lowcodekg.query.service.retriever.ElasticSearchService;
+import org.example.lowcodekg.query.service.util.ElasticSearchService;
 import org.example.lowcodekg.query.service.summarize.FuncGenerate;
-import org.example.lowcodekg.query.service.summarize.FuncGenerateImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;

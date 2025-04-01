@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.BooleanUtils;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.query.model.Node;
-import org.example.lowcodekg.query.service.retriever.ElasticSearchService;
-import org.example.lowcodekg.query.utils.EmbeddingUtil;
+import org.example.lowcodekg.query.service.util.ElasticSearchService;
+import org.example.lowcodekg.query.service.util.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,6 @@ import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

@@ -1,15 +1,13 @@
 package org.example.lowcodekg.query.service.retriever;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang3.BooleanUtils;
 import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
-import org.example.lowcodekg.query.utils.EmbeddingUtil;
+import org.example.lowcodekg.query.service.util.ElasticSearchService;
+import org.example.lowcodekg.query.service.util.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.neo4j.driver.QueryRunner;
@@ -22,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.example.lowcodekg.query.utils.Constants.*;
-import static org.example.lowcodekg.query.utils.Prompt.TYPE_OF_RETRIEVED_ENTITY_PROMPT;
 
 /**
  * @Description

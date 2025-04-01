@@ -7,9 +7,9 @@ import org.example.lowcodekg.query.model.TaskGraph;
 import org.example.lowcodekg.query.service.processor.TaskMatching;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
 import org.example.lowcodekg.query.service.processor.TaskSplit;
-import org.example.lowcodekg.query.service.retriever.ElasticSearchService;
+import org.example.lowcodekg.query.service.util.ElasticSearchService;
+import org.example.lowcodekg.query.service.util.LLMService;
 import org.example.lowcodekg.query.utils.FilePrintStream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +35,8 @@ public class RecommendTest {
     private ElasticSearchService esService;
     @Autowired
     private DebugConfig debugConfig;
+    @Autowired
+    private LLMService llmService;
 
 //    @BeforeEach
     @Test
@@ -48,8 +50,8 @@ public class RecommendTest {
     @Test
     void test() {
         // 设置输出到本地日志文件
-//        String logFilePath = "D://Master//log.txt";
-        String logFilePath = "/Users/chang/Documents/projects/dataset/log.txt";
+        String logFilePath = "D://Master//log.txt";
+//        String logFilePath = "/Users/chang/Documents/projects/dataset/log.txt";
         FilePrintStream filePrintStream = null;
         try {
             filePrintStream = new FilePrintStream(logFilePath);
@@ -80,21 +82,20 @@ public class RecommendTest {
             }
             System.out.println("当前任务：" + task.getName());
             for(Node node : task.getResourceList()) {
-                System.out.println("资源名称：" + node.getName());
-                System.out.println("资源描述：" + node.getDescription());
+                System.out.println("资源名称：" + node.getName()+ "\n资源描述：" + node.getDescription());
             }
             System.out.println("\n");
         }
     }
 
-//    @Test
-//    void testClassification() throws Exception {
-//        String query = "新增博客实体的置顶状态字段";
-//        WekaTextProcessor processor = new WekaTextProcessor();
-//        processor.loadModel();
-//
-//        List<String> predictedLabels = processor.predict(query);
-//        System.out.println("查询文本: " + query);
-//        System.out.println("预测标签: " + predictedLabels);
-//    }
+    @Test
+    void testClassification() {
+        String prompt = "软件工程的关键问题是什么？";
+        try {
+            String answer = llmService.chat(prompt);
+            System.out.println("answer = " + answer);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

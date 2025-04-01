@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.utils;
+package org.example.lowcodekg.query.service.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
