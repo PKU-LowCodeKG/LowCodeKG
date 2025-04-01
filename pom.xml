@@ -88,11 +88,7 @@
             <type>pom</type>
             <scope>import</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
-            <version>1.0.0.M1</version>
-        </dependency>
+
         <dependency>
             <groupId>co.elastic.clients</groupId>
             <artifactId>elasticsearch-java</artifactId>
@@ -110,7 +106,7 @@
             <version>4.5.14</version>
         </dependency>
 
-        <!-- Replace Vertex AI with Google AI dependencies -->
+        <!-- ... existing dependencies ... -->
 <!--        <dependency>-->
 <!--            <groupId>dev.langchain4j</groupId>-->
 <!--            <artifactId>langchain4j-core</artifactId>-->
@@ -176,27 +172,6 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>nz.ac.waikato.cms.weka</groupId>-->
-<!--            <artifactId>weka-stable</artifactId>-->
-<!--            <version>3.8.6</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.deeplearning4j</groupId>-->
-<!--            <artifactId>deeplearning4j-core</artifactId>-->
-<!--            <version>1.0.0-beta7</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.deeplearning4j</groupId>-->
-<!--            <artifactId>deeplearning4j-nlp</artifactId>-->
-<!--            <version>1.0.0-beta7</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.nd4j</groupId>-->
-<!--            <artifactId>nd4j-native-platform</artifactId>-->
-<!--            <version>1.0.0-beta7</version>-->
-<!--        </dependency>-->
     </dependencies>
 
     <repositories>
@@ -215,6 +190,10 @@
             <releases>
                 <enabled>false</enabled>
             </releases>
+        </repository>
+        <repository>
+            <id>spring-ai-snapshots</id>
+            <url>https://repo.spring.io/snapshot</url>
         </repository>
     </repositories>
 
