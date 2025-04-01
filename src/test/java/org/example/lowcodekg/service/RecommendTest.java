@@ -86,7 +86,6 @@ public class RecommendTest {
             for(Node node : task.getResourceList()) {
                 System.out.println("资源名称：" + node.getName()+ "\n资源描述：" + node.getDescription());
             }
-            System.out.println("\n");
         }
     }
 
