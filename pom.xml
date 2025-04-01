@@ -111,16 +111,16 @@
         </dependency>
 
         <!-- Replace Vertex AI with Google AI dependencies -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-core</artifactId>
-            <version>0.24.0</version>
-        </dependency>
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-google-ai-gemini</artifactId>
-            <version>1.0.0-beta2</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j-core</artifactId>-->
+<!--            <version>0.24.0</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>dev.langchain4j</groupId>-->
+<!--            <artifactId>langchain4j-google-ai-gemini</artifactId>-->
+<!--            <version>1.0.0-beta2</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>dev.langchain4j</groupId>
