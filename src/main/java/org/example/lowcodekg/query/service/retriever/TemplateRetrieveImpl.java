@@ -72,8 +72,7 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
             List<Node> nodeList = new ArrayList<>();
             List<Document> documents = new ArrayList<>();
 
-            // 根据task任务信息，判断检索的对象类型
-            // TODO：目前由LLM判断，但耗时；后续希望采用轻量级预训练模型来执行该多分类任务
+            // 构造检索输入，关注recall召回
             String taskInfo = task.toString();
             if(debugConfig.isDebugMode()) {
                 System.out.println("子任务检索信息:\n" + taskInfo + "\n");
