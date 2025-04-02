@@ -54,12 +54,11 @@ public class IRGenerateImpl implements IRGenerate {
     public Result<List<IR>>  convertTemplateToIR(Node template) {
         try {
             String label = template.getLabel();
+            System.out.println("模板类型：" + label);
             List<IR> irList = new ArrayList<>();
             if("Workflow".equals(label)) {
-                StringBuilder templateInfo = new StringBuilder();
-                templateInfo.append(template.getName()).append(":")
-                        .append(template.getDescription());
-                String prompt = TASK_TO_IR_PROMPT.replace("{Task}", templateInfo.toString());
+                String templateInfo = template.getName() + ":" + template.getDescription();
+                String prompt = TASK_TO_IR_PROMPT.replace("{Task}", templateInfo);
                 String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
                 if(debugConfig.isDebugMode()) {
                     System.out.println("模板转换prompt:\n" + prompt);
@@ -116,7 +115,7 @@ public class IRGenerateImpl implements IRGenerate {
         float[] ir1Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir1.toSentence()));
         float[] ir2Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir2.toSentence()));
         double embeddingSimilarity = EmbeddingUtil.cosineSimilarity(ir1Vector, ir2Vector);
-        double sim = 0.7 * wordSimilarity + 0.3 * embeddingSimilarity;
+        double sim = 0.2 * wordSimilarity + 0.8 * embeddingSimilarity;
         return sim;
     }
 }

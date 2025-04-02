@@ -6,7 +6,9 @@ import com.huaban.analysis.jieba.JiebaSegmenter;
 import com.huaban.analysis.jieba.SegToken;
 import org.example.lowcodekg.model.dao.Describable;
 import org.example.lowcodekg.model.dao.es.document.Document;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.model.dto.Neo4jNode;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
@@ -118,6 +120,14 @@ public class FormatUtil {
         document.setName(entity.getName());
         document.setContent(entity.getDescription());
         document.setEmbedding(FormatUtil.ListToArray(entity.getEmbedding()));
+        // 设置label
+        if(entity instanceof WorkflowEntity) {
+            document.setLabel("Workflow");
+        } else if (entity instanceof PageEntity) {
+            document.setLabel("PageTemplate");
+        } else if(entity instanceof JavaClassEntity) {
+            document.setLabel("DataObject");
+        }
         return document;
     }
 

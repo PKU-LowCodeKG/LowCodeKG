@@ -20,6 +20,9 @@ public class Document {
     @Field(type = FieldType.Keyword)
     private String name;
 
+    @Field(type = FieldType.Keyword)
+    private String label;
+
     @Field(type = FieldType.Text)
     private String content;
 
