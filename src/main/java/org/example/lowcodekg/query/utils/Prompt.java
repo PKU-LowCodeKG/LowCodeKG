@@ -346,4 +346,11 @@ public interface Prompt {
             }
             ```
             """;
+
+    /**
+     * 依靠LLM对子任务检索结果重排序
+     */
+    public static final String RERANK_WITHIN_TASK_PROMPT = """
+            
+            """;
 }

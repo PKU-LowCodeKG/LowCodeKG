@@ -7,10 +7,14 @@ import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
+import org.example.lowcodekg.query.utils.FormatUtil;
+import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
+import static org.example.lowcodekg.query.utils.Prompt.RERANK_WITHIN_TASK_PROMPT;
 
 /**
  * @Description
@@ -21,6 +25,8 @@ import java.util.*;
 public class TaskMergeImpl implements TaskMerge {
     @Autowired
     private DebugConfig debugConfig;
+    @Autowired
+    private LLMGenerateService llmService;
 
     @Override
     public Result<List<Node>> mergeTask(TaskGraph graph) {
@@ -32,18 +38,9 @@ public class TaskMergeImpl implements TaskMerge {
                 if(task.getResourceList().size() == 0) {
                     continue;
                 }
-                // 获取当前任务的尾资源输出
-                Node tailResource = task.getResourceList().get(task.getResourceList().size() - 1);
+                // rerank within subtask
+                rerankWithinTask(task);
 
-                // 获取当前任务的下游任务
-                for(Map.Entry<Task, String> entry : graph.getDependencies(task.getId()).entrySet()) {
-                    Task dependencyTask = entry.getKey();
-                    String dependencyDescription = entry.getValue();
-                    // 获取当前下游任务的首资源输入
-                    Node headResource = dependencyTask.getResourceList().get(0);
-                    // 判断上下游任务的输出-输入类型是否兼容
-
-                }
                 // 当前任务满足兼容性要求，加入结果集
                 result.addAll(task.getResourceList());
             }
@@ -57,6 +54,34 @@ public class TaskMergeImpl implements TaskMerge {
         } catch (Exception e) {
             System.err.println("Error in mergeTask: " + e.getMessage());
             throw new RuntimeException("Error in mergeTask: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public Result<Void> rerankWithinTask(Task task) {
+        try {
+            List<Node> nodeList = task.getResourceList();
+            String taskInfo = task.getName() + ":" + task.getDescription();
+            StringBuilder resourceInfo = new StringBuilder();
+            for(Node node: nodeList) {
+                resourceInfo.append(node.toString()).append("\n");
+            }
+            // LLM decision
+            String prompt = RERANK_WITHIN_TASK_PROMPT
+                    .replace("{task}", taskInfo)
+                    .replace("{resourceList}", resourceInfo.toString());
+            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            if(debugConfig.isDebugMode()) {
+                System.out.println("task: " + task.getDescription());
+                System.out.println("rerankWithinTask answer:\n" + answer);
+            }
+            // select reranked resources by LLM
+
+
+            return Result.build(null, ResultCodeEnum.SUCCESS);
+        } catch (Exception e) {
+            System.err.println("Error in rerankWithinTask: " + e.getMessage());
+            throw new RuntimeException("Error in rerankWithinTask: " + e.getMessage());
         }
     }
 }

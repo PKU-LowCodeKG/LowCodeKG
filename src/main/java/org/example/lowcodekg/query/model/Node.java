@@ -57,7 +57,6 @@ public class Node {
     @Override
     public String toString() {
         return "Resource {" +
-                "id=" + id +
                 ", name='" + name + '\'' +
                 ", label='" + label + '\'' +
 //                ", content='" + content + '\'' +

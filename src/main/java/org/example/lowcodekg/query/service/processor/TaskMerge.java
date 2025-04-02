@@ -2,6 +2,7 @@ package org.example.lowcodekg.query.service.processor;
 
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.query.model.Node;
+import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
 
 import java.util.List;
@@ -19,4 +20,11 @@ public interface TaskMerge {
      * @return
      */
     Result<List<Node>> mergeTask(TaskGraph graph);
+
+    /**
+     * 对重排后的子任务推荐资源列表进行决策
+     * @param task
+     * @return
+     */
+    Result<Void> rerankWithinTask(Task task);
 }
