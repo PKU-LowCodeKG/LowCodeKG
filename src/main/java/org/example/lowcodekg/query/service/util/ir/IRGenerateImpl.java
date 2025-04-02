@@ -64,11 +64,13 @@ public class IRGenerateImpl implements IRGenerate {
                 IR ir = new IR();
                 ir.setObject(template.getName());
                 ir.setCondition(template.getDescription());
+                ir.setType("PageTemplate");
                 irList.add(ir);
             } else if("DataObject".equals(label)) {
                 IR ir  = new IR();
                 ir.setObject(template.getName());
                 ir.setCondition(template.getDescription());
+                ir.setType("DataObject");
                 irList.add(ir);
             }
 
@@ -91,7 +93,8 @@ public class IRGenerateImpl implements IRGenerate {
                         irObject.getString("action"),
                         irObject.getString("object"),
                         irObject.getString("target"),
-                        irObject.getString("condition")
+                        irObject.getString("condition"),
+                        null
                 ));
             }
             return isList;

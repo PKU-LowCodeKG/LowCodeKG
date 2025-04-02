@@ -16,12 +16,12 @@ import lombok.NoArgsConstructor;
 public class IR {
 
     private String action;
-
     private String object;
-
     private String target;
-
     private String condition;
+
+    // 额外记录类型
+    private String type;
 
     @Override
     public String toString() {
@@ -34,10 +34,16 @@ public class IR {
     }
 
     public String toSentence() {
-        String conditionPart = StringUtils.isBlank(condition) || condition.equals("null") ? "" : "在" + condition + "的条件下, ";
-        String objectPart = StringUtils.isBlank(action) || action.equals("null") ? "对象是" + object : "针对" + object + " ";
-        String actionPart = StringUtils.isBlank(action) || action.equals("null") ? "" : "执行" + action + "操作 ";
-        String targetPart = StringUtils.isBlank(target) || target.equals("null") ? "" : ",得到" + target + "的结果";
-        return conditionPart + objectPart + actionPart + targetPart;
+        String irStr;
+        if(StringUtils.isNotBlank(type) && ("PageTemplate".equals(type) || "DataObject".equals(type))) {
+            irStr = object + ": " + condition;
+        } else {
+            String conditionPart = StringUtils.isBlank(condition) || condition.equals("null") ? "" : "在" + condition + "的条件下, ";
+            String objectPart = StringUtils.isBlank(action) || action.equals("null") ? "对象是" + object : "针对" + object + " ";
+            String actionPart = StringUtils.isBlank(action) || action.equals("null") ? "" : "执行" + action + "操作 ";
+            String targetPart = StringUtils.isBlank(target) || target.equals("null") ? "" : ",得到" + target + "的结果";
+            irStr = conditionPart + objectPart + actionPart + targetPart;
+        }
+        return irStr;
     }
 }
