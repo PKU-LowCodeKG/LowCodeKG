@@ -144,20 +144,10 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
     private Node convertToNeo4jNode(Document document) {
         // 根据 Document 的属性创建 Neo4jNode
         Node node = new Node();
-        Long id = Long.valueOf(document.getId());
-        String cypher = "MATCH (n) WHERE ID(n) = " + id + " RETURN n";
-        QueryRunner runner = neo4jClient.getQueryRunner();
-        org.neo4j.driver.Result result = runner.run(cypher);
-        if(result.hasNext()) {
-            org.neo4j.driver.types.Node n = result.next().get("n").asNode();
-            node.setId(id);
-            node.setName(n.get("name").asString() + "_" + id);
-            node.setLabel(n.get("label").asString());
-            node.setContent(n.get("content").asString());
-            node.setDescription(n.get("description").asString());
-        } else {
-            return null;
-        }
+        node.setId(Long.valueOf(document.getId()));
+        node.setName(document.getName());
+        node.setLabel(document.getLabel());
+        node.setDescription(document.getContent());
         return node;
     }
 }

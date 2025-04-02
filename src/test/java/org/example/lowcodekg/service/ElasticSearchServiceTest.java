@@ -106,43 +106,19 @@ public class ElasticSearchServiceTest {
     @Test
     void testSubTaskRetrieval() throws IOException {
         String taskInfo = """
-                
+                添加或更新用于处理博客置顶状态的REST API端点。
                 """;
-        String prompt = TYPE_OF_RETRIEVED_ENTITY_PROMPT.replace("{Task}", taskInfo);
-        String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
-        System.out.println("retrieval category: " + answer);
-        JSONObject jsonObject = JSON.parseObject(answer);
 
         // 基于ES向量检索，获取候选列表
         List<Document> documents = new ArrayList<>();
         float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(taskInfo));
-        for(String key : jsonObject.keySet()) {
-            if("Page".equals(key)) {
-                Boolean isPage = jsonObject.getBoolean(key);
-                if(BooleanUtils.isTrue(isPage)) {
-                    documents.addAll(esService.searchByVector(
-                            vector, MAX_RESULTS, MIN_SCORE, PAGE_INDEX_NAME
-                    ));
-                }
-            } else if("Workflow".equals(key)) {
-                Boolean isWorkflow = jsonObject.getBoolean(key);
-                if(BooleanUtils.isTrue(isWorkflow)) {
-                    documents.addAll(esService.searchByVector(
-                            vector, MAX_RESULTS, MIN_SCORE, WORKFLOW_INDEX_NAME
-                    ));
-                }
-            } else if("DataObject".equals(key)) {
-                Boolean isDataObject = jsonObject.getBoolean(key);
-                if(BooleanUtils.isTrue(isDataObject)) {
-                    documents.addAll(esService.searchByVector(
-                            vector, MAX_RESULTS, MIN_SCORE, DATA_OBJECT_INDEX_NAME
-                    ));
-                }
-            }
+        documents.addAll(esService.searchByVector(
+                vector, MAX_RESULTS, 0, WORKFLOW_INDEX_NAME
+        ));
+        List<Node> nodeList = new ArrayList<>();
+        for(Document document : documents) {
+            nodeList.add(convertToNeo4jNode(document));
         }
-        List<Node> nodeList = documents.stream()
-                .map(this::convertToNeo4jNode)
-                .collect(Collectors.toList());
         for(Node node : nodeList) {
             System.out.println(node.toString());
         }
@@ -151,19 +127,23 @@ public class ElasticSearchServiceTest {
     private Node convertToNeo4jNode(Document document) {
         // 根据 Document 的属性创建 Neo4jNode
         Node node = new Node();
-        Long id = Long.valueOf(document.getId());
-        String cypher = "MATCH (n) WHERE ID(n) = " + id + " RETURN n";
-        QueryRunner runner = neo4jClient.getQueryRunner();
-        org.neo4j.driver.Result result = runner.run(cypher);
-        if(result.hasNext()) {
-            org.neo4j.driver.types.Node n = result.next().get("n").asNode();
-
-            node.setName(n.get("name").asString());
-            node.setContent(n.get("content").asString());
-            node.setDescription(n.get("description").asString());
-        } else {
-            return null;
-        }
+        node.setId(Long.valueOf(document.getId()));
+        node.setName(document.getName());
+        node.setLabel(document.getLabel());
+        node.setDescription(document.getContent());
+//        Long id = Long.valueOf(document.getId());
+//        String cypher = "MATCH (n) WHERE ID(n) = " + id + " RETURN n";
+//        QueryRunner runner = neo4jClient.getQueryRunner();
+//        org.neo4j.driver.Result result = runner.run(cypher);
+//        if(result.hasNext()) {
+//            org.neo4j.driver.types.Node n = result.next().get("n").asNode();
+//            node.setId(id);
+//            node.setName(n.get("name").asString() + "_" + id);
+//            node.setContent(n.get("content").asString());
+//            node.setDescription(n.get("description").asString());
+//        } else {
+//            return null;
+//        }
         return node;
     }
 } 

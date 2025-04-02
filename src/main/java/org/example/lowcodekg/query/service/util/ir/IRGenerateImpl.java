@@ -54,16 +54,11 @@ public class IRGenerateImpl implements IRGenerate {
     public Result<List<IR>>  convertTemplateToIR(Node template) {
         try {
             String label = template.getLabel();
-            System.out.println("模板类型：" + label);
             List<IR> irList = new ArrayList<>();
             if("Workflow".equals(label)) {
                 String templateInfo = template.getName() + ":" + template.getDescription();
                 String prompt = TASK_TO_IR_PROMPT.replace("{Task}", templateInfo);
                 String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
-                if(debugConfig.isDebugMode()) {
-                    System.out.println("模板转换prompt:\n" + prompt);
-                    System.out.println("模板转换结果:\n" + answer);
-                }
                 irList = buildIRList(answer);
             } else if("PageTemplate".equals(label)) {
                 IR ir = new IR();

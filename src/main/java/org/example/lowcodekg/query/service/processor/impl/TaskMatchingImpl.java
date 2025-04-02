@@ -43,11 +43,10 @@ public class TaskMatchingImpl implements TaskMatching {
     @Override
     public Result<Void> rerankResource(Task task) {
         try {
-            // 类别路由的资源检索策略
             List<Node> nodeList = templateRetrieve.queryBySubTask(task).getData();
             if(debugConfig.isDebugMode()) {
-                System.out.println("类别路由策略检索结果:" + nodeList.size());
-                System.out.println("类别路由策略检索资源:");
+                System.out.println("子任务检索结果个数:" + nodeList.size());
+                System.out.println("子任务检索资源:");
                 for(Node node : nodeList) {
                     System.out.println(node);
                 }
