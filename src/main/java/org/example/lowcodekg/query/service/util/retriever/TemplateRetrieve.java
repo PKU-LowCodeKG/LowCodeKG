@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.retriever;
+package org.example.lowcodekg.query.service.util.retriever;
 
 import org.example.lowcodekg.model.dto.Neo4jNode;
 import org.example.lowcodekg.model.result.Result;

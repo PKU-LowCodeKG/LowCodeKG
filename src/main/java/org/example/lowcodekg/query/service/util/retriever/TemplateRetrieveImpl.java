@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.retriever;
+package org.example.lowcodekg.query.service.util.retriever;
 
 import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.dao.es.document.Document;
@@ -70,7 +70,7 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
             List<Document> documents = new ArrayList<>();
 
             // 构造检索输入，关注recall召回
-            String taskInfo = task.toString();
+            String taskInfo = task.getName() + ": " + task.getDescription();
             if(debugConfig.isDebugMode()) {
                 System.out.println("子任务检索信息:\n" + taskInfo + "\n");
             }

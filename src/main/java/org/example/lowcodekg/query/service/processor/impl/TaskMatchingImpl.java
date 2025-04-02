@@ -9,9 +9,9 @@ import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
-import org.example.lowcodekg.query.service.ir.IRGenerate;
+import org.example.lowcodekg.query.service.util.ir.IRGenerate;
 import org.example.lowcodekg.query.service.processor.TaskMatching;
-import org.example.lowcodekg.query.service.retriever.TemplateRetrieve;
+import org.example.lowcodekg.query.service.util.retriever.TemplateRetrieve;
 import org.example.lowcodekg.query.service.util.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.service.LLMGenerateService;
@@ -46,19 +46,22 @@ public class TaskMatchingImpl implements TaskMatching {
             // 类别路由的资源检索策略
             List<Node> nodeList = templateRetrieve.queryBySubTask(task).getData();
             if(debugConfig.isDebugMode()) {
-                System.out.println("类别路由策略检索结果:\n" + nodeList.size() + "\n");
-                System.out.println("类别路由策略检索资源:\n" + nodeList + "\n");
+                System.out.println("类别路由策略检索结果:" + nodeList.size());
+                System.out.println("类别路由策略检索资源:");
+                for(Node node : nodeList) {
+                    System.out.println(node);
+                }
             }
-            Map<Node, Double> nodeScoreMap = new HashMap<>();
 
             // 根据任务上下游依赖进行初步过滤
 //            nodeList = filterByDependency(task, nodeList);
 //            task.setResourceList(nodeList);
 //            if(debugConfig.isDebugMode()) {
-//                System.out.println("依赖关系过滤后资源个数:\n" + nodeList.size() + "\n");
-//                System.out.println("根据依赖关系过滤后资源:\n" + nodeList + "\n");
+//                System.out.println("依赖关系过滤后资源个数:\n" + nodeList.size());
+//                System.out.println("根据依赖关系过滤后资源:\n" + nodeList);
 //            }
 
+            Map<Node, Double> nodeScoreMap = new HashMap<>();
             // 相似度计算
             for(Node node : nodeList) {
                 Result<Double> scoreResult = subTaskMatchingScore(task, node);
@@ -77,7 +80,15 @@ public class TaskMatchingImpl implements TaskMatching {
             // 更新任务资源列表
             task.setResourceList(sortedNodeList);
             if(debugConfig.isDebugMode()) {
-                System.out.println("重排序后的资源:\n" + sortedNodeList + "\n");
+                System.out.println("重排序分数:");
+                for(Map.Entry<Node, Double> entry : nodeScoreMap.entrySet()) {
+                    System.out.println(entry.getKey() + ": " + entry.getValue());
+                }
+                System.out.println("重排序后的资源个数: " + sortedNodeList.size());
+                System.out.println("重排序后的资源:");
+                for(Node node : sortedNodeList) {
+                    System.out.println(node);
+                }
             }
 
             return Result.build(null, ResultCodeEnum.SUCCESS);
@@ -96,6 +107,11 @@ public class TaskMatchingImpl implements TaskMatching {
             List<IR> taskIRList = irGenerate.convertTaskToIR(task).getData();
             // 获取node对应的IR序列
             List<IR> templateIRList = irGenerate.convertTemplateToIR(node).getData();
+
+            if(debugConfig.isDebugMode()) {
+                System.out.println("task IR序列:\n" + taskIRList);
+                System.out.println("template IR序列:\n" + templateIRList);
+            }
 
             // 序列向量化表示
             List<float[]> taskVectorList = taskIRList.stream()
@@ -145,12 +161,12 @@ public class TaskMatchingImpl implements TaskMatching {
                     .replace("{downstreamDependency}", downstreamDependency)
                     .replace("{nodeList}", nodeInfos.toString());
             if(debugConfig.isDebugMode()) {
-                System.out.println("根据依赖关系过滤prompt:\n" + prompt + "\n");
+                System.out.println("根据依赖关系过滤prompt:\n" + prompt);
             }
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
             if(debugConfig.isDebugMode()) {
-                System.out.println("根据依赖关系过滤prompt:\n" + prompt + "\n");
-                System.out.println("根据依赖关系过滤资源:\n" + answer + "\n");
+                System.out.println("根据依赖关系过滤prompt:\n" + prompt);
+                System.out.println("根据依赖关系过滤资源:\n" + answer);
             }
 
             JSONObject jsonObject = JSONObject.parseObject(answer);

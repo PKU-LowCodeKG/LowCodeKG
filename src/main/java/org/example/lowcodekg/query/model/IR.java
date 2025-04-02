@@ -1,5 +1,6 @@
 package org.example.lowcodekg.query.model;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,10 +34,10 @@ public class IR {
     }
 
     public String toSentence() {
-        String conditionPart = condition == null ? "" : "在" + condition + "的条件下, ";
-        String objectPart = action == null ? "对象是" + object : "针对" + object + " ";
-        String actionPart = action == null ? "" : "执行" + action + "操作 ";
-        String targetPart = target == null ? "" : ",得到" + target + "的结果";
+        String conditionPart = StringUtils.isBlank(condition) || condition.equals("null") ? "" : "在" + condition + "的条件下, ";
+        String objectPart = StringUtils.isBlank(action) || action.equals("null") ? "对象是" + object : "针对" + object + " ";
+        String actionPart = StringUtils.isBlank(action) || action.equals("null") ? "" : "执行" + action + "操作 ";
+        String targetPart = StringUtils.isBlank(target) || target.equals("null") ? "" : ",得到" + target + "的结果";
         return conditionPart + objectPart + actionPart + targetPart;
     }
 }

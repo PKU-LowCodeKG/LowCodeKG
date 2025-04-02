@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.ir;
+package org.example.lowcodekg.query.service.util.ir;
 
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.query.model.IR;
@@ -28,4 +28,11 @@ public interface IRGenerate {
      * @return
      */
     Result<List<IR>> convertTemplateToIR(Node template);
+
+    /**
+     * 将LLM输出的答案转化为IR(功能类服务)
+     * @param answer
+     * @return
+     */
+    List<IR> buildIRList(String answer);
 }

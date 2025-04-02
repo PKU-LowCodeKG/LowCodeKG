@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.summarize;
+package org.example.lowcodekg.query.service.util.summarize;
 
 import com.alibaba.fastjson.JSONObject;
 import org.example.lowcodekg.model.dao.es.document.Document;

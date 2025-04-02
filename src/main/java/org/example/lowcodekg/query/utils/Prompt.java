@@ -13,7 +13,8 @@ public interface Prompt {
     public static final String WORKFLOW_SUMMARIZE_PROMPT = """
             You are an expert in software development and code analysis. 
             Your task is to analyze a given code snippet and provide a concise and brief summary of its functionality in Chinese. 
-            Please focus on the core logic and purpose of the code, and present your summary in the following JSON format:
+            Please focus on the core logic and purpose of the code, and avoid specific code implementation details.
+            Present your summary in the following JSON format:
             ```json
             {
                 "functionality": ""
@@ -30,7 +31,8 @@ public interface Prompt {
     public static final String PAGE_SUMMARIZE_PROMPT = """
             You are an expert in software development and code analysis. 
             Your task is to analyze a given code snippet in a **Front-End** project and provide a concise and brief summary of its functionality in Chinese. 
-            Please focus on the core functionality of the code, and present your summary in the following JSON format:
+            Please focus on the core functionality of the code, and avoid specific code implementation details.
+            Present your summary in the following JSON format:
             ```json
             {
                 "functionality": ""
@@ -70,11 +72,13 @@ public interface Prompt {
                 4.Add an interface for querying the pinning status of a post
                 5.Write business rules for validating pinning status
             
-            **Provided Code:**
-            {code}
+            ### **Input**
             
             **Requirement Description:**
             {task}
+            
+            **Provided Potentially Relevant Code:**
+            {code}
             
             ### **Output Format (in Chinese):**
             Please return the breakdown results in the following JSON format:
@@ -105,117 +109,62 @@ public interface Prompt {
      * 从任务描述中抽取IR列表
      */
     public static final String TASK_TO_IR_PROMPT = """
-            **Role:**
             You are an expert in Natural Language Processing specializing in structured information extraction. 
             Your task is to analyze input text and decompose it into discrete operational components using the DSL schema.
             
             **Task**:
             Extract ALL actionable instructions from the input text and map them to a list of DSL objects. Each DSL must represent a SINGLE atomic operation with explicit contextual dependencies.
             
-            **Guidelines:**
-            
-            1. **DSL Field Definitions**:
+            **DSL Field Definitions**:
                - `action`: *Required* - The core verb/operation (e.g., "filter", "sort", "export").
                - `object`: *Required* - The entity being manipulated (e.g., "raw_data", "user_logs").
                - `target`: *Optional* - The output destination/format (e.g., "CSV_file", "database_table").
                - `condition`: *Optional* - Environmental constraints or prerequisites (e.g., "if_errors_detected", "during_nightly_maintenance").
             
-            2. **Input**:
-               - You will be provided with a natural language description that describes a functional requirement.
-            
-            3. **Output**:
-               - Your task is to identify and extract the relevant information from the description and organize it into DSL objects.
-               - Return the extracted DSL objects in the following JSON format:
-            
-            ```json
-            {
-                "IR": [
-                    {
-                        "action": "<action_1>",
-                        "object": "<object_1>",
-                        "target": "<target_1>",
-                        "condition": "<condition_1>"
-                    },
-                    {
-                        "action": "<action_2>",
-                        "object": "<object_2>",
-                        "target": "<target_2>",
-                        "condition": "<condition_2>"
-                    },
-                    ...
-                ]
-            }
-            ```
-            
-            4. **Example**:
-               - **Natural Language Description**:
-                 ```
-                 The system needs to validate the user input. If the input is correct, it should store the data in the database. If the input is incorrect, it should display an error message.
-                 ```
-               - **Expected JSON Output**:
-                 ```json
-                 {
-                     "IR": [
-                         {
-                             "action": "validate",
-                             "object": "user input",
-                             "target": "validation result",
-                             "condition": "N/A"
-                         },
-                         {
-                             "action": "store",
-                             "object": "data",
-                             "target": "database",
-                             "condition": "input is correct"
-                         },
-                         {
-                             "action": "display",
-                             "object": "error message",
-                             "target": "user interface",
-                             "condition": "input is incorrect"
-                         }
-                     ]
-                 }
-                 ```
-            
-            5. **Instructions**:
-               - Carefully read the natural language description to identify actions, objects, targets, and conditions.
-               - Ensure that each extracted DSL object accurately reflects the information in the description.
-               - If any component (action, object, target, condition) is not explicitly mentioned, use "N/A" or an appropriate placeholder.
-               - The JSON output must strictly follow the provided format.
-               - The language of the results you return should be consistent with the language used for the given description.
-            
-            **Task Description (Input):**
+            **Input**:
+            You will be provided with a natural language description that describes a functional requirement, the task description is:
             {Task}
             
-            **JSON Output (Expected Result):**
+            **Output**:
+               - Your task is to identify and extract the relevant information from the description and organize it into DSL objects.
+               - Return the extracted DSL objects in the following JSON format in Chinese:
+            
             ```json
             {
                 "IR": [
                     {
-                        "action": "<action_1>",
-                        "object": "<object_1>",
-                        "target": "<target_1>",
-                        "condition": "<condition_1>"
+                        "action": "<动作1>",
+                        "object": "<对象1>",
+                        "target": "<目标1>",
+                        "condition": "<条件1>"
+                    },
+                    {
+                        "action": "<操作2>",
+                        "object": "<对象2>",
+                        "target": "<目标2>",
+                        "condition": "<条件2>"
                     },
                     ...
                 ]
             }
             ```
+            
+            **Instructions**:
+               - Carefully read the natural language description to identify actions, objects, targets, and conditions.
+               - Ensure that each extracted DSL object accurately reflects the information in the description.
+               - If any component (action, object, target, condition) is not explicitly mentioned, use "null" as placeholder.
+               - The JSON output must strictly follow the provided format in Chinese.
             """;
 
     /**
      * 从资源描述中抽取IR列表
      */
     public static final String RESOURCE_TO_IR_PROMPT = """
-            **Role:**
             You are an expert in Natural Language Processing specializing in structured information extraction. 
-            Your task is to analyze input text and code and decompose it into discrete operational components using the DSL schema.
+            Your task is to analyze input text or code and decompose it into discrete operational components using the DSL schema.
            
             **Task**:
             Extract ALL actionable instructions from the input text or code and map them to a list of DSL objects. Each DSL must represent a SINGLE atomic operation with explicit contextual dependencies.
-           
-            **Guidelines:**
            
             **DSL Field Definitions**:
                - `action`: *Required* - The core verb/operation (e.g., "filter", "sort", "export").
@@ -223,34 +172,38 @@ public interface Prompt {
                - `target`: *Optional* - The output destination/format (e.g., "CSV_file", "database_table").
                - `condition`: *Optional* - Environmental constraints or prerequisites (e.g., "if_errors_detected", "during_nightly_maintenance").
           
-            **Output**:
-               - Your task is to identify and extract the relevant information from the description and organize it into DSL objects.
-               - Return the extracted DSL objects in the JSON format:
-           
-            **Instructions**:
-               - Carefully read the natural language description to identify actions, objects, targets, and conditions.
-               - Ensure that each extracted DSL object accurately reflects the information in the description.
-               - If any component (action, object, target, condition) is not explicitly mentioned, use "N/A" or an appropriate placeholder.
-               - The JSON output must strictly follow the provided format.
-               - The language of the results you return should be consistent with the language used for the given description.
-           
             **Task Description (Input):**
             {Task}
-           
-            **JSON Output (Expected Result):**
-            ```json
+            
+            **Output**:
+               - Your task is to identify and extract the relevant information from the description and organize it into DSL objects.
+               - Return the extracted DSL objects in the following JSON format in Chinese:
+               
+             ```json
             {
                 "IR": [
                     {
-                        "action": "<action_1>",
-                        "object": "<object_1>",
-                        "target": "<target_1>",
-                        "condition": "<condition_1>"
+                        "action": "<动作1>",
+                        "object": "<对象1>",
+                        "target": "<目标1>",
+                        "condition": "<条件1>"
+                    },
+                    {
+                        "action": "<操作2>",
+                        "object": "<对象2>",
+                        "target": "<目标2>",
+                        "condition": "<条件2>"
                     },
                     ...
                 ]
             }
             ```
+           
+            **Instructions**:
+               - Carefully read the natural language description to identify actions, objects, targets, and conditions.
+               - Ensure that each extracted DSL object accurately reflects the information in the description.
+               - If any component (action, object, target, condition) is not explicitly mentioned, use "null" as placeholder.
+               - The JSON output must strictly follow the provided format in Chinese.
             """;
 
     /**

@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.ir;
+package org.example.lowcodekg.query.service.util.ir;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -41,6 +41,7 @@ public class IRGenerateImpl implements IRGenerate {
             String prompt = TASK_TO_IR_PROMPT.replace("{Task}", taskInfo);
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
             List<IR> irList = buildIRList(answer);
+
             return Result.build(irList, ResultCodeEnum.SUCCESS);
         } catch (Exception e) {
             System.err.println("Error occurred while converting task to IR: " + e.getMessage());
@@ -55,14 +56,13 @@ public class IRGenerateImpl implements IRGenerate {
             List<IR> irList = new ArrayList<>();
             if("Workflow".equals(label)) {
                 StringBuilder templateInfo = new StringBuilder();
-                templateInfo.append("模板名称：").append(template.getName()).append("\n")
-                        .append("模板描述：").append(template.getDescription()).append("\n")
-                        .append("模板代码：").append(template.getContent()).append("\n");
-                String prompt = RESOURCE_TO_IR_PROMPT.replace("{Task}", templateInfo.toString());
+                templateInfo.append(template.getName()).append(":")
+                        .append(template.getDescription());
+                String prompt = TASK_TO_IR_PROMPT.replace("{Task}", templateInfo.toString());
                 String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
                 if(debugConfig.isDebugMode()) {
-                    System.out.println("模板转换prompt:\n" + prompt + "\n");
-                    System.out.println("模板转换结果:\n" + answer + "\n");
+                    System.out.println("模板转换prompt:\n" + prompt);
+                    System.out.println("模板转换结果:\n" + answer);
                 }
                 irList = buildIRList(answer);
             } else if("PageTemplate".equals(label)) {
@@ -84,7 +84,8 @@ public class IRGenerateImpl implements IRGenerate {
         }
     }
 
-    private List<IR> buildIRList(String answer) {
+    @Override
+    public List<IR> buildIRList(String answer) {
         try {
             JSONObject jsonObject = JSON.parseObject(answer);
             JSONArray irArray = jsonObject.getJSONArray("IR");

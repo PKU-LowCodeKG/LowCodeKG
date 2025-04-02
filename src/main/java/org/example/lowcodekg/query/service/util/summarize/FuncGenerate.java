@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.summarize;
+package org.example.lowcodekg.query.service.util.summarize;
 
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;

@@ -12,7 +12,7 @@ import org.example.lowcodekg.model.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
 import org.example.lowcodekg.extraction.java.JavaASTVisitor;
 import org.example.lowcodekg.model.schema.entity.workflow.JavaProject;
-import org.example.lowcodekg.query.service.summarize.FuncGenerate;
+import org.example.lowcodekg.query.service.util.summarize.FuncGenerate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

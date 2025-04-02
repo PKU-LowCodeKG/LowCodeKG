@@ -91,10 +91,11 @@ public class RecommendTest {
 
     @Test
     void testRetrieval() {
-        String query = "我想要能够更新博客的置顶文章的状态";
-        long startTime1 = System.currentTimeMillis();
-        llmService.chat(query);
-        long endTime1 = System.currentTimeMillis();
-        System.out.println("llmService.generateAnswer(prompt) 执行时间: " + (endTime1 - startTime1) + " ms");
+        Task task = new Task("实现服务层方法_2",
+                "实现服务层方法",
+                "创建或更新一个服务层方法，用于处理博客置顶状态的更新逻辑。",
+                null);
+        String taskInfo = task.getName() + ": " + task.getDescription();
+
     }
 }

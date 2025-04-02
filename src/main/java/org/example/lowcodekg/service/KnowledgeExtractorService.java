@@ -5,7 +5,7 @@ import org.example.lowcodekg.extraction.ExtractorConfig;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.model.dao.neo4j.repository.*;
 import org.example.lowcodekg.query.service.util.ElasticSearchService;
-import org.example.lowcodekg.query.service.summarize.FuncGenerate;
+import org.example.lowcodekg.query.service.util.summarize.FuncGenerate;
 import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
