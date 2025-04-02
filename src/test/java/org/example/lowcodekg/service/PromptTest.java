@@ -4,13 +4,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
+import org.example.lowcodekg.query.service.processor.TaskMatching;
 import org.example.lowcodekg.query.service.util.LLMService;
 import org.example.lowcodekg.query.service.util.ir.IRGenerate;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +26,8 @@ public class PromptTest {
     private LLMService llm;
     @Autowired
     private IRGenerate irGenerate;
+    @Autowired
+    private TaskMatching taskMatch;
 
     @Test
     void test() {
@@ -41,7 +46,7 @@ public class PromptTest {
             
             **Input**:
             You will be provided with a natural language description that describes a functional requirement, the task description is:
-            实现服务层方法:创建或更新一个服务层方法，用于处理博客置顶状态的更新逻辑。
+            updateTop_3279:该代码片段定义了一个用于更新博客置顶状态的HTTP PUT请求处理方法。通过接收博客ID和是否置顶的状态参数，调用blogService中的updateBlogTopById方法来更新数据库中的博客置顶信息，并返回一个操作成功的Result对象。
             
             **Output**:
                - Your task is to identify and extract the relevant information from the description and organize it into DSL objects.
@@ -89,5 +94,35 @@ public class PromptTest {
 //        System.out.println(llm.chat(prompt));
 //        long endTime2 = System.currentTimeMillis();
 //        System.out.println("llm.chat(prompt) 执行时间: " + (endTime2 - startTime2) + " ms");
+    }
+
+    @Test
+    void testTransCost() {
+        List<IR> taskList = new ArrayList<>(
+                List.of(
+                        new IR("创建或更新", "服务层方法", "null", "null"),
+                        new IR("处理", "博客置顶状态的更新逻辑", "null", "null")
+                )
+        );
+        List<IR> nodeList = new ArrayList<>(
+                List.of(
+                        new IR("处理", "HTTP PUT请求", "null", "null"),
+                        new IR("接收", "博客ID和是否置顶的状态参数", "null", "null"),
+                        new IR("调用", "blogService中的updateBlogTopById方法", "null", "null"),
+                        new IR("更新", "数据库中的博客置顶信息", "null", "null"),
+                        new IR("返回", "操作成功的Result对象", "null", "null")
+                )
+        );
+        List<IR> nodeList1 = new ArrayList<>(
+                List.of(
+                        new IR("定义", "名为VisitLog的Java类", "null", "null"),
+                        new IR("记录", "网站或应用的访问日志", "null", "null"),
+                        new IR("存储", "访客信息、请求详情和访问行为等", "null", "null"),
+                        new IR("初始化", "实体中的字段", "null", "null")
+                )
+        );
+        // 目标：第一个结果更小
+        System.out.println(taskMatch.minTransformCost(taskList, nodeList));
+        System.out.println(taskMatch.minTransformCost(taskList, nodeList1));
     }
 }

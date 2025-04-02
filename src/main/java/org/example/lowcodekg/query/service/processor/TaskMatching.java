@@ -1,10 +1,12 @@
 package org.example.lowcodekg.query.service.processor;
 
 import org.example.lowcodekg.model.result.Result;
+import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,4 +31,10 @@ public interface TaskMatching {
      * @return
      */
     Result<Void> rerankResource(Task task);
+
+    /**
+     * 序列2转换为序列1的最低成本
+     * @return
+     */
+    Double minTransformCost(List<IR> taskIRList, List<IR> templateIRList);
 }

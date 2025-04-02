@@ -113,18 +113,8 @@ public class TaskMatchingImpl implements TaskMatching {
                 System.out.println("template IR序列:\n" + templateIRList);
             }
 
-            // 序列向量化表示
-            List<float[]> taskVectorList = taskIRList.stream()
-                    .map(ir -> ir.toSentence())
-                    .map(EmbeddingUtil::embedText)
-                    .map(FormatUtil::ListToArray).toList();
-            List<float[]> templateVectorList = templateIRList.stream()
-                    .map(ir -> ir.toSentence())
-                    .map(EmbeddingUtil::embedText)
-                    .map(FormatUtil::ListToArray).toList();
-
             // 基于DP计算序列转换成本
-            double transCost = minTransformCost(taskVectorList, templateVectorList);
+            double transCost = minTransformCost(taskIRList, templateIRList);
 
             return Result.build(transCost, ResultCodeEnum.SUCCESS);
 
@@ -133,6 +123,60 @@ public class TaskMatchingImpl implements TaskMatching {
             e.printStackTrace();
             throw new RuntimeException("Error occurred while calculating subTaskMatchingScore: " + e.getMessage());
         }
+    }
+
+    @Override
+    public Double minTransformCost(List<IR> taskIRList, List<IR> templateIRList) {
+        // 序列向量化表示
+        List<float[]> vectorList1 = taskIRList.stream()
+                .map(ir -> ir.toSentence())
+                .map(EmbeddingUtil::embedText)
+                .map(FormatUtil::ListToArray).toList();
+        List<float[]> vectorList2 = templateIRList.stream()
+                .map(ir -> ir.toSentence())
+                .map(EmbeddingUtil::embedText)
+                .map(FormatUtil::ListToArray).toList();
+
+        int m = vectorList1.size(); // vectorList1 的长度
+        int n = vectorList2.size(); // vectorList2 的长度
+
+        // dp[i][j] 表示将 vectorList1 的前 i 个向量转换为 vectorList2 的前 j 个向量的最小成本
+        double[][] dp = new double[m + 1][n + 1];
+
+        // 初始化边界条件
+        for (int i = 0; i <= m; i++) {
+            dp[i][0] = i; // 删除 vectorList1 中的 i 个向量
+        }
+        for (int j = 0; j <= n; j++) {
+            dp[0][j] = j; // 在 vectorList1 中新增 j 个向量
+        }
+
+        // 动态规划填表
+        int amplifyFactor = 6; // 放大因子
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                // 计算相似度
+                double similarity = EmbeddingUtil.cosineSimilarity(vectorList1.get(i - 1), vectorList2.get(j - 1));
+
+                double expWeight = Math.exp(amplifyFactor * similarity); // 5 是放大因子，可调整
+                double maxExpWeight = Math.exp(amplifyFactor); // similarity=1 时的最大权重
+                double normalizedWeight = expWeight / maxExpWeight; // 归一化到 [0,1]
+
+                // 计算修改成本
+                double modifyCost = Math.max(0, 1 - similarity * normalizedWeight);
+
+                // 选择最小成本的操作
+                dp[i][j] = Math.min(
+                        Math.min(dp[i - 1][j] + 1, // 删除 vectorList1[i-1]
+                                dp[i][j - 1] + 1), // 新增 vectorList2[j-1]
+                        dp[i - 1][j - 1] + modifyCost // 修改 vectorList1[i-1] 为 vectorList2[j-1]
+                );
+            }
+        }
+
+        double maxPossibleCost = Math.min(m, n) * 1.0 + Math.abs(m - n); // 理论最大成本
+        // 返回最终的最小成本
+        return dp[m][n] / maxPossibleCost;
     }
 
     /**
@@ -193,46 +237,4 @@ public class TaskMatchingImpl implements TaskMatching {
         }
     }
 
-    /**
-     * 序列2转换为序列1的最低成本
-     * @param vectorList1
-     * @param vectorList2
-     * @return
-     */
-    private Double minTransformCost(List<float[]> vectorList1, List<float[]> vectorList2) {
-        int m = vectorList1.size(); // vectorList1 的长度
-        int n = vectorList2.size(); // vectorList2 的长度
-
-        // dp[i][j] 表示将 vectorList1 的前 i 个向量转换为 vectorList2 的前 j 个向量的最小成本
-        double[][] dp = new double[m + 1][n + 1];
-
-        // 初始化边界条件
-        for (int i = 0; i <= m; i++) {
-            dp[i][0] = i; // 删除 vectorList1 中的 i 个向量
-        }
-        for (int j = 0; j <= n; j++) {
-            dp[0][j] = j; // 在 vectorList1 中新增 j 个向量
-        }
-
-        // 动态规划填表
-        for (int i = 1; i <= m; i++) {
-            for (int j = 1; j <= n; j++) {
-                // 计算相似度
-                double similarity = EmbeddingUtil.cosineSimilarity(vectorList1.get(i - 1), vectorList2.get(j - 1));
-
-                // 计算修改成本
-                double modifyCost = 1 - similarity;
-
-                // 选择最小成本的操作
-                dp[i][j] = Math.min(
-                        Math.min(dp[i - 1][j] + 1, // 删除 vectorList1[i-1]
-                                dp[i][j - 1] + 1), // 新增 vectorList2[j-1]
-                        dp[i - 1][j - 1] + modifyCost // 修改 vectorList1[i-1] 为 vectorList2[j-1]
-                );
-            }
-        }
-
-        // 返回最终的最小成本
-        return dp[m][n] / m;
-    }
 }
