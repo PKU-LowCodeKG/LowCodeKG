@@ -35,4 +35,12 @@ public interface IRGenerate {
      * @return
      */
     List<IR> buildIRList(String answer);
+
+    /**
+     * 计算两个IR的相似度
+     * @param ir1
+     * @param ir2
+     * @return
+     */
+    Double calculateIRSim(IR ir1, IR ir2);
 }

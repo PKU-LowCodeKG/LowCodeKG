@@ -10,6 +10,7 @@ import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
+import org.example.lowcodekg.query.service.util.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,5 +105,18 @@ public class IRGenerateImpl implements IRGenerate {
             System.err.println("Error parsing JSON in TaskToDsl: " + e.getMessage());
             throw new RuntimeException("Error parsing JSON: " + e.getMessage());
         }
+    }
+
+    @Override
+    public Double calculateIRSim(IR ir1, IR ir2) {
+        List<String> words1 = FormatUtil.textPreProcess(ir1.toSentence());
+        List<String> words2 = FormatUtil.textPreProcess(ir2.toSentence());
+        Double wordSimilarity = FormatUtil.calculateWordLevelSimilarity(words1, words2);
+        // 向量相似度
+        float[] ir1Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir1.toSentence()));
+        float[] ir2Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir2.toSentence()));
+        double embeddingSimilarity = EmbeddingUtil.cosineSimilarity(ir1Vector, ir2Vector);
+        double sim = 0.7 * wordSimilarity + 0.3 * embeddingSimilarity;
+        return sim;
     }
 }

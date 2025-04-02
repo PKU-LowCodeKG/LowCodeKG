@@ -117,8 +117,7 @@ public class PromptTest {
                 List.of(
                         new IR("定义", "名为VisitLog的Java类", "null", "null"),
                         new IR("记录", "网站或应用的访问日志", "null", "null"),
-                        new IR("存储", "访客信息、请求详情和访问行为等", "null", "null"),
-                        new IR("初始化", "实体中的字段", "null", "null")
+                        new IR("存储", "访客信息、请求详情和访问行为等", "null", "null")
                 )
         );
         // 目标：第一个结果更小

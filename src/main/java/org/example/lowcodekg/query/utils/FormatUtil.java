@@ -2,6 +2,8 @@ package org.example.lowcodekg.query.utils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.huaban.analysis.jieba.JiebaSegmenter;
+import com.huaban.analysis.jieba.SegToken;
 import org.example.lowcodekg.model.dao.Describable;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
@@ -15,10 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.example.lowcodekg.query.utils.Constants.resultSavePath;
 
@@ -28,6 +33,20 @@ import static org.example.lowcodekg.query.utils.Constants.resultSavePath;
  * @Date 2025/3/23 14:47
  */
 public class FormatUtil {
+
+    /**
+     * 对中文文本进行预处理
+     * @param text
+     * @return
+     */
+    public static List<String> textPreProcess(String text) {
+        Set<String> stopWords = loadStopWords();
+        String cleaned = text.replaceAll("[\\pP\\pS\\pZ]", "");
+        List<SegToken> segTokens = new JiebaSegmenter().process(cleaned, JiebaSegmenter.SegMode.SEARCH);
+        List<String> words = segTokens.stream().map(token -> token.word).collect(Collectors.toList());
+        words.removeIf(stopWords::contains);
+        return words;
+    }
 
     /**
      * 将查询处理过程的中间及结果数据保存到本地
@@ -108,5 +127,43 @@ public class FormatUtil {
             array[i] = list.get(i);
         }
         return array;
+    }
+
+    private static Set<String> loadStopWords() {
+        Set<String> stopWords = new HashSet<>();
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(
+                    FormatUtil.class.getClassLoader().getResourceAsStream("data/stopwords.txt"),
+                    StandardCharsets.UTF_8
+                ))) {
+            String line;
+            while((line = reader.readLine()) != null) {
+                stopWords.add(line.trim());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error loading stop words: " + e.getMessage());
+        }
+        return stopWords;
+    }
+
+    /**
+     * 计算词级别的相似度
+     * 使用 Jaccard 相似度计算两个词集合的相似度
+     */
+    public static double calculateWordLevelSimilarity(List<String> words1, List<String> words2) {
+        Set<String> set1 = new HashSet<>(words1);
+        Set<String> set2 = new HashSet<>(words2);
+
+        // 计算交集大小
+        Set<String> intersection = new HashSet<>(set1);
+        intersection.retainAll(set2);
+
+        // 计算并集大小
+        Set<String> union = new HashSet<>(set1);
+        union.addAll(set2);
+
+        // Jaccard 相似度 = 交集大小 / 并集大小
+        return union.isEmpty() ? 0.0 : (double) intersection.size() / union.size();
     }
 }

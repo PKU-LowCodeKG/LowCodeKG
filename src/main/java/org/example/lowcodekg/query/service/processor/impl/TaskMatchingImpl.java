@@ -127,18 +127,8 @@ public class TaskMatchingImpl implements TaskMatching {
 
     @Override
     public Double minTransformCost(List<IR> taskIRList, List<IR> templateIRList) {
-        // 序列向量化表示
-        List<float[]> vectorList1 = taskIRList.stream()
-                .map(ir -> ir.toSentence())
-                .map(EmbeddingUtil::embedText)
-                .map(FormatUtil::ListToArray).toList();
-        List<float[]> vectorList2 = templateIRList.stream()
-                .map(ir -> ir.toSentence())
-                .map(EmbeddingUtil::embedText)
-                .map(FormatUtil::ListToArray).toList();
-
-        int m = vectorList1.size(); // vectorList1 的长度
-        int n = vectorList2.size(); // vectorList2 的长度
+        int m = taskIRList.size(); // vectorList1 的长度
+        int n = templateIRList.size(); // vectorList2 的长度
 
         // dp[i][j] 表示将 vectorList1 的前 i 个向量转换为 vectorList2 的前 j 个向量的最小成本
         double[][] dp = new double[m + 1][n + 1];
@@ -152,13 +142,13 @@ public class TaskMatchingImpl implements TaskMatching {
         }
 
         // 动态规划填表
-        int amplifyFactor = 6; // 放大因子
+        int amplifyFactor = 5; // 放大因子
         for (int i = 1; i <= m; i++) {
             for (int j = 1; j <= n; j++) {
                 // 计算相似度
-                double similarity = EmbeddingUtil.cosineSimilarity(vectorList1.get(i - 1), vectorList2.get(j - 1));
+                double similarity = irGenerate.calculateIRSim(taskIRList.get(i - 1), templateIRList.get(j - 1));
 
-                double expWeight = Math.exp(amplifyFactor * similarity); // 5 是放大因子，可调整
+                double expWeight = Math.exp(amplifyFactor * similarity);
                 double maxExpWeight = Math.exp(amplifyFactor); // similarity=1 时的最大权重
                 double normalizedWeight = expWeight / maxExpWeight; // 归一化到 [0,1]
 
