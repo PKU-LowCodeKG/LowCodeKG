@@ -74,7 +74,7 @@ public class RecommendTest {
         }
 
         // 任务合并
-//        List<Node> resourceList = taskMerge.mergeTask(taskGraph).getData();
+        List<Node> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
 
         System.out.println("推荐资源结果列表:");
         List<Task> sortedTasks = taskGraph.topologicalSort();

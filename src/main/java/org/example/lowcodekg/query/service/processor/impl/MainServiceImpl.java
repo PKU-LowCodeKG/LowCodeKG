@@ -39,7 +39,7 @@ public class MainServiceImpl implements MainService {
             }
 
             // 任务合并
-            resourceList = taskMerge.mergeTask(taskGraph).getData();
+            resourceList = taskMerge.mergeTask(taskGraph, query).getData();
 
             return Result.build(resourceList, ResultCodeEnum.SUCCESS);
 

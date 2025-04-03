@@ -19,7 +19,7 @@ public interface TaskMerge {
      * @param graph
      * @return
      */
-    Result<List<Node>> mergeTask(TaskGraph graph);
+    Result<List<Node>> mergeTask(TaskGraph graph, String query);
 
     /**
      * 对重排后的子任务推荐资源列表进行决策

@@ -171,16 +171,4 @@ public class TaskSplitImpl implements TaskSplit {
             throw new RuntimeException("Error parsing JSON: " + e.getMessage());
         }
     }
-
-    public static void main(String[] args) {
-        // 创建 DSL 对象
-        IR dsl1 = new IR("CREATE", "Entity1", "Database", "Condition1");
-        IR dsl2 = new IR("UPDATE", "Entity2", "Database", "Condition2");
-
-        // 创建 Task 对象
-        Task task = new Task("task1", "Create and Update Entities", "This task involves creating and updating entities", new ArrayList<>(List.of(dsl1, dsl2)));
-
-        // 打印 Task 对象
-        System.out.println(task.toString());
-    }
 }

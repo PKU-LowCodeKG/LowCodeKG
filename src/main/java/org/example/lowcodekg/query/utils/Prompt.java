@@ -351,6 +351,61 @@ public interface Prompt {
      * 依靠LLM对子任务检索结果重排序
      */
     public static final String RERANK_WITHIN_TASK_PROMPT = """
+            **Role:** 
+            You are a seasoned software engineering expert with deep technical experience. 
             
+            **Task:** 
+            Given a user’s functional requirement and its decomposed subtasks—each with a list of recommended resources—you must: 
+            1. **Re-sort resources** for each subtask based on: 
+               - Relevance to the subtask description 
+               - Dependencies between subtasks (e.g., execution order, shared resources) 
+            2. **Filter out irrelevant resources** (low relevance or redundancy). 
+            
+            
+            ### **Input Format** 
+            ```json
+            {
+                "task": "[Overall functional requirement]",
+                "subTasks": [
+                    {
+                        "name": "[Subtask 1 name]",
+                        "description": "[Subtask 1 description]",
+                        "resources": [
+                            {
+                                "resourceName": "",
+                                "resourceDescription": ""
+                            },
+                            ...
+                        ]
+                    }, 
+                ...
+                ]
+            }
+            ```
+            ### **Input Content**
+            {input}
+            
+            ### **Output** 
+            - **Strictly adhere to this JSON structure:** 
+              ```json 
+              { 
+                "[Subtask 1 name]": [ 
+                  { "resourceName": "[Top-priority resource]" }, 
+                  { "resourceName": "[Next relevant resource]" }, 
+                  ... 
+                ], 
+                "[Subtask 2 name]": [ ... ], 
+                ... 
+              } 
+              ``` 
+            - **Rules for sorting/filtering:** 
+              1. **Priority order:** 
+                 - Resources directly solving the subtask’s core problem > supporting tools. 
+                 - Prefer resources with technical consistency (e.g., same framework/library ecosystem). 
+              2. **Dependency analysis:** 
+                 - Highlight shared resources across subtasks. 
+                 - Remove duplicates (keep only the highest-priority instance). 
+              3. **Filtering criteria:** 
+                 - Exclude resources with no clear relevance to the subtask description. 
             """;
 }
