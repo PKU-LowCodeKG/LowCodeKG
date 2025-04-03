@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MainServiceImpl implements MainService {
@@ -28,7 +30,7 @@ public class MainServiceImpl implements MainService {
     @Override
     public Result<List<Node>> recommend(String query) {
         try {
-            List<Node> resourceList;
+            Map<Task, List<Node>> resourceList;
 
             // 检索增强的需求分解
             TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
@@ -40,8 +42,12 @@ public class MainServiceImpl implements MainService {
 
             // 任务合并
             resourceList = taskMerge.mergeTask(taskGraph, query).getData();
+            List<Node> nodeList = new ArrayList<>();
+            for(Task task : resourceList.keySet()) {
+                nodeList.addAll(resourceList.get(task));
+            }
 
-            return Result.build(resourceList, ResultCodeEnum.SUCCESS);
+            return Result.build(nodeList, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
             System.err.println("Error in recommend: " + e.getMessage());

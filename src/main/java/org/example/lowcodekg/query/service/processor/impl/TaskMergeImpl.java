@@ -32,13 +32,13 @@ public class TaskMergeImpl implements TaskMerge {
     private LLMGenerateService llmService;
 
     @Override
-    public Result<List<Node>> mergeTask(TaskGraph graph, String query) {
+    public Result<Map<Task, List<Node>>> mergeTask(TaskGraph graph, String query) {
         try {
             // construct prompt input
             JSONObject input = new JSONObject();
-            JSONArray subTasks = new JSONArray();
             input.put("task", query);
             // iterate task graph
+            JSONArray subTasks = new JSONArray();
             List<Task> sortedTasks = graph.topologicalSort();
             for(Task task : sortedTasks) {
                 subTasks.add(buildSubTaskJson(task));
@@ -48,13 +48,21 @@ public class TaskMergeImpl implements TaskMerge {
             String prompt = RERANK_WITHIN_TASK_PROMPT.replace("{input}", input.toString());
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
             // result format parse
-            Set<Node> result = filterResourcesByLLM(answer, sortedTasks);
+            Map<Task, Set<Node>> result = filterResourcesByLLM(answer, sortedTasks);
 
             if(debugConfig.isDebugMode()) {
-                System.out.println("合并后的结果集:\n" + result);
+                System.out.println("任务合并prompt:\n" + prompt);
+                System.out.println("LLM返回结果:\n" + answer);
+                System.out.println("合并后的结果集:");
+                for(Task task : result.keySet()) {
+                    System.out.println("Task: " + task.getName() + ": " + task.getDescription());
+                    for(Node node : result.get(task)) {
+                        System.out.println("Node: " + node.getName() + ": " + node.getDescription() + "\n");
+                    }
+                }
             }
-            List<Node> nodeList = new ArrayList<>(result);
-            return Result.build(nodeList, ResultCodeEnum.SUCCESS);
+
+            return Result.build(result, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
             System.err.println("Error in mergeTask: " + e.getMessage());
@@ -107,18 +115,19 @@ public class TaskMergeImpl implements TaskMerge {
         return subTask;
     }
 
-    private Set<Node> filterResourcesByLLM(String answer, List<Task> taskList) {
+    private Map<Task, Set<Node>> filterResourcesByLLM(String answer, List<Task> taskList) {
         try {
-            Set<Node> result = new HashSet<>();
+            Map<Task, Set<Node>> resultMap = new HashMap<>();
             JSONObject jsonObject = JSON.parseObject(answer);
             for(String subTaskName: jsonObject.keySet()) {
+                Set<Node> result = new HashSet<>();
                 // each subtask
+                Task task = findTaskByName(taskList, subTaskName);
                 JSONArray resourceList = jsonObject.getJSONArray(subTaskName);
                 for(int i = 0; i < resourceList.size(); i++) {
                     // each resource
                     JSONObject resource = resourceList.getJSONObject(i);
                     String resourceName = resource.getString("resourceName");
-                    Task task = findTaskByName(taskList, subTaskName);
                     if (!Objects.isNull(task)) {
                         Node node = findNodeByName(task.getResourceList(), resourceName);
                         if (!Objects.isNull(node)) {
@@ -126,8 +135,9 @@ public class TaskMergeImpl implements TaskMerge {
                         }
                     }
                 }
+                resultMap.put(task, result);
             }
-            return result;
+            return resultMap;
 
         } catch (Exception e) {
             System.err.println("Error in filterResourcesByLLM: " + e.getMessage());

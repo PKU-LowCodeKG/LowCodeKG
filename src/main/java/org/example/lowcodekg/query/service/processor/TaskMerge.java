@@ -6,6 +6,7 @@ import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description 将子任务合并，并进行兼容性检查
@@ -19,7 +20,7 @@ public interface TaskMerge {
      * @param graph
      * @return
      */
-    Result<List<Node>> mergeTask(TaskGraph graph, String query);
+    Result<Map<Task, List<Node>>> mergeTask(TaskGraph graph, String query);
 
     /**
      * 对重排后的子任务推荐资源列表进行决策

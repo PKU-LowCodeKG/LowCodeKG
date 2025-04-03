@@ -22,8 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.example.lowcodekg.query.utils.Prompt.IDENTIFY_TASK_DEPENDENCY_PROMPT;
-import static org.example.lowcodekg.query.utils.Prompt.TaskSplitPrompt;
+import static org.example.lowcodekg.query.utils.Prompt.*;
 
 /**
  * @Description
@@ -49,13 +48,13 @@ public class TaskSplitImpl implements TaskSplit {
             // 根据需求检索相关资源
             List<Node> nodes = templateRetrieve.queryByTask(query).getData();
             if(debugConfig.isDebugMode()) {
-                System.out.println("初步检索资源:\n" + nodes + "\n");
+                System.out.println("初步检索资源:\n" + nodes);
             }
 
-            // 基于检索结果，构造提示让LLM进行任务分解
+            // 基于检索结果，构造提示让LLM进行任务分解，并识别依赖
             String answer = getSplitTasks(query, nodes);
             if(debugConfig.isDebugMode()) {
-                System.out.println("LLM任务分解:\n" + answer + "\n");
+                System.out.println("LLM任务分解:\n" + answer);
             }
 
             // 将返回json格式字符串解析为Task对象
@@ -71,13 +70,13 @@ public class TaskSplitImpl implements TaskSplit {
             }
 
             // 基于分解后的任务，让LLM判断子任务之间的依赖约束关系
-            String result = identifyDependenciesBetweenTasks(graph, query);
-            if(debugConfig.isDebugMode()) {
-                System.out.println("任务依赖关系识别: " + result);
-            }
+//            String result = identifyDependenciesBetweenTasks(graph, query);
+//            if(debugConfig.isDebugMode()) {
+//                System.out.println("任务依赖关系识别: " + result);
+//            }
 
             // 构建子任务依赖图
-            buildDependencyGraph(graph, result);
+            buildDependencyGraph(graph, answer);
 
             return Result.build(graph, ResultCodeEnum.SUCCESS);
 
@@ -90,7 +89,7 @@ public class TaskSplitImpl implements TaskSplit {
     private void buildDependencyGraph(TaskGraph graph, String result) {
         try {
             JSONObject jsonObject = JSONObject.parseObject(result);
-            JSONArray dependencies = jsonObject.getJSONArray("Dependencies");
+            JSONArray dependencies = jsonObject.getJSONArray("dependencies");
 
             for (int i = 0; i < dependencies.size(); i++) {
                 JSONObject dependency = dependencies.getJSONObject(i);
@@ -144,7 +143,7 @@ public class TaskSplitImpl implements TaskSplit {
             jsonArray.add(jsonObject);
         }
         String codePrompt = jsonArray.toJSONString();
-        String prompt = TaskSplitPrompt.replace("{code}", codePrompt).replace("{task}", query);
+        String prompt = TASK_GRAPH_BUILD_PROMPT.replace("{code}", codePrompt).replace("{task}", query);
         if(debugConfig.isDebugMode()) {
             System.out.println("Task split prompt:\n" + prompt);
         }

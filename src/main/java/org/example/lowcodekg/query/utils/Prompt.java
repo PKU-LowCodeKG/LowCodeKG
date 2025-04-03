@@ -115,7 +115,7 @@ public interface Prompt {
                     },
                     ...
                 ],
-                "Dependencies": [
+                "dependencies": [
                     {
                         "taskId1": "taskId2",
                         "dependency": "task2 需要使用 task1 产生的计算结果"

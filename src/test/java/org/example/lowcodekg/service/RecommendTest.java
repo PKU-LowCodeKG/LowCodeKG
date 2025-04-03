@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 测试需求推荐模板相关功能
@@ -74,19 +75,7 @@ public class RecommendTest {
         }
 
         // 任务合并
-        List<Node> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
-
-        System.out.println("推荐资源结果列表:");
-        List<Task> sortedTasks = taskGraph.topologicalSort();
-        for(Task task : sortedTasks) {
-            if(task.getResourceList().size() == 0) {
-                continue;
-            }
-            System.out.println("当前任务：" + task.getName());
-            for(Node node : task.getResourceList()) {
-                System.out.println("资源名称：" + node.getName()+ "\n资源描述：" + node.getDescription());
-            }
-        }
+        Map<Task, List<Node>> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
     }
 
     @Test
