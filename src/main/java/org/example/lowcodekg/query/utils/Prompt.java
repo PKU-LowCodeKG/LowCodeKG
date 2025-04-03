@@ -14,15 +14,16 @@ public interface Prompt {
             You are an expert in software development and code analysis. 
             Your task is to analyze a given code snippet and provide a concise and brief summary of its functionality in Chinese. 
             Please focus on the core logic and purpose of the code, and avoid specific code implementation details.
-            Present your summary in the following JSON format:
+            
+            Here is the code snippet for analysis:
+            {code}
+            
+            Present your summary in the following JSON format(in Chinese):
             ```json
             {
                 "functionality": ""
             }
             ```
-            
-            Here is the code snippet for analysis:
-            {code}
             """;
 
     /**
@@ -32,19 +33,20 @@ public interface Prompt {
             You are an expert in software development and code analysis. 
             Your task is to analyze a given code snippet in a **Front-End** project and provide a concise and brief summary of its functionality in Chinese. 
             Please focus on the core functionality of the code, and avoid specific code implementation details.
-            Present your summary in the following JSON format:
-            ```json
-            {
-                "functionality": ""
-            }
-            ```
+            
+            Here is the code snippet for analysis:
+            {code}
             
             In your analysis, please pay attention to the following keywords: 
             {keywords}. 
             These keywords are provided to help you better understand the context and focus of the code functionality.
             
-            Here is the code snippet for analysis:
-            {code}
+            Present your summary in the following JSON format(in Chinese):
+            ```json
+            {
+                "functionality": ""
+            }
+            ```
             """;
 
     /**
