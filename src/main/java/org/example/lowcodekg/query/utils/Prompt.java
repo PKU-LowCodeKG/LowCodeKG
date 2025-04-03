@@ -493,8 +493,8 @@ public interface Prompt {
               ```json 
               { 
                 "[Subtask 1 name]": [ 
-                  { "resourceName": "[Top-priority resource]" }, 
-                  { "resourceName": "[Next relevant resource]" }, 
+                  { "resourceName": "[resource name 1]" }, 
+                  { "resourceName": "[resource name 2]" }, 
                   ... 
                 ], 
                 "[Subtask 2 name]": [ ... ], 
