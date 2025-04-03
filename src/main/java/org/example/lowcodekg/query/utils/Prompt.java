@@ -48,6 +48,98 @@ public interface Prompt {
             """;
 
     /**
+     * 需求分解，识别子任务依赖
+     */
+    public final static String TASK_GRAPH_BUILD_PROMPT = """
+            ## **Role & Objective** 
+            You are an expert in **Software Engineering** with extensive experience in analyzing **functional implementations** in software projects. Your primary role is twofold: 
+            1. **Break down a given requirement** into **functional implementation-oriented subtasks** based on the provided code context. Focus specifically on **core functional components**, avoiding technical details or non-functional aspects. 
+            2. **Identify potential dependencies** between these subtasks, explaining why the dependencies exist based on logical, data, or workflow relationships. 
+            
+            ---
+            
+            ## **Step 1: Functional Breakdown** 
+            Analyze the given requirement and extract **functional subtasks** based on the following key focus areas: 
+            1. **Entity fields/data structure changes** (e.g., adding/modifying database fields). 
+            2. **Service layer method implementation** (e.g., creating/updating domain service methods). 
+            3. **Interface/API definition** (e.g., adding REST endpoints). 
+            4. **Business logic flow** (e.g., state change rules). 
+            5. **Domain object relationship adjustments**. 
+            
+            ### **Negative Examples (to avoid):** 
+            ✗ Cache handling | ✗ Test case writing | ✗ Performance optimization | ✗ Deployment configuration | ✗ Monitoring logs 
+            
+            ### **Example Breakdown for "Pin Blog Post":** 
+            1. **Add an "is_pinned" boolean field** to the blog entity. 
+            2. **Create a blog update service method** to handle pinning status. 
+            3. **Implement persistence** of pinning status to the database. 
+            4. **Add an interface** for querying the pinning status of a post. 
+            5. **Write business rules** for validating pinning status.  
+            
+            ---
+            
+            ## **Step 2: Identify Dependencies** 
+            Once the subtasks are extracted, analyze their relationships to determine **dependencies** based on the following criteria: 
+            
+            1. **Semantic Relationships**: Identify references to **shared data, processes, or sequential operations** in natural language descriptions. 
+            2. **IR Sequence Logic**: If provided, analyze structured intermediate representations (`DslList`) to track how **objects and outputs are consumed across tasks**. 
+            3. **Development Workflow**: Consider logical execution order based on **data processing, API dependencies, UI flows**, etc. 
+            
+            ---
+            
+            ## **Input Content** 
+            
+            **Requirement Description:** 
+            {task} 
+            
+            **Provided Potentially Relevant Code:** 
+            {code}
+            
+            ---
+            
+            ## **Expected Output Format (in Chinese)** 
+            ```json
+            {
+                "subtasks": [
+                    {
+                        "id": 1,
+                        "name": "子任务1",
+                        "description": "子任务1的详细描述"
+                    },
+                    {
+                        "id": 2,
+                        "name": "子任务2",
+                        "description": "子任务2的详细描述"
+                    },
+                    ...
+                ],
+                "Dependencies": [
+                    {
+                        "taskId1": "taskId2",
+                        "dependency": "task2 需要使用 task1 产生的计算结果"
+                    },
+                    {
+                        "taskId3": "taskId4",
+                        "dependency": "task3 依赖 task4 生成的输入数据"
+                    },
+                    ...
+                ]
+            }
+            ``` 
+            ---
+            ### **Additional Guidelines:** 
+            - Output must be in Chinese.
+            - Each subtask should focus on a **single functional component**. 
+            - **No specific code details** in the subtask descriptions. 
+            - Exclude non-functional requirements.
+            
+            - Dependencies should be determined strictly based on **the provided criteria**. 
+            - Always return **task IDs** (not names). 
+            - If **no dependencies exist**, return: `"Dependencies": []` 
+            - Explanations must be **clear, precise, and in Chinese**. 
+            """;
+
+    /**
      * 任务拆分Prompt（关键！！！）
      */
     public final static String TaskSplitPrompt = """
@@ -95,8 +187,19 @@ public interface Prompt {
                         "name": "子任务2",
                         "description": "子任务2的详细描述"
                     }
+                ],
+                "Dependencies": [
+                    {
+                        "taskId1": "taskId2",
+                        "dependency": "task2 需要使用 task1 产生的计算结果"
+                    },
+                    {
+                        "taskId3": "taskId4",
+                        "dependency": "task3 依赖 task4 生成的输入数据"
+                    }
                 ]
             }
+            ```
             
             Ensure:
             - Output in Chinese
