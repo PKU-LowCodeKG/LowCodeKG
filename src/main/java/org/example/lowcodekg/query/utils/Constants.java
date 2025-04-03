@@ -18,17 +18,17 @@ public final class Constants {
      * 任务检索参数设置
      */
     // 初步检索
-    public static final int MAX_RESULTS = 5;
+    public static final int MAX_RESULTS = 8;
     // 子任务检索
-    public static final int MAX_DATA_OBJECT_NUM = 3;
-    public static final int MAX_PAGE_NUM = 3;
-    public static final int MAX_WORKFLOW_NUM = 3;
-    public static final float MIN_SCORE = 0.65f;
+    public static final int MAX_DATA_OBJECT_NUM = 5;
+    public static final int MAX_PAGE_NUM = 5;
+    public static final int MAX_WORKFLOW_NUM = 5;
+    public static final float MIN_SCORE = 0.6f;
 
     /**
      * 子任务推荐候选资源重排序后的个数
      */
-    public static final int MAX_RESOURCE_RECOMMEND_NUM = 3;
+    public static final int MAX_RESOURCE_RECOMMEND_NUM = 5;
 
     /**
      * 保存结果的本地路径
