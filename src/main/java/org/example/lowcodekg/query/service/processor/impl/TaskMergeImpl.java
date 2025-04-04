@@ -57,7 +57,7 @@ public class TaskMergeImpl implements TaskMerge {
                 for(Task task : result.keySet()) {
                     System.out.println("Task: " + task.getName() + ": " + task.getDescription());
                     for(Node node : result.get(task)) {
-                        System.out.println("Node: " + node.getName() + ": " + node.getDescription() + "\n");
+                        System.out.println("Node: " + node.getName() + ": " + node.getDescription());
                     }
                 }
             }

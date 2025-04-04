@@ -21,9 +21,7 @@ import java.util.Set;
 @SpringBootTest
 public class PromptTest {
     @Autowired
-    private LLMGenerateService llmService;
-    @Autowired
-    private LLMService llm;
+    private LLMService llmService;
     @Autowired
     private IRGenerate irGenerate;
     @Autowired

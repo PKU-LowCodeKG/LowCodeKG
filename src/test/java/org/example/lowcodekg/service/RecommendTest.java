@@ -37,8 +37,6 @@ public class RecommendTest {
     @Autowired
     private DebugConfig debugConfig;
     @Autowired
-    private LLMGenerateService llmGenerateService;
-    @Autowired
     private LLMService llmService;
 
 //    @BeforeEach
@@ -63,7 +61,7 @@ public class RecommendTest {
             throw new RuntimeException(e);
         }
 
-        String query = "我想要能够更新博客的置顶文章的状态";
+        String query = "我想要设置博客置顶状态，并添加对博客评论审核的功能";
 
         // 检索增强的需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();

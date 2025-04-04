@@ -1,5 +1,8 @@
 package org.example.lowcodekg.query.service.util;
 
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.ollama.OllamaChatModel;
 import io.github.lnyocly.ai4j.config.DeepSeekConfig;
 import io.github.lnyocly.ai4j.config.ZhipuConfig;
 import io.github.lnyocly.ai4j.platform.openai.chat.entity.ChatCompletion;
@@ -20,6 +23,8 @@ public class LLMService {
 
     @Autowired
     private AiService aiService;
+    @Autowired
+    private OllamaChatModel ollamaChatModel;
 
     public ChatCompletionResponse chat(String prompt) {
         try {
@@ -64,5 +69,24 @@ public class LLMService {
             System.out.println("Error in chat: " + e.getMessage());
             return null;
         }
+    }
+
+    public String generateAnswer(String prompt) {
+        int maxRetries = 1; // 设定最大重试次数
+        int retryCount = 0;
+        Exception lastException = null;
+
+        while (retryCount < maxRetries) {
+            try {
+                UserMessage userMessage = UserMessage.from(prompt);
+                AiMessage aiMessage = ollamaChatModel.generate(userMessage).content();
+                return aiMessage.text();
+            } catch (Exception e) {
+                lastException = e;
+                retryCount++;
+                System.out.println("generateAnswer failed, retrying...");
+            }
+        }
+        return null;
     }
 }
