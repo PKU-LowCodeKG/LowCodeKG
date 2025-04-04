@@ -22,6 +22,11 @@ public class Node {
 
     private String name;
 
+    /**
+     * 资源全路径名称，用于实验验证标识
+     */
+    private String fullName;
+
     private String label;
 
     private String content;
