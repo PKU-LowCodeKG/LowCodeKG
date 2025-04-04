@@ -80,11 +80,17 @@ public class RecommendTest {
 
     @Test
     void testRetrieval() {
-        Task task = new Task("实现服务层方法_2",
-                "实现服务层方法",
-                "创建或更新一个服务层方法，用于处理博客置顶状态的更新逻辑。",
-                null);
-        String taskInfo = task.getName() + ": " + task.getDescription();
+        // 设置输出到本地日志文件
+        String logFilePath = "D://Master//log.txt";
+//        String logFilePath = "/Users/chang/Documents/projects/dataset/log.txt";
+        FilePrintStream filePrintStream = null;
+        try {
+            filePrintStream = new FilePrintStream(logFilePath);
+            System.setOut(filePrintStream); // 替换 System.out
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
+        System.out.println("test output");
     }
 }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import io.micrometer.common.util.StringUtils;
 import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.example.lowcodekg.query.utils.Prompt.RESOURCE_TO_IR_PROMPT;
 import static org.example.lowcodekg.query.utils.Prompt.TASK_TO_IR_PROMPT;
@@ -104,14 +106,26 @@ public class IRGenerateImpl implements IRGenerate {
         }
     }
 
+    /**
+     * @param ir1 任务IR
+     * @param ir2 资源IR
+     */
     @Override
     public Double calculateIRSim(IR ir1, IR ir2) {
-        List<String> words1 = FormatUtil.textPreProcess(ir1.toSentence());
-        List<String> words2 = FormatUtil.textPreProcess(ir2.toSentence());
+        // 添加规则化处理逻辑
+        IR ir1Edit = new IR(ir1);
+        if(StringUtils.isNotBlank(ir2.getType()) && !"Workflow".equals(ir2.getType())) {
+            ir1Edit.setAction(null);
+        }
+        String ir1Sentence = ir1Edit.toSentence();
+        String ir2Sentence = ir2.toSentence();
+
+        List<String> words1 = FormatUtil.textPreProcess(ir1Sentence);
+        List<String> words2 = FormatUtil.textPreProcess(ir2Sentence);
         Double wordSimilarity = FormatUtil.calculateWordLevelSimilarity(words1, words2);
         // 向量相似度
-        float[] ir1Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir1.toSentence()));
-        float[] ir2Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir2.toSentence()));
+        float[] ir1Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir1Sentence));
+        float[] ir2Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir2Sentence));
         double embeddingSimilarity = EmbeddingUtil.cosineSimilarity(ir1Vector, ir2Vector);
         double sim = 0.2 * wordSimilarity + 0.8 * embeddingSimilarity;
         return sim;

@@ -23,6 +23,14 @@ public class IR {
     // 额外记录类型
     private String type;
 
+    public IR(IR ir) {
+        this.action = ir.action;
+        this.object = ir.object;
+        this.target = ir.target;
+        this.condition = ir.condition;
+        this.type = ir.type;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -34,16 +42,20 @@ public class IR {
     }
 
     public String toSentence() {
-        String irStr;
-        if(StringUtils.isNotBlank(type) && ("PageTemplate".equals(type) || "DataObject".equals(type))) {
-            irStr = object + ": " + condition;
-        } else {
-            String conditionPart = StringUtils.isBlank(condition) || condition.equals("null") ? "" : "在" + condition + "的条件下, ";
-            String objectPart = StringUtils.isBlank(action) || action.equals("null") ? "对象是" + object : "针对" + object + " ";
-            String actionPart = StringUtils.isBlank(action) || action.equals("null") ? "" : "执行" + action + "操作 ";
-            String targetPart = StringUtils.isBlank(target) || target.equals("null") ? "" : ",得到" + target + "的结果";
-            irStr = conditionPart + objectPart + actionPart + targetPart;
-        }
+//        if(StringUtils.isNotBlank(type) && ("PageTemplate".equals(type) || "DataObject".equals(type))) {
+//            irStr = object + " " + condition;
+//        } else {
+//            String conditionPart = StringUtils.isBlank(condition) || condition.equals("null") ? "" : "在" + condition + "的条件下, ";
+//            String objectPart = StringUtils.isBlank(action) || action.equals("null") ? "对象是" + object : "针对" + object + " ";
+//            String actionPart = StringUtils.isBlank(action) || action.equals("null") ? "" : "执行" + action + "操作 ";
+//            String targetPart = StringUtils.isBlank(target) || target.equals("null") ? "" : ",得到" + target + "的结果";
+//            irStr = conditionPart + objectPart + actionPart + targetPart;
+//        }
+        String conditionPart = StringUtils.isBlank(condition) || condition.equals("null") ? "" : condition;
+        String actionPart = StringUtils.isBlank(action) || action.equals("null") ? "" : action;
+        String objectPart = StringUtils.isBlank(object) || object.equals("null") ? "" : object;
+        String targetPart = StringUtils.isBlank(target) || target.equals("null") ? "" : target;
+        String irStr = conditionPart + " " + actionPart + " " + objectPart + " " + targetPart;
         return irStr;
     }
 }

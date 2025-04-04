@@ -107,10 +107,10 @@ public class TaskMatchingImpl implements TaskMatching {
             // 获取node对应的IR序列
             List<IR> templateIRList = irGenerate.convertTemplateToIR(node).getData();
 
-            if(debugConfig.isDebugMode()) {
-                System.out.println("task IR序列:\n" + taskIRList);
-                System.out.println("template IR序列:\n" + templateIRList);
-            }
+//            if(debugConfig.isDebugMode()) {
+//                System.out.println("task IR序列:\n" + taskIRList);
+//                System.out.println("template IR序列:\n" + templateIRList);
+//            }
 
             // 基于DP计算序列转换成本
             double transCost = minTransformCost(taskIRList, templateIRList);

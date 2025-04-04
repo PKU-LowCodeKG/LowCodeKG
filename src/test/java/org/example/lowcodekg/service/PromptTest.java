@@ -100,26 +100,23 @@ public class PromptTest {
     void testTransCost() {
         List<IR> taskList = new ArrayList<>(
                 List.of(
-                        new IR("创建或更新", "服务层方法", "null", "null", null),
-                        new IR("处理", "博客置顶状态的更新逻辑", "null", "null", null)
+                        new IR("更新", "博客实体字段", "null", "null", null),
+                        new IR("添加或修改", "布尔字段", "博客实体类", "表示置顶状态", null)
                 )
         );
         List<IR> nodeList = new ArrayList<>(
                 List.of(
-                        new IR("处理", "HTTP PUT请求", "null", "null", null),
-                        new IR("接收", "博客ID和是否置顶的状态参数", "null", "null", null),
-                        new IR("调用", "blogService中的updateBlogTopById方法", "null", "null", null),
-                        new IR("更新", "数据库中的博客置顶信息", "null", "null", null),
-                        new IR("返回", "操作成功的Result对象", "null", "null", null)
+                        new IR("null", "Blog", "null", "该代码定义了一个博客文章的实体类，包含文章的基本信息、作者、分类和标签等属性。", null)
                 )
         );
         List<IR> nodeList1 = new ArrayList<>(
                 List.of(
-                        new IR("定义", "名为VisitLog的Java类", "null", "null", null),
-                        new IR("记录", "网站或应用的访问日志", "null", "null", null),
-                        new IR("存储", "访客信息、请求详情和访问行为等", "null", "null", null)
+                        new IR("验证", "分类名称", "null", "如果分类名称为空", null),
+                        new IR("检查", "分类名称", "null", "不包括自身", null),
+                        new IR("执行更新操作", "分类实体", "null", "如果分类名称有效且不存在重复", null)
                 )
         );
+
         // 目标：第一个结果更小
         System.out.println(taskMatch.minTransformCost(taskList, nodeList));
         System.out.println(taskMatch.minTransformCost(taskList, nodeList1));
