@@ -27,6 +27,9 @@ public class WorkflowEntity implements Describable {
     @Property("name")
     private String name;
 
+    @Property("fullName")
+    private String fullName;
+
     @Property("description")
     private String description;
 
