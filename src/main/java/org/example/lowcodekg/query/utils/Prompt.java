@@ -68,21 +68,18 @@ public interface Prompt {
             4. **Business logic flow** (e.g., state change rules). 
             5. **Domain object relationship adjustments**. 
             
+            ### **Task Categories Explanation:**
+            1. data: Refers to entities, fields, or data structures (e.g., database schema changes, DTOs, or domain objects).
+            2. page: Involves UI/interface components (e.g., API endpoints, frontend pages, or user interactions).
+            3. workflow: Represents business logic, processes, or operational sequences (e.g., service methods, validation rules, or state transitions).
+            
             ### **Negative Examples (to avoid):** 
             ✗ Cache handling | ✗ Test case writing | ✗ Performance optimization | ✗ Deployment configuration | ✗ Monitoring logs 
-            
-            ### **Example Breakdown for "Pin Blog Post":** 
-            1. **Add an "is_pinned" boolean field** to the blog entity. 
-            2. **Create a blog update service method** to handle pinning status. 
-            3. **Implement persistence** of pinning status to the database. 
-            4. **Add an interface** for querying the pinning status of a post. 
-            5. **Write business rules** for validating pinning status.  
             
             ---
             
             ## **Step 2: Identify Dependencies** 
             Once the subtasks are extracted, analyze their relationships to determine **dependencies** based on the following criteria: 
-            
             1. **Semantic Relationships**: Identify references to **shared data, processes, or sequential operations** in natural language descriptions. 
             2. **IR Sequence Logic**: If provided, analyze structured intermediate representations (`DslList`) to track how **objects and outputs are consumed across tasks**. 
             3. **Development Workflow**: Consider logical execution order based on **data processing, API dependencies, UI flows**, etc. 
