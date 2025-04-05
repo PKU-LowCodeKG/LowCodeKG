@@ -4,6 +4,8 @@ import org.apache.commons.io.FileUtils;
 import org.example.lowcodekg.extraction.ExtractorConfig;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.model.dao.neo4j.repository.*;
+import org.example.lowcodekg.query.service.util.ElasticSearchService;
+import org.example.lowcodekg.query.service.util.summarize.FuncGenerate;
 import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -48,7 +50,7 @@ public class KnowledgeExtractorService {
     @Autowired
     private LLMGenerateService llmGenerateService;
     @Autowired
-    private FunctionalityGenService functionalityGenService;
+    private FuncGenerate funcGenerateService;
 
     public void execute(String yamlStr)
     {
@@ -75,7 +77,9 @@ public class KnowledgeExtractorService {
             QueryRunner runner = neo4jClient.getQueryRunner();
             runner.run(nodeCypher);
 
-            elasticSearchService.deleteDefaultIndex();
+            // 重建ES索引
+            elasticSearchService.deleteAllIndices();
+            elasticSearchService.createDefaultIndex();
         }
         KnowledgeExtractor.execute(configs);
     }
@@ -95,7 +99,7 @@ public class KnowledgeExtractorService {
         KnowledgeExtractor.setElasticSearchService(elasticSearchService);
         KnowledgeExtractor.setLlmGenerateService(llmGenerateService);
         KnowledgeExtractor.setNeo4jClient(neo4jClient);
-        KnowledgeExtractor.setFunctionalityGenService(functionalityGenService);
+        KnowledgeExtractor.setFuncGenerateService(funcGenerateService);
     }
 
     public static void main(String[] args) {

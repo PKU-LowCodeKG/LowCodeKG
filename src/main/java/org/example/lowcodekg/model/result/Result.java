@@ -1,19 +1,15 @@
 package org.example.lowcodekg.model.result;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 public class Result<T> {
-    @Schema(description = "业务状态码")
     private Integer code;
 
     //返回消息
-    @Schema(description = "响应消息")
     private String message;
 
     //返回数据
-    @Schema(description = "业务数据")
     private T data;
 
     // 私有化构造
