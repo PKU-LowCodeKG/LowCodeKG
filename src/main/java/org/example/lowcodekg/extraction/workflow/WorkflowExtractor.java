@@ -1,4 +1,4 @@
-package org.example.lowcodekg.extraction.java;
+package org.example.lowcodekg.extraction.workflow;
 
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
@@ -95,8 +95,9 @@ public class WorkflowExtractor extends KnowledgeExtractor {
             javaMethodRepo.save(startMethodEntity);
 
             // data object access relation
+            // include only param_type relation for now
             String cypher = MessageFormat.format("""
-                    MATCH (n:JavaMethod)-[:PARAM_TYPE]->(m:DataObject)
+                    MATCH (n:JavaMethod)-[r:RETURN_TYPE|PARAM_TYPE]->(m:DataObject)
                     WHERE id(n) = {0}
                     RETURN m
                     """, String.format("%d", startMethodEntity.getId()));

@@ -76,7 +76,7 @@ config.yml 示例
 org.example.lowcodekg.extraction.document.AntMDExtractor: 
   - /Users/chang/Documents/projects/ant-design/components
 # Java 项目代码解析
-org.example.lowcodekg.extraction.java.JavaExtractor:
+org.example.lowcodekg.extraction.workflow.JavaExtractor:
   - /Users/chang/Documents/projects/data_projects/aurora/aurora-springboot
   - /Users/chang/Documents/projects/data_projects/NBlog/blog-api
 ```

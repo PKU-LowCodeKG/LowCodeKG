@@ -1,4 +1,4 @@
-package org.example.lowcodekg.extraction.java;
+package org.example.lowcodekg.extraction.workflow;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
@@ -92,7 +92,7 @@ public class JavaASTVisitor extends ASTVisitor {
             SingleVariableDeclaration param = (SingleVariableDeclaration) n;
             return (Modifier.isFinal(param.getModifiers()) ? "final " : "") + param.getType().toString() + " " + param.getName().getFullyQualifiedName();
         }).collect(Collectors.toList()));
-        String fullName = belongTo + "." + name + "( " + params + " )";
+        String fullName = belongTo + "." + name;
         String fullParams = String.join(", ", (List<String>) node.parameters().stream().map(n -> {
             SingleVariableDeclaration param = (SingleVariableDeclaration) n;
             return NameResolver.getFullName(param.getType());

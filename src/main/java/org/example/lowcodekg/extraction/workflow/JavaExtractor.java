@@ -1,4 +1,4 @@
-package org.example.lowcodekg.extraction.java;
+package org.example.lowcodekg.extraction.workflow;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;

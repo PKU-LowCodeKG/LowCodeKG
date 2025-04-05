@@ -1,8 +1,6 @@
-package org.example.lowcodekg.extraction.java;
+package org.example.lowcodekg.extraction.workflow;
 
 import org.eclipse.jdt.core.dom.*;
-
-import java.util.Set;
 
 /**
  * Evaluates fully qualified name of TypeDeclaration, Type and Name objects.
