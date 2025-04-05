@@ -2,6 +2,7 @@ package org.example.lowcodekg.query.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -13,11 +14,17 @@ import java.util.List;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Task {
 
     private String id;
 
     private String name;
+
+    private List<String> category;
+    private Boolean isData = false;
+    private Boolean isPage = false;
+    private Boolean isWorkflow = false;
 
     private String description;
 
@@ -38,11 +45,21 @@ public class Task {
     private String downstreamDependency;
 
 
-    public Task(String id, String name, String description, List<IR> irList) {
+    public Task(String id, String name, List<String> category, String description, List<IR> irList) {
         this.id = id;
         this.name = name;
+        this.category = category;
         this.description = description;
         this.irList = irList;
+        for(String type: category) {
+            if("data".equals(type)) {
+                this.isData = true;
+            } else if("page".equals(type)) {
+                this.isPage = true;
+            } else if("workflow".equals(type)) {
+                this.isWorkflow = true;
+            }
+        }
     }
 
     public void setUpstreamDependency(String description) {

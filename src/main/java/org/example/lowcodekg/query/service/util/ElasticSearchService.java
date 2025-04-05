@@ -213,6 +213,52 @@ public class ElasticSearchService {
     }
 
     /**
+     * 混合检索文档
+     * @param textQuery 文本查询
+     * @param vectorQuery 向量查询
+     * @param maxResults 最大返回结果数
+     * @param minScore 最小相似度阈值
+     * @param textWeight 文本搜索权重 (0.0-1.0)
+     * @param indexName 索引名称
+     * @return 匹配的文档列表
+     */
+    public List<Document> hybridSearch(String textQuery, float[] vectorQuery, 
+            int maxResults, double minScore, double textWeight, String indexName) throws IOException {
+        // 确保权重在有效范围内并提前计算，使其成为effectively final
+        final float normalizedTextWeight = (float) Math.max(0.0, Math.min(1.0, textWeight));
+        final float normalizedVectorWeight = (float) (1.0 - normalizedTextWeight);
+
+        SearchResponse<Document> response = client.search(s -> s
+                .index(indexName)
+                .query(q -> q
+                        .bool(b -> b
+                                .should(s1 -> s1
+                                        .multiMatch(m -> m
+                                                .fields("name", "content")
+                                                .query(textQuery)
+                                                .boost(normalizedTextWeight)  // 直接使用float类型
+                                        )
+                                )
+                                .should(s2 -> s2
+                                        .scriptScore(ss -> ss
+                                                .query(qq -> qq.matchAll(m -> m))
+                                                .script(script -> script
+                                                        .source("cosineSimilarity(params.queryVector, 'embedding') * params.weight + 1.0")
+                                                        .params("queryVector", JsonData.of(vectorQuery))
+                                                        .params("weight", JsonData.of(normalizedVectorWeight))  // 转换为JsonData
+                                                )
+                                        )
+                                )
+                        )
+                )
+                .size(maxResults),
+                Document.class
+        );
+
+        return extractHits(response, minScore);
+    }
+
+    /**
      * 从搜索响应中提取命中结果
      * @param response 搜索响应
      * @param minScore 最小相似度阈值

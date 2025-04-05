@@ -28,4 +28,13 @@ public class Document {
 
     @Field(type = FieldType.Dense_Vector, dims = 512)
     private float[] embedding;
+
+    @Override
+    public String toString() {
+        return "Document{" +
+                "name='" + name + '\'' +
+                ", label='" + label + '\'' +
+                ", content='" + content + '\'' +
+                '}';
+    }
 }

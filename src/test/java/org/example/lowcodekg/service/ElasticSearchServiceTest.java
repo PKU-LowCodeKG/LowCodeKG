@@ -146,4 +146,55 @@ public class ElasticSearchServiceTest {
 //        }
         return node;
     }
-} 
+
+    @Test
+    void testHybridSearch() throws IOException, InterruptedException {
+        // 创建测试文档
+        Document doc1 = new Document();
+        doc1.setId(UUID.randomUUID().toString());
+        doc1.setName("用户注册功能");
+        doc1.setContent("实现用户注册流程，包括邮箱验证和手机号验证");
+        doc1.setNeo4jId(1L);
+        float[] embedding1 = FormatUtil.ListToArray(EmbeddingUtil.embedText(doc1.getName() + "\n" + doc1.getContent()));
+        doc1.setEmbedding(embedding1);
+
+        Document doc2 = new Document();
+        doc2.setId(UUID.randomUUID().toString());
+        doc2.setName("商品收藏功能");
+        doc2.setContent("开发用户收藏商品和取消收藏的功能，支持批量操作");
+        float[] embedding2 = FormatUtil.ListToArray(EmbeddingUtil.embedText(doc2.getName() + "\n" + doc2.getContent()));
+        doc2.setEmbedding(embedding2);
+
+        // 索引文档
+        esService.indexDocument(doc1, "test");
+        esService.indexDocument(doc2, "test");
+
+        // 等待索引刷新
+        Thread.sleep(1000);
+
+        // 测试混合搜索
+        String queryText = "邮箱注册验证";
+        float[] queryVector = FormatUtil.ListToArray(EmbeddingUtil.embedText(queryText));
+        
+        // 测试不同权重配比的效果
+        double[] textWeights = {0.3, 0.5, 0.7};
+        for (double textWeight : textWeights) {
+            System.out.println("\n文本权重: " + textWeight);
+            List<Document> results = esService.hybridSearch(
+                    queryText,
+                    queryVector,
+                    1,
+                    0.0,
+                    textWeight,
+                    "test"
+            );
+            
+            // 打印结果
+            for (Document doc : results) {
+                System.out.println("文档名称: " + doc.getName());
+                System.out.println("文档内容: " + doc.getContent());
+                System.out.println("------------------------");
+            }
+        }
+    }
+}

@@ -4,6 +4,7 @@ import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
+import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.service.util.ElasticSearchService;
@@ -66,34 +67,43 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
     @Override
     public Result<List<Node>> queryBySubTask(Task task) {
         try {
-            List<Node> nodeList = new ArrayList<>();
+            List<Node> nodeList;
             List<Document> documents = new ArrayList<>();
-
-            // 构造检索输入，关注recall召回
-            String taskInfo = task.getName() + ": " + task.getDescription();
+            StringBuilder taskInfo = new StringBuilder();
+            for(IR ir: task.getIrList()) {
+                taskInfo.append(ir.toSentence() + " ");
+            }
             if(debugConfig.isDebugMode()) {
                 System.out.println("子任务检索信息:\n" + taskInfo + "\n");
             }
-            // LLM标签路由
-//            String prompt = TYPE_OF_RETRIEVED_ENTITY_PROMPT.replace("{Task}", taskInfo);
-//            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
-//            if(debugConfig.isDebugMode()) {
-//                System.out.println("判断检索对象类型prompt:\n" + prompt + "\n");
-//                System.out.println("检索对象类型:\n" + answer + "\n");
-//            }
-//            JSONObject jsonObject = JSON.parseObject(answer);
 
             // 基于ES向量检索，获取候选列表
-            float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(taskInfo));
-            documents.addAll(esService.searchByVector(
-                    vector, MAX_PAGE_NUM, MIN_SCORE, PAGE_INDEX_NAME
-                    ));
-            documents.addAll(esService.searchByVector(
-                    vector, MAX_WORKFLOW_NUM, MIN_SCORE, WORKFLOW_INDEX_NAME
-            ));
-            documents.addAll(esService.searchByVector(
-                    vector, MAX_DATA_OBJECT_NUM, MIN_SCORE, DATA_OBJECT_INDEX_NAME
-            ));
+            float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(taskInfo.toString()));
+
+            if(task.getIsPage())  {
+                documents.addAll(esService.hybridSearch(
+                        taskInfo.toString(), vector,
+                        MAX_PAGE_NUM, MIN_SCORE,
+                        0.0,
+                        PAGE_INDEX_NAME
+                ));
+            }
+            if(task.getIsWorkflow()) {
+                documents.addAll(esService.hybridSearch(
+                        taskInfo.toString(), vector,
+                        MAX_WORKFLOW_NUM, MIN_SCORE,
+                        0.0,
+                        WORKFLOW_INDEX_NAME
+                ));
+            }
+            if(task.getIsData()) {
+                documents.addAll(esService.hybridSearch(
+                        taskInfo.toString(), vector,
+                        MAX_DATA_OBJECT_NUM, MIN_SCORE,
+                        0.0,
+                        DATA_OBJECT_INDEX_NAME
+                ));
+            }
 
             // 将 Document 转换为 Node 并返回 Result
             nodeList = documents.stream()
@@ -111,29 +121,24 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
 
     private List<Node> queryCategoryEntitiesByTask(String query, String indexName) {
         List<Node> pageEntities = new ArrayList<>();
-        List<Document> documentsByText = new ArrayList<>();
-        List<Document> documentsByVector = new ArrayList<>();
         try {
+            // 生成查询向量
             float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(query));
-            if(indexName.equals(PAGE_INDEX_NAME)) {
-                documentsByText = esService.searchByText(query, MAX_RESULTS, 0, PAGE_INDEX_NAME);
-                documentsByVector = esService.searchByVector(vector, MAX_RESULTS, 0, PAGE_INDEX_NAME);
-            } else if(indexName.equals(WORKFLOW_INDEX_NAME)) {
-                documentsByText = esService.searchByText(query, MAX_RESULTS, 0, WORKFLOW_INDEX_NAME);
-                documentsByVector = esService.searchByVector(vector, MAX_RESULTS, 0, WORKFLOW_INDEX_NAME);
-            } else if(indexName.equals(DATA_OBJECT_INDEX_NAME)) {
-                documentsByText = esService.searchByText(query, MAX_RESULTS, 0, DATA_OBJECT_INDEX_NAME);
-                documentsByVector = esService.searchByVector(vector, MAX_RESULTS, 0, DATA_OBJECT_INDEX_NAME);
-            }
 
-            List<Document> intersection = documentsByText.stream()
-                    .filter(documentsByVector::contains)
-                    .collect(Collectors.toList());
+            List<Document> documents = esService.hybridSearch(
+                    query,              // 文本查询
+                    vector,             // 向量查询
+                    MAX_RESULTS,        // 最大返回结果数
+                    0,                  // 最小分数阈值
+                    0.2,               // 文本搜索权重
+                    indexName          // 索引名称
+            );
 
-            // 将 Document 转换为 Node 并返回 Result
-            pageEntities = intersection.stream()
+            // 将 Document 转换为 Node
+            pageEntities = documents.stream()
                     .map(this::convertToNeo4jNode)
                     .collect(Collectors.toList());
+                    
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Error in queryPageEntitiesByTask: " + e.getMessage());

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.example.lowcodekg.query.utils.Prompt.*;
@@ -158,9 +159,16 @@ public class TaskSplitImpl implements TaskSplit {
             JSONArray subtasksArray = jsonObject.getJSONArray("subtasks");
             for(int i = 0; i < subtasksArray.size(); i++) {
                 JSONObject subtaskObject = subtasksArray.getJSONObject(i);
+                JSONArray categoryArray = subtaskObject.getJSONArray("category");
+                List<String> categories = new ArrayList<>();
+                for(int j = 0; j < categoryArray.size(); j++) {
+                    categories.add(categoryArray.getString(j));
+                }
+                
                 tasksList.add(new Task(
                         subtaskObject.getString("name") + "_" + subtaskObject.getString("id"),
                         subtaskObject.getString("name"),
+                        categories,
                         subtaskObject.getString("description"),
                         new ArrayList<>()));
             }

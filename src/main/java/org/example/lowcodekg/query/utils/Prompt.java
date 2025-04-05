@@ -99,18 +99,20 @@ public interface Prompt {
             
             ---
             
-            ## **Expected Output Format (in Chinese)** 
+            ## **Expected Output Format (in Chinese)**
             ```json
             {
                 "subtasks": [
                     {
                         "id": 1,
                         "name": "子任务1",
+                        "category": ["data", "page", "workflow"]
                         "description": "子任务1的详细描述"
                     },
                     {
                         "id": 2,
                         "name": "子任务2",
+                        "category": ["data", "page", "workflow"]
                         "description": "子任务2的详细描述"
                     },
                     ...
@@ -127,22 +129,23 @@ public interface Prompt {
                     ...
                 ]
             }
-            ``` 
+            ```
             ---
-            ### **Additional Guidelines:** 
+            ### **Additional Guidelines:**
             - Output must be in Chinese.
-            - Each subtask should focus on a **single functional component**. 
-            - **No specific code details** in the subtask descriptions. 
+            - Each subtask should focus on a **single functional component**.
+            - For task category, choose one or more of the three categories “data”, “workflow” and “page”.
+            - **No specific code details** in the subtask descriptions.
             - Exclude non-functional requirements.
             
-            - Dependencies should be determined strictly based on **the provided criteria**. 
-            - Always return **task IDs** (not names). 
-            - If **no dependencies exist**, return: `"Dependencies": []` 
-            - Explanations must be **clear, precise, and in Chinese**. 
+            - Dependencies should be determined strictly based on **the provided criteria**.
+            - Always return **task IDs** (not names).
+            - If **no dependencies exist**, return: `"Dependencies": []`
+            - Explanations must be **clear, precise, and in Chinese**.
             """;
 
     /**
-     * 任务拆分Prompt（关键！！！）
+     * 任务拆分Prompt
      */
     public final static String TaskSplitPrompt = """
             You are an expert in Software Engineering with extensive experience in analyzing functional implementations in software projects.
@@ -255,6 +258,7 @@ public interface Prompt {
             
             **Instructions**:
                - Carefully read the natural language description to identify actions, objects, targets, and conditions.
+               - The input may contain pieces that are not relevant to the functional logic, exclude such content from your generation of intermediate representations.
                - Ensure that each extracted DSL object accurately reflects the functional information in the description.
                - If any component (action, object, target, condition) is not explicitly mentioned, use "null" as placeholder.
                - The JSON output must strictly follow the provided format, and be presented in Chinese.

@@ -44,6 +44,7 @@ public class IRGenerateImpl implements IRGenerate {
             String prompt = TASK_TO_IR_PROMPT.replace("{Task}", taskInfo);
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
             List<IR> irList = buildIRList(answer);
+            task.setIrList(irList);
 
             return Result.build(irList, ResultCodeEnum.SUCCESS);
         } catch (Exception e) {
@@ -75,6 +76,7 @@ public class IRGenerateImpl implements IRGenerate {
                 ir.setType("DataObject");
                 irList.add(ir);
             }
+            template.setIrList(irList);
 
             return Result.build(irList, ResultCodeEnum.SUCCESS);
         } catch (Exception e) {

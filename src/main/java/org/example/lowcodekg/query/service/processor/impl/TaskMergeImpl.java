@@ -59,6 +59,7 @@ public class TaskMergeImpl implements TaskMerge {
                     for(Node node : result.get(task)) {
                         System.out.println("Node: " + node.getName() + ": " + node.getDescription());
                     }
+                    System.out.println();
                 }
             }
 
