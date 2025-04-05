@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.util.ir;
+package org.example.lowcodekg.query.service.ir;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -19,9 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import static org.example.lowcodekg.query.utils.Prompt.RESOURCE_TO_IR_PROMPT;
 import static org.example.lowcodekg.query.utils.Prompt.TASK_TO_IR_PROMPT;
 
 /**

@@ -7,20 +7,18 @@ import com.alibaba.fastjson.JSONObject;
 import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
-import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
-import org.example.lowcodekg.query.service.util.ir.IRGenerate;
+import org.example.lowcodekg.query.service.ir.IRGenerate;
 import org.example.lowcodekg.query.service.processor.TaskSplit;
+import org.example.lowcodekg.query.service.llm.LLMService;
 import org.example.lowcodekg.query.service.util.retriever.TemplateRetrieve;
 import org.example.lowcodekg.query.utils.FormatUtil;
-import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.example.lowcodekg.query.utils.Prompt.*;
@@ -33,7 +31,7 @@ import static org.example.lowcodekg.query.utils.Prompt.*;
 @Service
 public class TaskSplitImpl implements TaskSplit {
     @Autowired
-    private LLMGenerateService llmService;
+    private LLMService llmService;
     @Autowired
     private TemplateRetrieve templateRetrieve;
     @Autowired
@@ -124,7 +122,7 @@ public class TaskSplitImpl implements TaskSplit {
                 taskInfos.append(task.toString() + "\n");
             }
             String prompt = IDENTIFY_TASK_DEPENDENCY_PROMPT.replace("{query}", query).replace("{subTasks}", taskInfos.toString());
-            String result = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            String result = FormatUtil.extractJson(llmService.chat(prompt));
 
             return result;
 
@@ -148,7 +146,7 @@ public class TaskSplitImpl implements TaskSplit {
         if(debugConfig.isDebugMode()) {
             System.out.println("Task split prompt:\n" + prompt);
         }
-        String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+        String answer = FormatUtil.extractJson(llmService.chat(prompt));
         return answer;
     }
 

@@ -9,12 +9,11 @@ import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
-import org.example.lowcodekg.query.service.util.ir.IRGenerate;
+import org.example.lowcodekg.query.service.ir.IRGenerate;
 import org.example.lowcodekg.query.service.processor.TaskMatching;
+import org.example.lowcodekg.query.service.llm.LLMService;
 import org.example.lowcodekg.query.service.util.retriever.TemplateRetrieve;
-import org.example.lowcodekg.query.service.util.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
-import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +35,7 @@ public class TaskMatchingImpl implements TaskMatching {
     @Autowired
     private TemplateRetrieve templateRetrieve;
     @Autowired
-    private LLMGenerateService llmService;
+    private LLMService llmService;
     @Autowired
     private DebugConfig debugConfig;
 
@@ -196,7 +195,7 @@ public class TaskMatchingImpl implements TaskMatching {
             if(debugConfig.isDebugMode()) {
                 System.out.println("根据依赖关系过滤prompt:\n" + prompt);
             }
-            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            String answer = FormatUtil.extractJson(llmService.chat(prompt));
             if(debugConfig.isDebugMode()) {
                 System.out.println("根据依赖关系过滤prompt:\n" + prompt);
                 System.out.println("根据依赖关系过滤资源:\n" + answer);

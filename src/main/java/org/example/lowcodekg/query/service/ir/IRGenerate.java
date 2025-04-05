@@ -1,4 +1,4 @@
-package org.example.lowcodekg.query.service.util.ir;
+package org.example.lowcodekg.query.service.ir;
 
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.query.model.IR;

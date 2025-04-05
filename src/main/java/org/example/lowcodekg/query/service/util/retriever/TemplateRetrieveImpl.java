@@ -9,9 +9,8 @@ import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.service.util.ElasticSearchService;
 import org.example.lowcodekg.query.service.util.EmbeddingUtil;
+import org.example.lowcodekg.query.service.llm.LLMService;
 import org.example.lowcodekg.query.utils.FormatUtil;
-import org.example.lowcodekg.service.LLMGenerateService;
-import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,7 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
     @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
-    private LLMGenerateService llmService;
+    private LLMService llmService;
     @Autowired
     private DebugConfig debugConfig;
 

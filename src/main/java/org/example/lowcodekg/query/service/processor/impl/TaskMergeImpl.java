@@ -10,8 +10,8 @@ import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
+import org.example.lowcodekg.query.service.llm.LLMService;
 import org.example.lowcodekg.query.utils.FormatUtil;
-import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ public class TaskMergeImpl implements TaskMerge {
     @Autowired
     private DebugConfig debugConfig;
     @Autowired
-    private LLMGenerateService llmService;
+    private LLMService llmService;
 
     @Override
     public Result<Map<Task, List<Node>>> mergeTask(TaskGraph graph, String query) {
@@ -46,7 +46,7 @@ public class TaskMergeImpl implements TaskMerge {
             input.put("subTasks", subTasks);
             // LLM rerank
             String prompt = RERANK_WITHIN_TASK_PROMPT.replace("{input}", input.toString());
-            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            String answer = FormatUtil.extractJson(llmService.chat(prompt));
             // result format parse
             Map<Task, Set<Node>> result = filterResourcesByLLM(answer, sortedTasks);
 
@@ -84,7 +84,7 @@ public class TaskMergeImpl implements TaskMerge {
             String prompt = RERANK_WITHIN_TASK_PROMPT
                     .replace("{task}", taskInfo)
                     .replace("{resourceList}", resourceInfo.toString());
-            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            String answer = FormatUtil.extractJson(llmService.chat(prompt));
             if(debugConfig.isDebugMode()) {
                 System.out.println("task: " + task.getDescription());
                 System.out.println("rerankWithinTask answer:\n" + answer);

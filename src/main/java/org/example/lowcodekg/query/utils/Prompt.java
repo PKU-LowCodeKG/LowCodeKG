@@ -61,18 +61,21 @@ public interface Prompt {
             ---
             
             ## **Step 1: Functional Breakdown** 
-            Analyze the given requirement and extract **functional subtasks** based on the following key focus areas: 
-            1. **Entity fields/data structure changes** (e.g., adding/modifying database fields). 
-            2. **Service layer method implementation** (e.g., creating/updating domain service methods). 
-            3. **Interface/API definition** (e.g., adding REST endpoints). 
-            4. **Business logic flow** (e.g., state change rules). 
-            5. **Domain object relationship adjustments**. 
-            
+            Analyze the given requirement and extract **functional subtasks**
             ### **Task Categories Explanation:**
-            1. data: Refers to entities, fields, or data structures (e.g., database schema changes, DTOs, or domain objects).
+            1. data: Refers to entity fields/data structure/domain object changes (e.g., database schema changes, or DTOs).
             2. page: Involves UI/interface components (e.g., API endpoints, frontend pages, or user interactions).
             3. workflow: Represents business logic, processes, or operational sequences (e.g., service methods, validation rules, or state transitions).
             
+            **Example Breakdown for "Pin Blog Post":**
+                [page] Add pin toggle button in post editor (admin) 
+                [page] Display pinned badge (e.g., "Pinned") in post listings 
+                [data] Add is_pinned boolean field to blog post entity 
+                [data] Update database schema to persist pin status
+                [workflow] Create service method to toggle pin/unpin status 
+                [workflow] Add validation (e.g., max pinned posts allowed) 
+                [workflow] Implement sorting logic (pinned posts first)
+                
             ### **Negative Examples (to avoid):** 
             ✗ Cache handling | ✗ Test case writing | ✗ Performance optimization | ✗ Deployment configuration | ✗ Monitoring logs 
             
@@ -164,7 +167,6 @@ public interface Prompt {
                 2.Create a blog update service method to handle pinning status
                 3.Implement persistence of pinning status to the database
                 4.Add an interface for querying the pinning status of a post
-                5.Write business rules for validating pinning status
             
             ### **Input**
             
