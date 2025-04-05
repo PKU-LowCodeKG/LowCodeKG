@@ -21,7 +21,7 @@ public class DataProcess {
      * @return JSON对象
      * @throws IOException 如果文件读取失败
      */
-    public JSONObject loadDataFromJson(String filePath) throws IOException {
+    public static JSONObject loadDataFromJson(String filePath) throws IOException {
         File file = new File(filePath);
         try (FileReader reader = new FileReader(file)) {
             StringBuilder content = new StringBuilder();
@@ -61,7 +61,7 @@ public class DataProcess {
      * 获取查询结果映射
      * @return 查询到结果列表的映射
      */
-    public Map<String, List<String>> getQueryResultMap() {
+    public static Map<String, List<String>> getQueryResultMap() {
         JSONObject jsonObject = null;
         try {
             jsonObject = loadDataFromJson(JSON_FILE_PATH);

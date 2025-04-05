@@ -2,6 +2,7 @@ package org.example.lowcodekg.query.service.evaluation;
 
 // 修改导入语句
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * @Author Sherloque
  * @Date 2025/3/21 19:50
  */
+@Component
 public class Metric {
 
     /**
