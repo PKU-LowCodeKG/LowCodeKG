@@ -15,7 +15,14 @@ import java.util.List;
 public interface IRGenerate {
 
     /**
-     * 将需求描述（子任务）转化为功能原语表示
+     * 构建阶段调用
+     * @param description
+     * @return
+     */
+    Result<List<IR>> generateIR(String description, String type);
+
+    /**
+     * 将需求描述（子任务）转化为中间表示
      *
      * @param task LLM分解后的子任务
      * @return
@@ -23,7 +30,7 @@ public interface IRGenerate {
     Result<List<IR>> convertTaskToIR(Task task);
 
     /**
-     * 将模板资源描述转化为功能原语表示
+     * 将模板资源描述转化为中间表示
      * @param template
      * @return
      */

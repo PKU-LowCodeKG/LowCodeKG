@@ -5,6 +5,7 @@ import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaFieldEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaMethodEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.page.*;
 import org.example.lowcodekg.model.dao.neo4j.repository.*;
+import org.example.lowcodekg.query.model.Node;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @SpringBootTest
 public class Neo4jModifyTest {
@@ -141,6 +143,15 @@ public class Neo4jModifyTest {
          javaMethodRepo.createRelationOfParamType(jm2.getId(), jc3.getId());
 
          scriptMethodRepo.createRelationOfMethod(sm1.getId(), jm1.getId());
+     }
 
+     @Test
+     public void testIR() {
+        Optional<PageEntity> entity = pageRepo.findById(145L);
+        if(entity.isPresent()) {
+            PageEntity pageEntity = entity.get();
+            Node node = new Node(pageEntity);
+            System.out.println(node.getIrList());
+        }
      }
 }

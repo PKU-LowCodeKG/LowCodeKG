@@ -9,6 +9,8 @@ import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 import java.util.List;
 import java.util.Objects;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * @Description 检索得到的实体类型
  * @Author Sherloque
@@ -41,6 +43,7 @@ public class Node {
         this.label = "PageTemplate";
         this.content = entity.getContent();
         this.description = entity.getDescription();
+        this.irList = JSONObject.parseArray(entity.getIr(), IR.class);
     }
 
     public Node(WorkflowEntity entity) {
@@ -49,6 +52,7 @@ public class Node {
         this.label = "Workflow";
         this.content = entity.getContent();
         this.description = entity.getDescription();
+        this.irList = JSONObject.parseArray(entity.getIr(), IR.class);
     }
 
     public Node(JavaClassEntity entity) {
@@ -57,6 +61,7 @@ public class Node {
         this.label = "DataObject";
         this.content = entity.getContent();
         this.description = entity.getDescription();
+        this.irList = JSONObject.parseArray(entity.getIr(), IR.class);
     }
 
     @Override

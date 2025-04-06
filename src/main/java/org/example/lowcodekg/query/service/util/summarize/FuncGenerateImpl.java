@@ -8,6 +8,8 @@ import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.model.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
+import org.example.lowcodekg.query.model.IR;
+import org.example.lowcodekg.query.service.ir.IRGenerate;
 import org.example.lowcodekg.query.service.util.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.query.service.util.ElasticSearchService;
@@ -51,18 +53,25 @@ public class FuncGenerateImpl implements FuncGenerate {
     private PageRepo pageRepo;
     @Autowired
     private JavaClassRepo classRepo;
+    @Autowired
+    private IRGenerate irGenerate;
 
     @Override
     public void genDataObjectFunc(JavaClassEntity classEntity) {
         try {
+            // functional description
             String prompt = WORKFLOW_SUMMARIZE_PROMPT.replace("{code}", classEntity.getContent());
             String result = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
             JSONObject jsonObject = JSONObject.parseObject(result);
-            classEntity.setDescription(jsonObject.getString("functionality"));
+            String description = jsonObject.getString("functionality");
+            classEntity.setDescription(description);
+            // convert to IR list
+            List<IR> irList = irGenerate.generateIR(description, "DataObject").getData();
+            classEntity.setIr(JSONObject.toJSONString(irList));
             JavaClassEntity entity = classRepo.save(classEntity);
 
             // create es index
-            entity.setEmbedding(EmbeddingUtil.embedText(entity.getDescription()));
+            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document, DATA_OBJECT_INDEX_NAME);
         } catch (Exception e) {
@@ -75,11 +84,15 @@ public class FuncGenerateImpl implements FuncGenerate {
             String prompt = WORKFLOW_SUMMARIZE_PROMPT.replace("{code}", workflowEntity.getContent());
             String result = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
             JSONObject jsonObject = JSONObject.parseObject(result);
-            workflowEntity.setDescription(jsonObject.getString("functionality"));
+            String description = jsonObject.getString("functionality");
+            workflowEntity.setDescription(description);
+            // IR
+            List<IR> irList = irGenerate.generateIR(description, "Workflow").getData();
+            workflowEntity.setIr(JSONObject.toJSONString(irList));
             WorkflowEntity entity = workflowRepo.save(workflowEntity);
 
             // create es index
-            entity.setEmbedding(EmbeddingUtil.embedText(entity.getDescription()));
+            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document, WORKFLOW_INDEX_NAME);
 
@@ -124,13 +137,13 @@ public class FuncGenerateImpl implements FuncGenerate {
                     .replace("{code}", codeContent.toString())
                     .replace("{keywords}", keywords.toString());
             String description = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
-
-            // save modification to description of pageEntity
             pageEntity.setDescription(description);
+            List<IR> irList = irGenerate.generateIR(description, "DataObject").getData();
+            pageEntity.setIr(JSONObject.toJSONString(irList));
             PageEntity entity = pageRepo.save(pageEntity);
 
             // create es index
-            entity.setEmbedding(EmbeddingUtil.embedText(entity.getDescription()));
+            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document, PAGE_INDEX_NAME);
         } catch (Exception e) {

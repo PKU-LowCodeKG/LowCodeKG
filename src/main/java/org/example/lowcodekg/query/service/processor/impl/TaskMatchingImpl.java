@@ -72,7 +72,7 @@ public class TaskMatchingImpl implements TaskMatching {
                     .stream()
                     .sorted((entry1, entry2) -> entry1.getValue().compareTo(entry2.getValue()))
                     .map(Map.Entry::getKey)
-                    .limit(MAX_RESOURCE_RECOMMEND_NUM)
+                    .limit(MAX_RESOURCE_RECOMMEND_NUM * Math.max(1, task.getCategory().size()))
                     .collect(Collectors.toList());
 
             // 更新任务资源列表
@@ -103,7 +103,7 @@ public class TaskMatchingImpl implements TaskMatching {
         try {
             // 获取task对应的IR序列
             List<IR> taskIRList = irGenerate.convertTaskToIR(task).getData();
-            // 获取node对应的IR序列
+            // 获取node对应的IR序列(这一步可以直接从数据库中读取)
             List<IR> templateIRList = irGenerate.convertTemplateToIR(node).getData();
 
 //            if(debugConfig.isDebugMode()) {

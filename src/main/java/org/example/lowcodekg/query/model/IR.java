@@ -20,7 +20,7 @@ public class IR {
     private String target;
     private String condition;
 
-    // 额外记录类型
+    // 额外记录类型:Workflow, DataObject, PageTemplate
     private String type;
 
     public IR(IR ir) {

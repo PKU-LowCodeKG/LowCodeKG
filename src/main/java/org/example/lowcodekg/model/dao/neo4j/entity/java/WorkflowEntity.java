@@ -42,6 +42,9 @@ public class WorkflowEntity implements Describable {
     @Property("methodList")
     private String methodList;
 
+    @Property
+    private String ir;
+
     private List<Float> embedding = new ArrayList<>();
 
     /**

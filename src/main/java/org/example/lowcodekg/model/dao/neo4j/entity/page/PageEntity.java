@@ -34,6 +34,9 @@ public class PageEntity implements Describable {
     @Property("category")
     private String category;
 
+    @Property("ir")
+    private String ir;
+
     private List<Float> embedding = new ArrayList<>();
 
     @Relationship(type = "DEPENDENCY", direction = Relationship.Direction.OUTGOING)

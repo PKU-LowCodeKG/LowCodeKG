@@ -36,6 +36,23 @@ public class IRGenerateImpl implements IRGenerate {
     private DebugConfig debugConfig;
 
     @Override
+    public Result<List<IR>> generateIR(String description, String type) {
+        try {
+            String prompt = TASK_TO_IR_PROMPT.replace("{Task}", description);
+            String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
+            List<IR> irList = buildIRList(answer);
+            irList.stream().forEach(ir -> {
+                ir.setType(type);
+            });
+            return Result.build(irList, ResultCodeEnum.SUCCESS);
+
+        } catch (Exception e) {
+            System.err.println("Error occurred while generating IR: " + e.getMessage());
+            throw new RuntimeException("Error occurred while generating IR: " + e.getMessage());
+        }
+    }
+
+    @Override
     public Result<List<IR>> convertTaskToIR(Task task) {
         try {
             String taskInfo = task.getName() + "\n" + task.getDescription();
@@ -114,9 +131,9 @@ public class IRGenerateImpl implements IRGenerate {
     public Double calculateIRSim(IR ir1, IR ir2) {
         // 添加规则化处理逻辑
         IR ir1Edit = new IR(ir1);
-        if(StringUtils.isNotBlank(ir2.getType()) && !"Workflow".equals(ir2.getType())) {
-            ir1Edit.setAction(null);
-        }
+//        if(StringUtils.isNotBlank(ir2.getType()) && !"Workflow".equals(ir2.getType())) {
+//            ir1Edit.setAction(null);
+//        }
         String ir1Sentence = ir1Edit.toSentence();
         String ir2Sentence = ir2.toSentence();
 
@@ -127,7 +144,7 @@ public class IRGenerateImpl implements IRGenerate {
         float[] ir1Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir1Sentence));
         float[] ir2Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir2Sentence));
         double embeddingSimilarity = EmbeddingUtil.cosineSimilarity(ir1Vector, ir2Vector);
-        double sim = 0.2 * wordSimilarity + 0.8 * embeddingSimilarity;
+        double sim = 0.1 * wordSimilarity + 0.9 * embeddingSimilarity;
         return sim;
     }
 }
