@@ -128,9 +128,9 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
                     query,              // 文本查询
                     vector,             // 向量查询
                     MAX_RESULTS,        // 最大返回结果数
-                    0,                  // 最小分数阈值
-                    0.2,               // 文本搜索权重
-                    indexName          // 索引名称
+                    MIN_SCORE,          // 最小分数阈值
+                    0.1,                // 文本搜索权重
+                    indexName           // 索引名称
             );
 
             // 将 Document 转换为 Node

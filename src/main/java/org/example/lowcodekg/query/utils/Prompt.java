@@ -12,7 +12,7 @@ public interface Prompt {
      */
     public static final String WORKFLOW_SUMMARIZE_PROMPT = """
             You are an expert in software development and code analysis. 
-            Your task is to analyze a given code snippet and provide a concise and brief summary of its functionality in Chinese. 
+            Your task is to analyze a given code snippet and provide a **concise and brief** summary of its functionality in Chinese. 
             Please focus on the core logic and purpose of the code, and avoid specific code implementation details.
             
             Here is the code snippet for analysis:
@@ -31,7 +31,7 @@ public interface Prompt {
      */
     public static final String PAGE_SUMMARIZE_PROMPT = """
             You are an expert in software development and code analysis. 
-            Your task is to analyze a given code snippet in a **Front-End** project and provide a concise and brief summary of its functionality in Chinese. 
+            Your task is to analyze a given code snippet in a **Front-End** project and provide a **concise and brief** summary of its functionality in Chinese. 
             Please focus on the core functionality of the code, and avoid specific code implementation details.
             
             Here is the code snippet for analysis:
@@ -507,13 +507,12 @@ public interface Prompt {
               } 
               ``` 
             - **Rules for sorting/filtering:** 
-              1. **Priority order:** 
-                 - Resources directly solving the subtask’s core problem > supporting tools. 
-                 - Prefer resources with technical consistency (e.g., same framework/library ecosystem). 
-              2. **Dependency analysis:** 
-                 - Highlight shared resources across subtasks. 
+              **Priority order:** 
+                 - Resources directly solving the subtask’s core problem > supporting tools.
+                 - Reserve resources of the DataObject type if the subtask involves data entities.
+              **Dependency analysis:** 
                  - Remove duplicates (keep only the highest-priority instance). 
-              3. **Filtering criteria:** 
+              **Filtering criteria:** 
                  - Exclude resources with no clear relevance to the subtask description. 
             """;
 }

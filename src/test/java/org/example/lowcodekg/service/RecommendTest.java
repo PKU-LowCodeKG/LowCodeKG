@@ -64,7 +64,7 @@ public class RecommendTest {
             throw new RuntimeException(e);
         }
 
-        String query = "我想要设置博客置顶状态，并添加对博客评论审核的功能";
+        String query = "我想要设置博客置顶状态，并对博客评论进行审核";
 
         // 需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();

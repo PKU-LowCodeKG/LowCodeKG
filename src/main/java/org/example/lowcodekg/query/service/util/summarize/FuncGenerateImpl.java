@@ -136,7 +136,9 @@ public class FuncGenerateImpl implements FuncGenerate {
             String prompt = PAGE_SUMMARIZE_PROMPT
                     .replace("{code}", codeContent.toString())
                     .replace("{keywords}", keywords.toString());
-            String description = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
+            String res = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
+            JSONObject jsonObject = JSONObject.parseObject(res);
+            String description = jsonObject.getString("functionality");
             pageEntity.setDescription(description);
             List<IR> irList = irGenerate.generateIR(description, "DataObject").getData();
             pageEntity.setIr(JSONObject.toJSONString(irList));
