@@ -38,8 +38,36 @@ public class FormatUtil {
      * 保存资源推荐结果到本地
      */
     public static void saveResult(String query, Map<Task, Set<Node>> resources) {
-        JSONObject result = new JSONObject();
-        JSONArray predicted = new JSONArray();
+        // 读取现有文件内容
+        JSONObject result;
+        File file = new File(saveResultPath);
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                StringBuilder content = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    content.append(line);
+                }
+                result = JSONObject.parseObject(content.toString());
+            } catch (IOException e) {
+                throw new RuntimeException("Error reading existing results: " + e.getMessage());
+            }
+        } else {
+            // 如果文件不存在，创建新的JSON对象
+            result = new JSONObject();
+            result.put("predicted", new JSONArray());
+            file.getParentFile().mkdirs();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // 获取现有的predicted数组
+        JSONArray predicted = result.getJSONArray("predicted");
+        
+        // 创建新的查询结果
         JSONObject queryResult = new JSONObject();
         JSONArray tasks = new JSONArray();
 
@@ -55,7 +83,6 @@ public class FormatUtil {
             taskJson.put("name", task.getName());
             taskJson.put("description", task.getDescription());
             
-            // 提取资源的 fullName 列表
             List<String> resourceNames = nodes.stream()
                     .map(Node::getFullName)
                     .collect(Collectors.toList());
@@ -66,20 +93,8 @@ public class FormatUtil {
 
         queryResult.put("task", tasks);
         predicted.add(queryResult);
-        result.put("predicted", predicted);
 
-        // 写入文件
-        // 确保文件存在
-        File file = new File(saveResultPath);
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();  // 创建父目录
-            try {
-                file.createNewFile();  // 创建文件
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        
+        // 写入更新后的内容
         try (FileWriter writer = new FileWriter(saveResultPath)) {
             writer.write(result.toJSONString());
         } catch (IOException e) {

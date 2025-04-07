@@ -72,7 +72,8 @@ public class RecommendTest {
             throw new RuntimeException(e);
         }
 
-        String query = "实现博客文章置顶的功能";
+//        String query = "实现博客文章置顶的功能";
+        String query = "实现博客评论审核的功能";
 
         // 需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
