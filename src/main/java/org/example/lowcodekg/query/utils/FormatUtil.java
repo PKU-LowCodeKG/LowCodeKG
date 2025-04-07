@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -34,6 +31,50 @@ import java.util.stream.Collectors;
  * @Date 2025/3/23 14:47
  */
 public class FormatUtil {
+
+    private static final String saveResultPath = "D:/Master/Dataset/result.json";
+
+    /**
+     * 保存资源推荐结果到本地
+     */
+    public static void saveResult(String query, Map<Task, List<Node>> resources) {
+        JSONObject result = new JSONObject();
+        JSONArray predicted = new JSONArray();
+        JSONObject queryResult = new JSONObject();
+        JSONArray tasks = new JSONArray();
+
+        // 设置查询
+        queryResult.put("query", query);
+
+        // 处理每个任务及其资源
+        for (Map.Entry<Task, List<Node>> entry : resources.entrySet()) {
+            Task task = entry.getKey();
+            List<Node> nodes = entry.getValue();
+
+            JSONObject taskJson = new JSONObject();
+            taskJson.put("name", task.getName());
+            taskJson.put("description", task.getDescription());
+            
+            // 提取资源的 fullName 列表
+            List<String> resourceNames = nodes.stream()
+                    .map(Node::getFullName)
+                    .collect(Collectors.toList());
+            taskJson.put("resources", resourceNames);
+
+            tasks.add(taskJson);
+        }
+
+        queryResult.put("task", tasks);
+        predicted.add(queryResult);
+        result.put("predicted", predicted);
+
+        // 写入文件
+        try (FileWriter writer = new FileWriter(saveResultPath)) {
+            writer.write(result.toJSONString());
+        } catch (IOException e) {
+            throw new RuntimeException("Error saving results to file: " + e.getMessage());
+        }
+    }
 
     /**
      * 对中文文本进行预处理

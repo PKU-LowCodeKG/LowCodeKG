@@ -40,10 +40,13 @@ public class PageExtractor extends KnowledgeExtractor {
     private Map<String, ScriptMethodEntity> scriptMethodMap = new HashMap<>();
     private Map<String, ConfigItemEntity> configItemMap = new HashMap<>();
 
-
     @Override
     public void extraction() {
         for(String filePath: this.getDataDir()) {
+            // 获取项目名称
+            String projectName = filePath.substring(filePath.lastIndexOf("\\") + 1);
+            filePath = filePath.replace("\\\\", "\\");
+            
             Collection<File> vueFiles = FileUtils.listFiles(new File(filePath), new String[]{"vue"}, true);
             for(File vueFile: vueFiles) {
                 System.out.println("---parse file: " + vueFile.getAbsolutePath());
@@ -51,13 +54,14 @@ public class PageExtractor extends KnowledgeExtractor {
                 scriptMethodMap.clear();
                 configItemMap.clear();
 
-                /**
-                 * each .vue file is parsed as one PageTemplate entity
-                 * including: component, config item, script, script method, script data
-                 */
                 PageTemplate pageTemplate = new PageTemplate();
                 String name = vueFile.getName().substring(0, vueFile.getName().length()-4);
-                String fullName = vueFile.getAbsolutePath().replace(filePath, "");
+                String relativePath = vueFile.getAbsolutePath()
+                        .replace("\\\\", "\\")
+                        .replace(filePath.substring(0, filePath.indexOf(projectName)), "");
+                String fullName = relativePath
+                        .replace("\\", ".")
+                        .replaceAll("\\.vue$", "");
                 pageTemplate.setName(name);
                 pageTemplate.setFullName(fullName);
                 String fileContent = FileUtil.readFile(vueFile.getAbsolutePath());

@@ -223,10 +223,10 @@ public interface Prompt {
             Extract ALL actionable instructions from the input text and map them to a list of DSL objects. Each DSL represents a **SINGLE FUNCTIONAL** atomic operation.
             
             **DSL Schema**:
-               - `action`: - The core verb/operation (e.g., "filter", "sort", "export").
-               - `object`: - The entity being manipulated (e.g., "raw_data", "user_logs").
-               - `target`: - The output destination/format (e.g., "CSV_file", "database_table").
-               - `condition`: - Environmental constraints or prerequisites (e.g., "if_errors_detected", "during_nightly_maintenance").
+               - `action`: indicates what function it requires to perform, which is the core operation of the task, such as get, convert, or create..
+               - `object`: indicates what it operates on, which is the primary entity of the task, such as data types, libraries, or frameworks.
+               - `target`: indicates what it wants to achieve, which is the result of the task.
+               - `condition`: indicates any rules or restrictions associated with the task such as specific programming languages (e.g., in Java) or data formats (e.g., CSV-format input data).
             
             **Input**:
             You will be provided with a natural language description that describes a functional requirement, the task description is:
@@ -256,10 +256,9 @@ public interface Prompt {
             ```
             
             **Instructions**:
-               - The input may contain pieces(e.g., stopwords) that are not relevant to the functional logic, exclude such content from your generation.
-               - Ensure that each extracted DSL object accurately reflects the functional information in the description.
-               - If any component (action, object, target, condition) is not explicitly mentioned, use "null" as placeholder.
-               - The JSON output must strictly follow the provided format, and be presented in Chinese.
+               - The input may contain pieces(e.g., stopwords) that are not relevant to the task, exclude such content from your generation.
+               - If any component (action, object, target, condition) is not mentioned, use "null" as placeholder.
+               - The output must strictly follow the provided JSON format, and be presented in Chinese.
             """;
 
     /**

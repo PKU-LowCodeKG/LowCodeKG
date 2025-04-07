@@ -84,12 +84,15 @@ public class RecommendTest {
     @Test
     void testUnit() {
         Task task = new Task();
-        task.setName("实现博客列表按置顶排序逻辑");
-        task.setDescription("在查询博客列表时，首先展示置顶的文章，然后按照创建时间或其他规则排序。");
+        task.setName("按置顶状态排序博客列表");
+        task.setDescription("修改博客列表查询逻辑，使得置顶的文章优先显示在列表顶部。");
         List<IR> irList = irGenerate.generateIR(
                 task.getName() + ":" + task.getDescription(),
                 "workflow")
                 .getData();
+        for(IR ir : irList) {
+            System.out.println("ir = " + ir.toString());
+        }
         task.setIrList(irList);
         task.setIsWorkflow(true);
         task.setCategory(List.of("workflow"));
