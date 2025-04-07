@@ -16,6 +16,7 @@ public interface Describable {
      * 获取实体的名称
      */
     String getName();
+    String getFullName();
 
     /**
      * 获取实体的描述
@@ -23,6 +24,8 @@ public interface Describable {
     String getDescription();
 
     List<Float> getEmbedding();
+
+    String getIr();
 
     /**
      * 获取实体的类型

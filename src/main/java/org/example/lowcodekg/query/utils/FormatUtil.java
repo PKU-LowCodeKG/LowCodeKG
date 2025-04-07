@@ -68,8 +68,10 @@ public class FormatUtil {
         Document document = new Document();
         document.setId(entity.getId().toString());
         document.setName(entity.getName());
+        document.setFullName(entity.getFullName());
         document.setContent(entity.getDescription());
         document.setEmbedding(FormatUtil.ListToArray(entity.getEmbedding()));
+        document.setIr(entity.getIr());
         // 设置label
         if(entity instanceof WorkflowEntity) {
             document.setLabel("Workflow");

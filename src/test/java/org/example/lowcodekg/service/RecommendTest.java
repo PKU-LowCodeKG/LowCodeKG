@@ -1,5 +1,6 @@
 package org.example.lowcodekg.service;
 
+import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +66,7 @@ public class RecommendTest {
             throw new RuntimeException(e);
         }
 
-        String query = "我想要设置博客置顶状态，并对博客评论进行审核";
+        String query = "实现博客文章置顶的功能";
 
         // 需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
@@ -80,7 +82,19 @@ public class RecommendTest {
     }
 
     @Test
-    void testUnit() throws IOException {
+    void testUnit() {
+        Task task = new Task();
+        task.setName("实现博客列表按置顶排序逻辑");
+        task.setDescription("在查询博客列表时，首先展示置顶的文章，然后按照创建时间或其他规则排序。");
+        List<IR> irList = irGenerate.generateIR(
+                task.getName() + ":" + task.getDescription(),
+                "workflow")
+                .getData();
+        task.setIrList(irList);
+        task.setIsWorkflow(true);
+        task.setCategory(List.of("workflow"));
 
+        List<Node> resourceList = templateRetrieve.queryBySubTask(task).getData();
+        taskMatching.rerankResource(task);
     }
 }

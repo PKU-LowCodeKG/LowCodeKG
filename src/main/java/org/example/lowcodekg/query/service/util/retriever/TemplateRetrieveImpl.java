@@ -1,5 +1,7 @@
 package org.example.lowcodekg.query.service.util.retriever;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.result.Result;
@@ -150,8 +152,10 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
         Node node = new Node();
         node.setId(Long.valueOf(document.getId()));
         node.setName(document.getName());
+        node.setFullName(document.getFullName());
         node.setLabel(document.getLabel());
         node.setDescription(document.getContent());
+        node.setIrList(JSONObject.parseArray(document.getIr(), IR.class));
         return node;
     }
 }

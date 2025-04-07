@@ -102,9 +102,9 @@ public class TaskMatchingImpl implements TaskMatching {
     public Result<Double> subTaskMatchingScore(Task task, Node node) {
         try {
             // 获取task对应的IR序列
-            List<IR> taskIRList = irGenerate.convertTaskToIR(task).getData();
+            List<IR> taskIRList = task.getIrList();
             // 获取node对应的IR序列(这一步可以直接从数据库中读取)
-            List<IR> templateIRList = irGenerate.convertTemplateToIR(node).getData();
+            List<IR> templateIRList = node.getIrList();
 
 //            if(debugConfig.isDebugMode()) {
 //                System.out.println("task IR序列:\n" + taskIRList);

@@ -22,8 +22,8 @@ public final class Constants {
     // 子任务检索
     public static final int MAX_DATA_OBJECT_NUM = 10;
     public static final int MAX_PAGE_NUM = 10;
-    public static final int MAX_WORKFLOW_NUM = 10;
-    public static final float MIN_SCORE = 0.65f;
+    public static final int MAX_WORKFLOW_NUM = 15;
+    public static final float MIN_SCORE = 0.9f;
 
     /**
      * 子任务推荐候选资源重排序后的个数

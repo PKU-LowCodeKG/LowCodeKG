@@ -55,7 +55,7 @@ public class IRGenerateImpl implements IRGenerate {
     @Override
     public Result<List<IR>> convertTaskToIR(Task task) {
         try {
-            String taskInfo = task.getName() + "\n" + task.getDescription();
+            String taskInfo = task.getName() + ":" + task.getDescription();
             String prompt = TASK_TO_IR_PROMPT.replace("{Task}", taskInfo);
             String answer = FormatUtil.extractJson(llmService.generateAnswer(prompt));
             List<IR> irList = buildIRList(answer);
@@ -130,11 +130,11 @@ public class IRGenerateImpl implements IRGenerate {
     @Override
     public Double calculateIRSim(IR ir1, IR ir2) {
         // 添加规则化处理逻辑
-        IR ir1Edit = new IR(ir1);
+//        IR ir1Edit = new IR(ir1);
 //        if(StringUtils.isNotBlank(ir2.getType()) && !"Workflow".equals(ir2.getType())) {
 //            ir1Edit.setAction(null);
 //        }
-        String ir1Sentence = ir1Edit.toSentence();
+        String ir1Sentence = ir1.toSentence();
         String ir2Sentence = ir2.toSentence();
 
         List<String> words1 = FormatUtil.textPreProcess(ir1Sentence);
@@ -144,7 +144,7 @@ public class IRGenerateImpl implements IRGenerate {
         float[] ir1Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir1Sentence));
         float[] ir2Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir2Sentence));
         double embeddingSimilarity = EmbeddingUtil.cosineSimilarity(ir1Vector, ir2Vector);
-        double sim = 0.1 * wordSimilarity + 0.9 * embeddingSimilarity;
+        double sim = 0.2 * wordSimilarity + 0.8 * embeddingSimilarity;
         return sim;
     }
 }

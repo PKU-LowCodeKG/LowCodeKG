@@ -22,7 +22,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.example.lowcodekg.query.utils.Constants.*;
-import static org.example.lowcodekg.query.utils.Prompt.TYPE_OF_RETRIEVED_ENTITY_PROMPT;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest

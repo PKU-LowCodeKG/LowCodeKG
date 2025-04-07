@@ -256,8 +256,7 @@ public interface Prompt {
             ```
             
             **Instructions**:
-               - Carefully read the natural language description to identify actions, objects, targets, and conditions.
-               - The input may contain pieces that are not relevant to the functional logic, exclude such content from your generation of intermediate representations.
+               - The input may contain pieces(e.g., stopwords) that are not relevant to the functional logic, exclude such content from your generation.
                - Ensure that each extracted DSL object accurately reflects the functional information in the description.
                - If any component (action, object, target, condition) is not explicitly mentioned, use "null" as placeholder.
                - The JSON output must strictly follow the provided format, and be presented in Chinese.

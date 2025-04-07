@@ -68,9 +68,11 @@ public class Node {
     public String toString() {
         return "Resource {" +
                 "name='" + name + '\'' +
+                ", fullName='" + fullName + '\'' +
                 ", label='" + label + '\'' +
 //                ", content='" + content + '\'' +
                 ", description='" + description + '\'' +
+                ", irList=" + irList +
                 '}';
     }
 
@@ -79,11 +81,11 @@ public class Node {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Node node = (Node) o;
-        return Objects.equals(name, node.name);
+        return Objects.equals(name, node.name) && Objects.equals(fullName, node.fullName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name, fullName);
     }
 }
