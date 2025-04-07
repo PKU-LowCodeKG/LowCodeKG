@@ -9,12 +9,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+import static org.example.lowcodekg.query.utils.Constants.GROUND_TRUTH_JSON_FILE_PATH;
+
 /**
  * 数据处理类
  */
 public class DataProcess {
 
-    private static final String JSON_FILE_PATH = "D:\\Master\\Data\\Dataset\\ground_truth.json";
+
     /**
      * 从JSON文件读取数据
      * @param filePath JSON文件路径
@@ -64,7 +66,7 @@ public class DataProcess {
     public static Map<String, List<String>> getQueryResultMap() {
         JSONObject jsonObject = null;
         try {
-            jsonObject = loadDataFromJson(JSON_FILE_PATH);
+            jsonObject = loadDataFromJson(GROUND_TRUTH_JSON_FILE_PATH);
             if (jsonObject == null) {
                 return Collections.emptyMap();
             }

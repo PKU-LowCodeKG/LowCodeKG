@@ -24,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.example.lowcodekg.query.utils.Constants.saveResultPath;
+
 
 /**
  * @Description 数据对象类型转换
@@ -32,12 +34,10 @@ import java.util.stream.Collectors;
  */
 public class FormatUtil {
 
-    private static final String saveResultPath = "D:/Master/Dataset/result.json";
-
     /**
      * 保存资源推荐结果到本地
      */
-    public static void saveResult(String query, Map<Task, List<Node>> resources) {
+    public static void saveResult(String query, Map<Task, Set<Node>> resources) {
         JSONObject result = new JSONObject();
         JSONArray predicted = new JSONArray();
         JSONObject queryResult = new JSONObject();
@@ -47,9 +47,9 @@ public class FormatUtil {
         queryResult.put("query", query);
 
         // 处理每个任务及其资源
-        for (Map.Entry<Task, List<Node>> entry : resources.entrySet()) {
+        for (Map.Entry<Task, Set<Node>> entry : resources.entrySet()) {
             Task task = entry.getKey();
-            List<Node> nodes = entry.getValue();
+            Set<Node> nodes = entry.getValue();
 
             JSONObject taskJson = new JSONObject();
             taskJson.put("name", task.getName());
@@ -69,6 +69,17 @@ public class FormatUtil {
         result.put("predicted", predicted);
 
         // 写入文件
+        // 确保文件存在
+        File file = new File(saveResultPath);
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();  // 创建父目录
+            try {
+                file.createNewFile();  // 创建文件
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        
         try (FileWriter writer = new FileWriter(saveResultPath)) {
             writer.write(result.toJSONString());
         } catch (IOException e) {

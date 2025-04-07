@@ -1,12 +1,18 @@
 package org.example.lowcodekg.query.service.evaluation;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.service.processor.MainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+
+import static org.example.lowcodekg.query.utils.Constants.saveResultPath;
 
 /**
  * 执行实验验证方法效果
@@ -25,21 +31,39 @@ public class Evaluate {
      */
     public double[] evaluate() {
         try {
-            // load ground truth
+            // 加载真实结果
             Map<String, List<String>> groundTruth = DataProcess.getQueryResultMap();
             
+            // 加载预测结果
+            JSONObject predictedJson = loadPredictedResults();
+
             double totalPrecision = 0.0;
             double totalRecall = 0.0;
             int validQueryCount = 0;
 
-            // run experiment
-            for(String query: groundTruth.keySet()) {
+            // 获取预测结果数组
+            JSONArray predictedArray = predictedJson.getJSONArray("predicted");
+            
+            // 处理每个查询
+            for (int i = 0; i < predictedArray.size(); i++) {
+                JSONObject queryResult = predictedArray.getJSONObject(i);
+                String query = queryResult.getString("query");
+                
+                // 如果该查询在groundTruth中不存在，跳过
+                if (!groundTruth.containsKey(query)) {
+                    continue;
+                }
+
                 try {
-                    // 获取预测结果
-                    List<Node> predictedNodes = mainService.recommend(query).getData();
-                    List<String> predicted = predictedNodes.stream()
-                            .map(Node::getFullName)
-                            .toList();
+                    // 合并所有任务的resources并去重
+                    Set<String> predictedResources = new HashSet<>();
+                    JSONArray tasks = queryResult.getJSONArray("task");
+                    for (int j = 0; j < tasks.size(); j++) {
+                        JSONObject task = tasks.getJSONObject(j);
+                        List<String> resources = task.getJSONArray("resources").toJavaList(String.class);
+                        predictedResources.addAll(resources);
+                    }
+                    List<String> predicted = new ArrayList<>(predictedResources);
                     
                     // 获取真实结果
                     List<String> groundTruthResult = groundTruth.get(query);
@@ -63,7 +87,6 @@ public class Evaluate {
                 } catch (Exception e) {
                     System.err.println("Error in evaluate query: " + query);
                     e.printStackTrace();
-                    // 继续执行下一个查询，而不是直接抛出异常
                 }
             }
 
@@ -87,6 +110,19 @@ public class Evaluate {
             System.err.println("Error in evaluate: " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException("Error in evaluate: " + e.getMessage());
+        }
+    }
+
+    private JSONObject loadPredictedResults() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(saveResultPath))) {
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+            return JSONObject.parseObject(content.toString());
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading predicted results: " + e.getMessage());
         }
     }
 }

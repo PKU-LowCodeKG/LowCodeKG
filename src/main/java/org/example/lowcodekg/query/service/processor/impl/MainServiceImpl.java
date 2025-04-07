@@ -12,10 +12,7 @@ import org.example.lowcodekg.query.service.processor.TaskSplit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class MainServiceImpl implements MainService {
@@ -30,7 +27,7 @@ public class MainServiceImpl implements MainService {
     @Override
     public Result<List<Node>> recommend(String query) {
         try {
-            Map<Task, List<Node>> resourceList;
+            Map<Task, Set<Node>> resourceList;
 
             // 检索增强的需求分解
             TaskGraph taskGraph = taskSplit.taskSplit(query).getData();

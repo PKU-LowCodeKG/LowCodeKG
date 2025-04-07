@@ -30,4 +30,10 @@ public final class Constants {
      */
     public static final int MAX_RESOURCE_RECOMMEND_NUM = 7;
 
+    /**
+     * 数据记录路径
+     */
+    public static final String GROUND_TRUTH_JSON_FILE_PATH = "D:\\Master\\Data\\Dataset\\ground_truth.json";
+    public static final String saveResultPath = "D:/Master/Data/Dataset/result.json";
+
 }

@@ -32,7 +32,7 @@ public class TaskMergeImpl implements TaskMerge {
     private LLMService llmService;
 
     @Override
-    public Result<Map<Task, List<Node>>> mergeTask(TaskGraph graph, String query) {
+    public Result<Map<Task, Set<Node>>> mergeTask(TaskGraph graph, String query) {
         try {
             // construct prompt input
             JSONObject input = new JSONObject();

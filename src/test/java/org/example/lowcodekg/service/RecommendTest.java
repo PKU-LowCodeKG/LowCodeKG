@@ -4,6 +4,7 @@ import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
+import org.example.lowcodekg.query.service.evaluation.Evaluate;
 import org.example.lowcodekg.query.service.processor.TaskMatching;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
 import org.example.lowcodekg.query.service.processor.TaskSplit;
@@ -21,6 +22,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static org.example.lowcodekg.query.utils.FormatUtil.saveResult;
 
 /**
  * 测试需求推荐模板相关功能
@@ -43,6 +47,8 @@ public class RecommendTest {
     private TemplateRetrieve templateRetrieve;
     @Autowired
     private LLMService llmService;
+    @Autowired
+    private Evaluate evaluate;
 
 //    @BeforeEach
     @Test
@@ -78,7 +84,9 @@ public class RecommendTest {
         }
 
         // 任务合并
-        Map<Task, List<Node>> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
+        Map<Task, Set<Node>> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
+
+        saveResult(query, resourceList);
     }
 
     @Test
@@ -99,5 +107,10 @@ public class RecommendTest {
 
         List<Node> resourceList = templateRetrieve.queryBySubTask(task).getData();
         taskMatching.rerankResource(task);
+    }
+
+    @Test
+    void testEvaluate() {
+        evaluate.evaluate();
     }
 }
