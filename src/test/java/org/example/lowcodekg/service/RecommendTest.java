@@ -73,7 +73,7 @@ public class RecommendTest {
         }
 
 //        String query = "实现博客文章置顶的功能";
-        String query = "实现博客评论审核的功能";
+        String query = "实现博客文章编辑功能";
 
         // 需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
@@ -93,18 +93,18 @@ public class RecommendTest {
     @Test
     void testUnit() {
         Task task = new Task();
-        task.setName("按置顶状态排序博客列表");
-        task.setDescription("修改博客列表查询逻辑，使得置顶的文章优先显示在列表顶部。");
+        task.setName("编辑博客文章页面");
+        task.setDescription("创建或更新前端表单组件，允许用户编辑和发布博客文章。");
         List<IR> irList = irGenerate.generateIR(
                 task.getName() + ":" + task.getDescription(),
-                "workflow")
+                "PageTemplate")
                 .getData();
         for(IR ir : irList) {
             System.out.println("ir = " + ir.toString());
         }
         task.setIrList(irList);
         task.setIsWorkflow(true);
-        task.setCategory(List.of("workflow"));
+        task.setCategory(List.of("page"));
 
         List<Node> resourceList = templateRetrieve.queryBySubTask(task).getData();
         taskMatching.rerankResource(task);

@@ -20,8 +20,8 @@ public final class Constants {
     // 初步检索
     public static final int MAX_RESULTS = 10;
     // 子任务检索
-    public static final int MAX_DATA_OBJECT_NUM = 10;
-    public static final int MAX_PAGE_NUM = 10;
+    public static final int MAX_DATA_OBJECT_NUM = 15;
+    public static final int MAX_PAGE_NUM = 15;
     public static final int MAX_WORKFLOW_NUM = 15;
     public static final float MIN_SCORE = 0.9f;
 
