@@ -71,7 +71,8 @@ public class FuncGenerateImpl implements FuncGenerate {
             JavaClassEntity entity = classRepo.save(classEntity);
 
             // create es index
-            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
+//            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
+            entity.setEmbedding(EmbeddingUtil.embedText(description));
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document, DATA_OBJECT_INDEX_NAME);
         } catch (Exception e) {
@@ -92,7 +93,8 @@ public class FuncGenerateImpl implements FuncGenerate {
             WorkflowEntity entity = workflowRepo.save(workflowEntity);
 
             // create es index
-            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
+//            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
+            entity.setEmbedding(EmbeddingUtil.embedText(description));
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document, WORKFLOW_INDEX_NAME);
 
@@ -145,7 +147,8 @@ public class FuncGenerateImpl implements FuncGenerate {
             PageEntity entity = pageRepo.save(pageEntity);
 
             // create es index
-            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
+//            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
+            entity.setEmbedding(EmbeddingUtil.embedText(description));
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document, PAGE_INDEX_NAME);
         } catch (Exception e) {

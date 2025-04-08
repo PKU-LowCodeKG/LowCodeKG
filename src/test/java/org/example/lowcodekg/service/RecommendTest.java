@@ -73,7 +73,7 @@ public class RecommendTest {
         }
 
 //        String query = "实现博客文章置顶的功能";
-        String query = "实现博客文章编辑功能";
+        String query = "实现友链申请功能";
 
         // 需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
