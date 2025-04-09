@@ -195,4 +195,17 @@ public class FormatUtil {
         // Jaccard 相似度 = 交集大小 / 并集大小
         return union.isEmpty() ? 0.0 : (double) intersection.size() / union.size();
     }
+
+    public static void setPrintStream() {
+        // 设置输出到本地日志文件
+        String logFilePath = "D://Master//log.txt";
+//        String logFilePath = "/Users/chang/Documents/projects/dataset/log.txt";
+        FilePrintStream filePrintStream = null;
+        try {
+            filePrintStream = new FilePrintStream(logFilePath);
+            System.setOut(filePrintStream); // 替换 System.out
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

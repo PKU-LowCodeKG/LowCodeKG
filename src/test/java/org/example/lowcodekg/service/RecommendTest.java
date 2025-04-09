@@ -13,6 +13,7 @@ import org.example.lowcodekg.query.service.llm.LLMService;
 import org.example.lowcodekg.query.service.ir.IRGenerate;
 import org.example.lowcodekg.query.service.util.retriever.TemplateRetrieve;
 import org.example.lowcodekg.query.utils.FilePrintStream;
+import org.example.lowcodekg.query.utils.FormatUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,19 +62,10 @@ public class RecommendTest {
 
     @Test
     void test() {
-        // 设置输出到本地日志文件
-        String logFilePath = "D://Master//log.txt";
-//        String logFilePath = "/Users/chang/Documents/projects/dataset/log.txt";
-        FilePrintStream filePrintStream = null;
-        try {
-            filePrintStream = new FilePrintStream(logFilePath);
-            System.setOut(filePrintStream); // 替换 System.out
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-//        String query = "实现博客文章置顶的功能";
-        String query = "实现友链申请功能";
+        FormatUtil.setPrintStream();
+
+        String query = "实现动态公开状态管理功能";
 
         // 需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
@@ -112,6 +104,7 @@ public class RecommendTest {
 
     @Test
     void testEvaluate() {
+        FormatUtil.setPrintStream();
         evaluate.evaluate();
     }
 }
