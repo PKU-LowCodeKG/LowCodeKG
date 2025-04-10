@@ -1,0 +1,15 @@
+{
+    "dataset": [
+        {
+            "query": "实现会员商品收藏功能",
+            "result": [
+                "com.macro.mall.portal.controller.MemberProductCollectionController.add",
+                "com.macro.mall.portal.controller.MemberProductCollectionController.delete",
+                "com.macro.mall.portal.controller.MemberProductCollectionController.list",
+                "com.macro.mall.portal.domain.MemberProductCollection",
+                "com.macro.mall.portal.service.MemberCollectionService",
+                "mall-portal-web.src.views.collection.ProductCollection"
+            ]
+        }
+    ]
+}
