@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.example.lowcodekg.query.utils.Constants.*;
 import static org.example.lowcodekg.query.utils.FormatUtil.saveResult;
 
 /**
@@ -63,9 +64,9 @@ public class RecommendTest {
     @Test
     void test() {
 
-        FormatUtil.setPrintStream();
+        FormatUtil.setPrintStream(logFilePath);
 
-        String query = "实现动态公开状态管理功能";
+        String query = "实现用户登录功能";
 
         // 需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
@@ -104,7 +105,7 @@ public class RecommendTest {
 
     @Test
     void testEvaluate() {
-        FormatUtil.setPrintStream();
+        FormatUtil.setPrintStream(BLOG_RESULT_PATH);
         evaluate.evaluate();
     }
 }

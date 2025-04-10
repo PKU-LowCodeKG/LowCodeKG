@@ -196,9 +196,8 @@ public class FormatUtil {
         return union.isEmpty() ? 0.0 : (double) intersection.size() / union.size();
     }
 
-    public static void setPrintStream() {
+    public static void setPrintStream(String logFilePath) {
         // 设置输出到本地日志文件
-        String logFilePath = "D://Master//log.txt";
 //        String logFilePath = "/Users/chang/Documents/projects/dataset/log.txt";
         FilePrintStream filePrintStream = null;
         try {
