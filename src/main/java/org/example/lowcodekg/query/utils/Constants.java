@@ -33,9 +33,9 @@ public final class Constants {
     /**
      * 数据记录路径
      */
-    public static final String GROUND_TRUTH_JSON_FILE_PATH = "D:\\Master\\Data\\Dataset\\ground_truth.json";
-    public static final String saveResultPath = "D:\\Master\\Data\\Dataset\\result.json";
-    public static final String BLOG_RESULT_PATH = "D:\\Master\\Logs\\blog_result.txt";
+    public static final String GROUND_TRUTH_JSON_FILE_PATH = "D:\\Master\\LowCodeKG\\src\\main\\resources\\data\\ground_truth.json";
+    public static final String SAVE_RESULT_PATH = "D:\\Master\\LowCodeKG\\src\\main\\resources\\data\\result.json";
+    public static final String BLOG_RESULT_PATH = "D:\\Master\\LowCodeKG\\src\\main\\resources\\data\\blog_result.txt";
     public static final String logFilePath = "D:\\Master\\log.txt";
 
 }

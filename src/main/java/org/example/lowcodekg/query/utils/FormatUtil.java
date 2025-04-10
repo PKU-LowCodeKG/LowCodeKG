@@ -9,22 +9,15 @@ import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
-import org.example.lowcodekg.model.dto.Neo4jNode;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
-import org.example.lowcodekg.query.model.TaskGraph;
-import org.neo4j.driver.QueryRunner;
-import org.neo4j.driver.Result;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.Neo4jClient;
-import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.example.lowcodekg.query.utils.Constants.saveResultPath;
+import static org.example.lowcodekg.query.utils.Constants.SAVE_RESULT_PATH;
 
 
 /**
@@ -40,7 +33,7 @@ public class FormatUtil {
     public static void saveResult(String query, Map<Task, Set<Node>> resources) {
         // 读取现有文件内容
         JSONObject result;
-        File file = new File(saveResultPath);
+        File file = new File(SAVE_RESULT_PATH);
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 StringBuilder content = new StringBuilder();
@@ -95,7 +88,7 @@ public class FormatUtil {
         predicted.add(queryResult);
 
         // 写入更新后的内容
-        try (FileWriter writer = new FileWriter(saveResultPath)) {
+        try (FileWriter writer = new FileWriter(SAVE_RESULT_PATH)) {
             writer.write(result.toJSONString());
         } catch (IOException e) {
             throw new RuntimeException("Error saving results to file: " + e.getMessage());

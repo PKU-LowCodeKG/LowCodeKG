@@ -76,13 +76,4 @@ public class JavaExtractor extends KnowledgeExtractor {
             javaProject.parse(workflowRepo, javaClassRepo, javaMethodRepo, javaFieldRepo);
         }
     }
-
-
-    public static void main(String[] args) {
-        String relativePath = "src/main/resources/data/javaInfo.json";
-        File file = new File(relativePath);
-        System.out.println(file.getAbsolutePath());
-        Map<String, JSONObject> jsonMap = JsonUtil.loadJsonFile(file.getAbsolutePath());
-        System.out.println(jsonMap.size());
-    }
 }

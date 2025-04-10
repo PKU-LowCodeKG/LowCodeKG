@@ -12,7 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-import static org.example.lowcodekg.query.utils.Constants.saveResultPath;
+import static org.example.lowcodekg.query.utils.Constants.SAVE_RESULT_PATH;
 
 /**
  * 执行实验验证方法效果
@@ -114,7 +114,7 @@ public class Evaluate {
     }
 
     private JSONObject loadPredictedResults() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(saveResultPath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(SAVE_RESULT_PATH))) {
             StringBuilder content = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
