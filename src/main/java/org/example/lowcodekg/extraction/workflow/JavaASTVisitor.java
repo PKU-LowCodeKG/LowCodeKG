@@ -56,7 +56,7 @@ public class JavaASTVisitor extends ASTVisitor {
         // 是否是数据实体类
         // 两层判断逻辑：1.判断是否是@Data注解修饰的类；2.判断路径名是否包含entity
         List<IExtendedModifier> annotations = node.modifiers();
-        if(fullName.contains("entity") || fullName.contains("model")) {
+        if(fullName.contains("entity") || fullName.contains("model") || fullName.contains("domain")) {
             classInfo.setIsData(true);
         } else {
             for(IExtendedModifier modifier : annotations) {

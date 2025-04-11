@@ -118,6 +118,11 @@ public class RecommendTest {
                 System.out.println("query = " + query);
             }
         }
-        evaluate.evaluate(EM_GROUND_TRUTH_JSON_FILE_PATH, EM_EVALUATE_RESULT_PATH);
+    }
+
+    @Test
+    void testEvaluate() {
+        FormatUtil.setPrintStream(EM_EVALUATE_RESULT_PATH);
+        evaluate.evaluate(EM_GROUND_TRUTH_JSON_FILE_PATH, SAVE_EM_RESULT_PATH);
     }
 }

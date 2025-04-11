@@ -5,10 +5,10 @@
             "result": [
                 "com.macro.mall.portal.controller.MemberProductCollectionController.add",
                 "com.macro.mall.portal.controller.MemberProductCollectionController.delete",
+                "com.macro.mall.portal.controller.MemberProductCollectionController.clear",
                 "com.macro.mall.portal.controller.MemberProductCollectionController.list",
-                "com.macro.mall.portal.domain.MemberProductCollection",
-                "com.macro.mall.portal.service.MemberCollectionService",
-                "mall-portal-web.src.views.collection.ProductCollection"
+                "com.macro.mall.portal.controller.MemberProductCollectionController.detail",
+                "com.macro.mall.portal.domain.MemberProductCollection"
             ]
         },
         {
