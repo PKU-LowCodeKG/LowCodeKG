@@ -144,7 +144,7 @@ public class IRGenerateImpl implements IRGenerate {
         float[] ir1Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir1Sentence));
         float[] ir2Vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(ir2Sentence));
         double embeddingSimilarity = EmbeddingUtil.cosineSimilarity(ir1Vector, ir2Vector);
-        double sim = 0.0 * wordSimilarity + 1.0 * embeddingSimilarity;
+        double sim = 0.1 * wordSimilarity + 0.9 * embeddingSimilarity;
         return sim;
     }
 }

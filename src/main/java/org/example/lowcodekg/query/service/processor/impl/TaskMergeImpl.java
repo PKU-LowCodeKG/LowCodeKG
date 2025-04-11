@@ -45,7 +45,7 @@ public class TaskMergeImpl implements TaskMerge {
             }
             input.put("subTasks", subTasks);
             // LLM rerank
-            String prompt = RERANK_WITHIN_TASK_PROMPT.replace("{input}", input.toString());
+            String prompt = RERANK_WITHIN_TASK_PROMPT.replace("{input}", input.toJSONString());
             String answer = FormatUtil.extractJson(llmService.chat(prompt));
             // result format parse
             Map<Task, Set<Node>> result = filterResourcesByLLM(answer, sortedTasks);
@@ -111,7 +111,6 @@ public class TaskMergeImpl implements TaskMerge {
             resource.put("resourceDescription", node.getDescription());
             resourcesArray.add(resource);
         }
-
         subTask.put("resources", resourcesArray);
         return subTask;
     }

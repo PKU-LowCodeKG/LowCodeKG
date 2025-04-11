@@ -49,6 +49,7 @@ public class Evaluate {
                 
                 // 如果该查询在groundTruth中不存在，跳过
                 if (!groundTruth.containsKey(query)) {
+                    System.out.println("Skipping query: " + query + ", not found in ground truth.");
                     continue;
                 }
 

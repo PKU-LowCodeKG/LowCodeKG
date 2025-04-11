@@ -3,54 +3,52 @@
         {
             "task": [
                 {
-                    "name": "更新数据库模式以支持收藏功能",
-                    "description": "修改数据库表结构，添加必要的字段来存储用户的收藏信息。",
+                    "name": "显示商品收藏详情",
+                    "description": "展示指定商品的收藏详情页面，包括收藏时间、商品信息等。",
                     "resources": [
-                        "com.macro.mall.controller.UmsResourceController.create",
-                        "com.macro.mall.controller.UmsResourceController.update"
+                        "com.macro.mall.portal.controller.MemberProductCollectionController.detail"
                     ]
                 },
                 {
                     "name": "添加商品收藏功能",
                     "description": "实现用户可以将商品添加到收藏列表的功能。",
                     "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.delete",
                         "com.macro.mall.portal.controller.MemberProductCollectionController.add"
                     ]
                 },
                 {
-                    "name": "添加收藏状态字段到商品实体",
-                    "description": "在商品数据结构中增加一个表示是否被收藏的字段。",
-                    "resources": []
-                },
-                {
-                    "name": "删除商品收藏",
-                    "description": "实现用户可以删除已收藏的商品的功能。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.clear",
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.delete"
-                    ]
-                },
-                {
                     "name": "清空当前用户商品收藏列表",
-                    "description": "提供功能让用户一次性清空所有已收藏的商品。",
+                    "description": "实现清空当前用户所有商品收藏的功能。",
                     "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.clear",
+                        "com.macro.mall.portal.controller.MemberProductCollectionController.clear"
+                    ]
+                },
+                {
+                    "name": "更新数据库模式以支持商品收藏功能",
+                    "description": "添加必要的字段或表来存储用户的商品收藏信息。",
+                    "resources": [
+                        "com.macro.mall.portal.domain.MemberProductCollection"
+                    ]
+                },
+                {
+                    "name": "分页显示用户商品收藏列表",
+                    "description": "实现一个接口，用于分页显示当前用户的商品收藏列表。",
+                    "resources": [
+                        "mall-app-web.pages.product.list"
+                    ]
+                },
+                {
+                    "name": "添加收藏按钮到商品详情页面",
+                    "description": "在商品详情页面底部提供收藏操作按钮，允许用户收藏商品。",
+                    "resources": [
+                        "mall-app-web.pages.product.product"
+                    ]
+                },
+                {
+                    "name": "删除指定商品的收藏",
+                    "description": "提供功能让用户可以删除指定的商品收藏，并返回操作结果。",
+                    "resources": [
                         "com.macro.mall.portal.controller.MemberProductCollectionController.delete"
-                    ]
-                },
-                {
-                    "name": "显示当前用户分页的商品收藏列表",
-                    "description": "展示当前用户的商品收藏列表，并支持分页浏览。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.list"
-                    ]
-                },
-                {
-                    "name": "显示商品收藏详情",
-                    "description": "展示指定商品的收藏详情页面，包括商品信息和收藏状态。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.detail"
                     ]
                 }
             ],
@@ -59,53 +57,400 @@
         {
             "task": [
                 {
-                    "name": "删除收货地址功能",
-                    "description": "实现一个允许用户删除指定收货地址的功能。",
+                    "name": "实现获取商品专题列表的服务方法",
+                    "description": "创建一个服务方法，用于根据条件分页查询商品专题列表。",
                     "resources": [
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.delete",
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.update"
+                        "com.macro.mall.controller.CmsSubjectController.getList",
+                        "com.macro.mall.portal.controller.HomeController.getSubjectList"
                     ]
                 },
                 {
-                    "name": "获取收货地址详情接口",
-                    "description": "实现一个通过ID获取指定收货地址详细信息的API接口。",
+                    "name": "实现添加商品专题的服务方法",
+                    "description": "创建一个服务方法，用于向数据库中添加新的商品专题。",
                     "resources": [
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.getItem",
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.list"
+                        "com.macro.mall.controller.SmsHomeNewProductController.create"
                     ]
                 },
                 {
-                    "name": "删除收货地址接口",
-                    "description": "实现一个用于删除指定ID的收货地址的API接口。",
+                    "name": "实现删除商品专题的服务方法",
+                    "description": "创建一个服务方法，用于从数据库中删除指定的商品专题。",
                     "resources": [
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.getItem",
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.delete",
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.list"
+                        "com.macro.mall.portal.controller.OmsCartItemController.delete",
+                        "com.macro.mall.controller.PmsProductController.updateDeleteStatus"
                     ]
                 },
                 {
-                    "name": "更新收货地址接口",
-                    "description": "实现一个用于修改用户收货地址信息的API接口。",
+                    "name": "创建商品专题页面",
+                    "description": "实现一个用于管理商品专题的页面，包括添加、编辑和删除专题的功能。",
                     "resources": [
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.getItem",
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.list",
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.update"
+                        "mall-app-web.pages.product.newProductList"
                     ]
                 },
                 {
-                    "name": "添加收货地址接口",
-                    "description": "实现一个通过POST请求接收用户收货地址信息并保存到数据库的API接口。",
+                    "name": "实现编辑商品专题的服务方法",
+                    "description": "创建一个服务方法，用于更新现有商品专题的信息。",
                     "resources": [
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.getItem",
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.list",
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.add"
+                        "com.macro.mall.controller.PmsProductAttributeController.update",
+                        "com.macro.mall.controller.PmsProductController.getUpdateInfo"
                     ]
                 },
+                {
+                    "name": "展示商品专题列表",
+                    "description": "在管理页面中展示所有商品专题的列表，并提供分页功能。",
+                    "resources": [
+                        "com.macro.mall.controller.CmsSubjectController.getList",
+                        "mall-app-web.pages.product.hotProductList",
+                        "com.macro.mall.portal.controller.HomeController.newProductList",
+                        "com.macro.mall.portal.controller.HomeController.getSubjectList"
+                    ]
+                },
+                {
+                    "name": "添加商品专题数据结构",
+                    "description": "定义一个用于存储商品专题信息的数据结构，包括名称、描述、图片等字段。",
+                    "resources": [
+                        "com.macro.mall.model.PmsProduct",
+                        "com.macro.mall.search.domain.EsProduct"
+                    ]
+                }
+            ],
+            "query": "实现商品专题管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "添加商品到购物车",
+                    "description": "实现将商品添加到用户购物车的功能。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsCartItemController.add",
+                        "com.macro.mall.portal.controller.OmsCartItemController.getCartProduct"
+                    ]
+                },
+                {
+                    "name": "生成确认订单",
+                    "description": "根据购物车中的商品信息生成订单确认页面所需的数据。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsCartItemController.getCartProduct",
+                        "com.macro.mall.portal.controller.OmsCartItemController.listPromotion",
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.generateConfirmOrder"
+                    ]
+                },
+                {
+                    "name": "获取购物车列表",
+                    "description": "提供接口以获取当前用户的购物车商品列表，包括促销信息。",
+                    "resources": [
+                        "com.macro.mall.controller.SmsFlashPromotionProductRelationController.getItem",
+                        "com.macro.mall.portal.controller.OmsCartItemController.getCartProduct",
+                        "com.macro.mall.portal.controller.OmsCartItemController.listPromotion",
+                        "com.macro.mall.portal.domain.PromotionProduct",
+                        "com.macro.mall.portal.domain.CartProduct",
+                        "com.macro.mall.portal.controller.UmsMemberCouponController.listCart"
+                    ]
+                },
+                {
+                    "name": "删除购物车中的商品",
+                    "description": "提供从购物车中移除指定商品的功能。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsCartItemController.delete"
+                    ]
+                },
+                {
+                    "name": "购物车页面展示",
+                    "description": "实现购物车页面，根据用户登录状态和购物车内容显示不同的界面。",
+                    "resources": [
+                        "mall-app-web.pages.cart.cart"
+                    ]
+                },
+                {
+                    "name": "商品详情页加入购物车功能",
+                    "description": "在商品详情页面提供将商品添加到购物车的操作按钮。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsCartItemController.getCartProduct",
+                        "com.macro.mall.portal.controller.OmsCartItemController.listPromotion"
+                    ]
+                },
+                {
+                    "name": "清空购物车",
+                    "description": "实现一键清空当前用户购物车的功能。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsCartItemController.clear"
+                    ]
+                },
+                {
+                    "name": "修改购物车中商品数量",
+                    "description": "允许用户修改购物车中已选商品的数量。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsCartItemController.getCartProduct",
+                        "com.macro.mall.portal.controller.OmsCartItemController.updateQuantity"
+                    ]
+                }
+            ],
+            "query": "实现购物车功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "确认收货功能实现",
+                    "description": "实现用户确认收货的功能，更新订单状态为已完成。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.confirmReceiveOrder"
+                    ]
+                },
+                {
+                    "name": "订单取消功能实现",
+                    "description": "实现用户取消订单的功能，更新订单状态为已取消。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelOrder",
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelUserOrder",
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelTimeOutOrder"
+                    ]
+                },
+                {
+                    "name": "订单详情页面实现",
+                    "description": "实现一个订单详情页面，显示订单状态、收货地址、商品信息、金额明细和操作按钮。",
+                    "resources": [
+                        "mall-app-web.pages.order.order",
+                        "mall-app-web.pages.order.createOrder"
+                    ]
+                },
+                {
+                    "name": "订单确认页面实现",
+                    "description": "实现一个订单确认页面，包括收货地址、商品列表、优惠信息和支付详情，并提供提交订单的功能。",
+                    "resources": [
+                        "mall-app-web.pages.address.addressManage",
+                        "mall-app-web.pages.order.createOrder"
+                    ]
+                },
+                {
+                    "name": "订单付款功能实现",
+                    "description": "实现用户付款订单的功能，更新订单状态为待发货，并处理支付信息。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.paySuccess"
+                    ]
+                },
+                {
+                    "name": "订单发货功能实现",
+                    "description": "实现批量处理订单发货的功能，更新订单状态为已发货，并记录发货信息。",
+                    "resources": [
+                        "com.macro.mall.controller.OmsOrderController.delivery"
+                    ]
+                },
+                {
+                    "name": "查询订单功能实现",
+                    "description": "实现分页查询订单的功能，支持根据状态、时间等条件筛选并返回订单列表。",
+                    "resources": [
+                        "com.macro.mall.controller.OmsOrderReturnApplyController.list",
+                        "com.macro.mall.controller.OmsOrderController.detail",
+                        "com.macro.mall.model.OmsOrderExample"
+                    ]
+                }
+            ],
+            "query": "实现订单管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "修改数据库模式以支持新字段",
+                    "description": "更新数据库表结构，确保能够存储新的订单状态信息。",
+                    "resources": [
+                        "com.macro.mall.model.OmsOrderExample"
+                    ]
+                },
+                {
+                    "name": "添加超时订单取消逻辑",
+                    "description": "实现自动检测并取消超时未支付的订单。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.detail",
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelTimeOutOrder",
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelOrder"
+                    ]
+                },
+                {
+                    "name": "在订单详情页面显示取消状态",
+                    "description": "在订单详情页面中添加逻辑以显示订单是否已被取消的信息。",
+                    "resources": [
+                        "mall-app-web.pages.order.orderDetail"
+                    ]
+                },
+                {
+                    "name": "更新订单状态字段",
+                    "description": "在订单实体中添加或更新表示订单是否已取消的状态字段。",
+                    "resources": [
+                        "com.macro.mall.model.OmsOrderExample"
+                    ]
+                },
+                {
+                    "name": "在订单列表页面显示取消状态",
+                    "description": "在订单列表页面中添加逻辑以显示哪些订单已被取消。",
+                    "resources": [
+                        "mall-app-web.pages.order.orderDetail",
+                        "mall-app-web.pages.order.order"
+                    ]
+                }
+            ],
+            "query": "实现超时订单取消功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "添加订单修改验证规则",
+                    "description": "为订单修改功能添加必要的验证规则，确保输入数据的有效性。",
+                    "resources": [
+                        "com.macro.mall.controller.OmsOrderSettingController.getItem",
+                        "com.macro.mall.controller.OmsOrderController.updateReceiverInfo",
+                        "com.macro.mall.controller.OmsOrderController.updateNote"
+                    ]
+                },
+                {
+                    "name": "创建订单修改服务方法",
+                    "description": "实现一个服务方法来处理订单修改请求，并更新相应的订单数据。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.detail",
+                        "com.macro.mall.controller.OmsOrderSettingController.update",
+                        "com.macro.mall.controller.OmsOrderController.updateReceiverInfo",
+                        "com.macro.mall.controller.OmsOrderController.updateNote"
+                    ]
+                },
+                {
+                    "name": "更新订单数据结构",
+                    "description": "在订单实体中添加或修改字段以支持新的订单修改功能。",
+                    "resources": [
+                        "com.macro.mall.model.OmsOrderItem"
+                    ]
+                },
+                {
+                    "name": "数据库模式更新",
+                    "description": "根据新的数据结构更新数据库模式，确保能够持久化订单的修改信息。",
+                    "resources": [
+                        "com.macro.mall.model.OmsOrderOperateHistory",
+                        "com.macro.mall.portal.domain.OmsOrderDetail"
+                    ]
+                },
+                {
+                    "name": "订单修改页面开发",
+                    "description": "开发一个允许用户修改订单信息的页面，包括收货地址、商品列表和支付详情等。",
+                    "resources": [
+                        "mall-app-web.pages.address.addressManage",
+                        "mall-app-web.pages.money.pay",
+                        "mall-app-web.pages.order.createOrder"
+                    ]
+                }
+            ],
+            "query": "实现订单修改功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "支持排序功能",
+                    "description": "允许用户选择按综合排序、销量优先或价格排序等方式对搜索结果进行排序。",
+                    "resources": [
+                        "com.macro.mall.search.controller.EsProductController.searchRelatedInfo",
+                        "com.macro.mall.controller.SmsHomeBrandController.updateSort"
+                    ]
+                },
+                {
+                    "name": "实现商品搜索页面",
+                    "description": "创建一个用户可以输入关键字、选择品牌和分类进行筛选，并可选择排序方式的商品搜索页面。",
+                    "resources": [
+                        "mall-app-web.pages.product.hotProductList",
+                        "mall-app-web.pages.user.brandAttention",
+                        "mall-app-web.pages.user.productCollection",
+                        "mall-app-web.pages.brand.brandDetail",
+                        "mall-app-web.pages.user.readHistory",
+                        "mall-app-web.pages.product.newProductList"
+                    ]
+                },
+                {
+                    "name": "提供商品综合搜索功能",
+                    "description": "实现根据用户输入的关键字、品牌和分类等条件，返回符合条件的商品列表的功能。",
+                    "resources": [
+                        "com.macro.mall.search.controller.EsProductController.searchRelatedInfo",
+                        "com.macro.mall.portal.controller.PmsPortalProductController.search"
+                    ]
+                }
+            ],
+            "query": "实现商品搜索功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "更新用户设置页面以显示会员等级",
+                    "description": "在用户设置页面中添加显示和修改用户会员等级的功能。",
+                    "resources": [
+                        "mall-app-web.components.upload-images",
+                        "mall-app-web.pages.user.user"
+                    ]
+                },
+                {
+                    "name": "实现用户会员等级分配功能",
+                    "description": "编写服务方法以将特定的会员等级分配给用户，并确保操作的有效性。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsAdminController.updateRole"
+                    ]
+                },
+                {
+                    "name": "实现会员等级查询功能",
+                    "description": "编写服务方法以查询所有会员等级，并根据是否为默认状态进行筛选。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.UmsMemberController.info",
+                        "com.macro.mall.controller.UmsMemberLevelController.list"
+                    ]
+                },
+                {
+                    "name": "创建管理会员等级的页面",
+                    "description": "开发一个用于添加、编辑和删除会员等级的管理界面。",
+                    "resources": [
+                        "mall-app-web.components.upload-images",
+                        "mall-app-web.pages.user.user"
+                    ]
+                },
+                {
+                    "name": "添加会员等级数据结构",
+                    "description": "定义会员等级的数据结构，包括会员等级的基本信息和特权。",
+                    "resources": [
+                        "com.macro.mall.model.UmsMemberLevel",
+                        "com.macro.mall.model.UmsMemberRuleSetting"
+                    ]
+                },
+                {
+                    "name": "更新用户信息以包含会员等级",
+                    "description": "修改用户数据结构，使其能够存储用户的会员等级信息。",
+                    "resources": [
+                        "com.macro.mall.portal.domain.MemberDetails",
+                        "com.macro.mall.model.UmsMemberLevel"
+                    ]
+                },
+                {
+                    "name": "更新数据库以支持会员等级",
+                    "description": "修改数据库模式以存储会员等级信息，并确保数据一致性。",
+                    "resources": [
+                        "com.macro.mall.model.PmsMemberPriceExample"
+                    ]
+                }
+            ],
+            "query": "实现会员等级管理功能"
+        },
+        {
+            "task": [
                 {
                     "name": "用户收货地址实体类",
                     "description": "定义一个包含收货地址信息的实体类，用于存储和管理用户的收货地址数据。",
                     "resources": [
                         "com.macro.mall.model.UmsMemberReceiveAddress"
+                    ]
+                },
+                {
+                    "name": "删除收货地址功能",
+                    "description": "实现一个功能，允许用户删除指定的收货地址。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.getItem",
+                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.delete"
+                    ]
+                },
+                {
+                    "name": "编辑收货地址页面",
+                    "description": "实现一个用户可以编辑现有收货地址的页面，包含必要的输入字段和保存按钮。",
+                    "resources": [
+                        "mall-app-web.pages.address.addressManage"
                     ]
                 },
                 {
@@ -117,19 +462,11 @@
                 },
                 {
                     "name": "设置默认收货地址功能",
-                    "description": "实现一个允许用户将某个收货地址设为默认地址的功能。",
+                    "description": "实现一个功能，允许用户将某个收货地址设为默认地址。",
                     "resources": [
                         "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.getItem",
                         "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.list",
                         "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.update"
-                    ]
-                },
-                {
-                    "name": "编辑收货地址页面",
-                    "description": "实现一个用户可以编辑现有收货地址的页面，包含必要的输入字段和保存按钮。",
-                    "resources": [
-                        "mall-app-web.pages.address.addressManage",
-                        "mall-app-web.pages.address.address"
                     ]
                 },
                 {
@@ -146,33 +483,81 @@
         {
             "task": [
                 {
-                    "name": "更新订单状态以反映库存不足",
-                    "description": "如果库存不足，将订单状态设置为“待处理”或“库存不足”，并记录相关操作历史。",
+                    "name": "实现SKU库存查询功能",
+                    "description": "提供根据商品ID和SKU编码关键字模糊搜索SKU库存的功能。",
                     "resources": [
-                        "com.macro.mall.model.OmsOrderOperateHistoryExample",
-                        "com.macro.mall.model.OmsOrderOperateHistory",
-                        "com.macro.mall.controller.OmsOrderController.updateNote"
-                    ]
-                },
-                {
-                    "name": "订单提交页面添加库存校验提示",
-                    "description": "在订单确认页面中，当用户点击提交订单时，显示库存不足的提示信息。",
-                    "resources": [
-                        "mall-app-web.pages.order.createOrder"
-                    ]
-                },
-                {
-                    "name": "实现库存校验逻辑",
-                    "description": "在订单提交时，检查所选商品的库存是否充足。",
-                    "resources": [
+                        "com.macro.mall.portal.controller.PmsPortalProductController.search",
                         "com.macro.mall.controller.PmsSkuStockController.getList"
                     ]
                 },
                 {
-                    "name": "更新商品库存数据结构",
-                    "description": "为商品实体添加库存字段，并确保数据库能够存储和查询该字段。",
+                    "name": "在购物车页面显示SKU库存信息",
+                    "description": "在购物车页面中展示商品的SKU库存状态，提示用户库存情况。",
+                    "resources": []
+                },
+                {
+                    "name": "创建批量更新SKU库存的服务方法",
+                    "description": "实现一个服务方法来批量更新商品SKU的库存信息。",
                     "resources": [
-                        "com.macro.mall.model.PmsSkuStockExample"
+                        "com.macro.mall.controller.PmsSkuStockController.update"
+                    ]
+                },
+                {
+                    "name": "更新数据库以支持SKU库存管理",
+                    "description": "修改数据库模式以存储和管理商品SKU库存信息，确保数据持久化。",
+                    "resources": [
+                        "com.macro.mall.model.PmsSkuStock"
+                    ]
+                },
+                {
+                    "name": "添加商品SKU库存数据结构",
+                    "description": "定义和实现商品SKU库存的数据结构，包括ID、产品ID、SKU编码、价格、库存量等属性。",
+                    "resources": [
+                        "com.macro.mall.model.PmsSkuStockExample",
+                        "com.macro.mall.model.PmsSkuStock"
+                    ]
+                },
+                {
+                    "name": "在商品详情页面显示SKU库存信息",
+                    "description": "在商品详情页面中展示商品的SKU库存状态，提示用户库存情况。",
+                    "resources": []
+                }
+            ],
+            "query": "实现商品SKU库存管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "创建服务方法来检查库存",
+                    "description": "实现一个服务方法，用于检查订单中的商品是否满足库存要求。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.detail",
+                        "com.macro.mall.controller.PmsSkuStockController.getList"
+                    ]
+                },
+                {
+                    "name": "更新订单实体以包含库存信息",
+                    "description": "在订单实体中添加字段以存储每个商品的库存数量。",
+                    "resources": [
+                        "com.macro.mall.model.OmsOrderItem",
+                        "com.macro.mall.model.PmsSkuStock",
+                        "com.macro.mall.portal.domain.OmsOrderDetail"
+                    ]
+                },
+                {
+                    "name": "在订单提交页面添加库存校验逻辑",
+                    "description": "在订单确认页面中，当用户点击提交订单时，需要检查所选商品的库存是否充足。",
+                    "resources": [
+                        "com.macro.mall.controller.PmsSkuStockController.getList",
+                        "mall-app-web.pages.order.createOrder"
+                    ]
+                },
+                {
+                    "name": "在库存不足时显示提示信息",
+                    "description": "当库存不足时，在订单确认页面中向用户显示相应的提示信息，并阻止订单提交。",
+                    "resources": [
+                        "mall-app-web.components.uni-load-more.uni-load-more",
+                        "mall-app-web.pages.order.createOrder"
                     ]
                 }
             ],
@@ -181,342 +566,53 @@
         {
             "task": [
                 {
-                    "name": "分页获取商品属性分类列表",
-                    "description": "实现分页获取商品属性分类列表的功能。",
+                    "name": "添加商品SKU库存",
+                    "description": "实现添加新的商品SKU库存的功能，包括数据结构定义、页面展示和业务逻辑处理。",
                     "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getListWithAttr",
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getList"
-                    ]
-                },
-                {
-                    "name": "获取商品属性分类信息",
-                    "description": "实现根据商品分类ID获取商品属性及属性分类信息的功能。",
-                    "resources": [
-                        "com.macro.mall.dto.ProductAttrInfo",
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getItem",
-                        "com.macro.mall.dto.PmsProductAttributeParam",
-                        "com.macro.mall.model.PmsProductAttribute",
-                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
-                    ]
-                },
-                {
-                    "name": "获取指定ID的商品属性分类信息",
-                    "description": "实现根据指定ID获取商品属性分类信息的功能。",
-                    "resources": [
-                        "com.macro.mall.dto.ProductAttrInfo",
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getItem",
-                        "com.macro.mall.dto.PmsProductAttributeParam",
-                        "com.macro.mall.model.PmsProductAttribute",
-                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
-                    ]
-                },
-                {
-                    "name": "修改商品属性分类",
-                    "description": "实现修改商品属性分类的功能，包括更新数据结构和业务逻辑。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.update",
-                        "com.macro.mall.dto.ProductAttrInfo",
-                        "com.macro.mall.dto.PmsProductAttributeParam",
-                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
-                    ]
-                },
-                {
-                    "name": "添加商品属性分类",
-                    "description": "实现添加商品属性分类的功能，包括定义数据结构和业务逻辑。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.create",
-                        "com.macro.mall.model.PmsProductCategory",
-                        "com.macro.mall.dto.PmsProductAttributeParam",
-                        "com.macro.mall.model.PmsProductAttribute"
-                    ]
-                },
-                {
-                    "name": "获取所有商品属性分类及其下属性",
-                    "description": "实现获取所有商品属性分类及其下属性的功能。",
-                    "resources": [
-                        "com.macro.mall.dto.ProductAttrInfo",
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getListWithAttr",
-                        "com.macro.mall.dto.PmsProductAttributeParam",
-                        "com.macro.mall.model.PmsProductAttribute"
-                    ]
-                },
-                {
-                    "name": "删除商品属性分类",
-                    "description": "实现删除指定ID的商品属性分类的功能，并返回操作结果。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getItem",
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.delete"
-                    ]
-                },
-                {
-                    "name": "展示商品属性分类管理页面",
-                    "description": "实现一个用于管理商品属性分类的页面，包括添加、修改和删除功能。",
-                    "resources": [
-                        "mall-app-web.pages.category.category"
-                    ]
-                }
-            ],
-            "query": "实现商品属性分类功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "订单修改页面开发",
-                    "description": "开发一个允许用户修改订单信息的页面，包括收货地址、商品列表和支付详情等。",
-                    "resources": [
-                        "mall-app-web.pages.address.addressManage",
-                        "mall-app-web.pages.order.orderDetail"
-                    ]
-                },
-                {
-                    "name": "创建订单修改服务方法",
-                    "description": "实现一个服务方法来处理订单修改请求，并更新订单状态和相关信息。",
-                    "resources": [
-                        "com.macro.mall.controller.OmsOrderSettingController.update",
-                        "com.macro.mall.controller.OmsOrderController.updateReceiverInfo",
-                        "com.macro.mall.controller.OmsOrderController.updateNote"
-                    ]
-                },
-                {
-                    "name": "更新订单数据结构",
-                    "description": "在订单实体中添加或修改字段以支持新的订单修改功能。",
-                    "resources": [
-                        "com.macro.mall.model.OmsOrderItem",
-                        "com.macro.mall.model.OmsOrderItemExample",
-                        "com.macro.mall.model.OmsOrderExample"
-                    ]
-                },
-                {
-                    "name": "数据库模式更新",
-                    "description": "根据订单数据结构的更改，更新数据库模式以持久化新的订单信息。",
-                    "resources": [
-                        "com.macro.mall.model.OmsOrderOperateHistory",
-                        "com.macro.mall.model.OmsOrderReturnReasonExample",
-                        "com.macro.mall.model.OmsOrderReturnReason",
-                        "com.macro.mall.model.OmsOrderItem",
-                        "com.macro.mall.model.OmsOrderItemExample",
-                        "com.macro.mall.model.OmsOrder"
-                    ]
-                },
-                {
-                    "name": "订单详情页面更新",
-                    "description": "在订单详情页面中添加或修改功能，以反映订单的最新信息。",
-                    "resources": [
-                        "mall-app-web.pages.order.orderDetail",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.detail",
-                        "com.macro.mall.controller.OmsOrderController.updateReceiverInfo"
-                    ]
-                }
-            ],
-            "query": "实现订单修改功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "创建推荐商品实体类",
-                    "description": "定义一个新的实体类来表示推荐商品的数据结构，包含产品ID、名称、推荐状态等信息。",
-                    "resources": [
-                        "com.macro.mall.model.SmsHomeNewProduct"
-                    ]
-                },
-                {
-                    "name": "实现删除推荐商品接口",
-                    "description": "创建一个API接口用于批量删除首页推荐商品，并处理相应的业务逻辑。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsBrandController.deleteBatch"
-                    ]
-                },
-                {
-                    "name": "添加推荐商品管理页面",
-                    "description": "在后台管理系统中添加一个用于管理首页推荐商品的页面，包括添加、删除和修改推荐商品的功能。",
-                    "resources": [
-                        "mall-app-web.pages.product.list",
-                        "mall-app-web.pages.product.newProductList"
-                    ]
-                },
-                {
-                    "name": "实现添加推荐商品接口",
-                    "description": "创建一个API接口用于向首页添加推荐商品，并处理相应的业务逻辑。",
-                    "resources": [
-                        "com.macro.mall.controller.SmsHomeNewProductController.create"
-                    ]
-                },
-                {
-                    "name": "更新数据库表结构以支持推荐商品管理",
-                    "description": "修改数据库表结构，添加必要的字段来存储推荐商品的相关信息。",
-                    "resources": [
-                        "com.macro.mall.dto.PmsProductParam"
-                    ]
-                },
-                {
-                    "name": "实现修改推荐商品状态接口",
-                    "description": "创建一个API接口用于批量修改首页推荐商品的状态（如启用或禁用），并处理相应的业务逻辑。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductController.updateRecommendStatus"
-                    ]
-                },
-                {
-                    "name": "实现获取推荐商品列表接口",
-                    "description": "创建一个API接口用于分页查询首页推荐商品的列表，并返回相应的数据。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.HomeController.newProductList",
-                        "com.macro.mall.portal.controller.HomeController.recommendProductList"
-                    ]
-                }
-            ],
-            "query": "实现首页推荐商品管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "品牌实体数据结构",
-                    "description": "定义或修改品牌的数据结构，添加必要的字段以支持收藏功能和展示需求。",
-                    "resources": [
-                        "com.macro.mall.search.domain.EsProduct",
-                        "com.macro.mall.dto.PmsProductQueryParam",
-                        "com.macro.mall.search.domain.EsProductAttributeValue"
-                    ]
-                },
-                {
-                    "name": "更新数据库模式",
-                    "description": "根据新的数据结构要求，更新数据库模式以持久化品牌信息和收藏状态。",
-                    "resources": [
-                        "com.macro.mall.search.domain.EsProduct",
-                        "com.macro.mall.dto.PmsProductQueryParam",
-                        "com.macro.mall.search.domain.EsProductAttributeValue",
+                        "com.macro.mall.controller.PmsProductAttributeController.create",
                         "com.macro.mall.model.PmsSkuStock"
                     ]
                 },
                 {
-                    "name": "展示品牌信息页面",
-                    "description": "实现一个页面用于展示品牌的详细信息，包括品牌故事和相关商品列表，并提供收藏功能。",
+                    "name": "查询商品SKU库存",
+                    "description": "实现根据条件查询商品SKU库存的功能，包括数据结构定义、页面展示和业务逻辑处理。",
                     "resources": [
-                        "mall-app-web.pages.user.brandAttention",
-                        "mall-app-web.pages.brand.brandDetail",
-                        "mall-app-web.pages.brand.list"
+                        "com.macro.mall.model.PmsSkuStock",
+                        "com.macro.mall.controller.PmsProductCategoryController.getList"
                     ]
                 },
                 {
-                    "name": "展示品牌列表页面",
-                    "description": "实现一个页面用于展示品牌列表，点击每个品牌可跳转到详情页，并显示商品数量。",
+                    "name": "更新商品SKU库存",
+                    "description": "实现更新现有商品SKU库存信息的功能，包括数据结构定义、页面展示和业务逻辑处理。",
                     "resources": [
-                        "mall-app-web.pages.user.brandAttention",
-                        "mall-app-web.pages.brand.brandDetail",
-                        "mall-app-web.pages.brand.list"
+                        "com.macro.mall.controller.PmsSkuStockController.update",
+                        "com.macro.mall.model.PmsSkuStock"
                     ]
                 },
                 {
-                    "name": "添加收藏功能",
-                    "description": "实现用户可以收藏品牌的逻辑，包括更新数据库中的收藏状态。",
+                    "name": "删除商品SKU库存",
+                    "description": "实现删除指定的商品SKU库存的功能，包括数据结构定义、页面展示和业务逻辑处理。",
                     "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.detail",
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.list",
-                        "com.macro.mall.portal.controller.UmsMemberReceiveAddressController.add"
+                        "com.macro.mall.controller.PmsProductCategoryController.delete",
+                        "com.macro.mall.model.PmsSkuStock"
                     ]
                 }
             ],
-            "query": "实现商品品牌管理功能"
+            "query": "实现商品SKU库存的CRUD(增删改查)管理功能"
         },
         {
             "task": [
                 {
-                    "name": "更新退货原因数据结构",
-                    "description": "在订单退货原因类中添加或修改必要的字段以支持编辑功能。",
+                    "name": "优惠券使用状态更新",
+                    "description": "提供接口以更新优惠券的使用状态。",
                     "resources": [
-                        "com.macro.mall.model.OmsOrderReturnReason"
+                        "com.macro.mall.controller.SmsFlashPromotionProductRelationController.update",
+                        "com.macro.mall.controller.SmsCouponHistoryController.list"
                     ]
                 },
                 {
-                    "name": "实现获取退货原因详情接口",
-                    "description": "创建一个API接口，用于根据ID获取指定的退货原因详情信息。",
-                    "resources": [
-                        "com.macro.mall.controller.OmsOrderReturnReasonController.getItem"
-                    ]
-                },
-                {
-                    "name": "实现更新退货原因接口",
-                    "description": "创建一个API接口，用于更新指定ID的退货原因信息，并返回操作结果。",
-                    "resources": [
-                        "com.macro.mall.controller.OmsOrderReturnReasonController.update"
-                    ]
-                },
-                {
-                    "name": "添加退货原因编辑页面",
-                    "description": "实现一个用于编辑退货原因的用户界面，包含必要的输入字段和提交按钮。",
-                    "resources": [
-                        "mall-app-web.components.uni-number-box"
-                    ]
-                }
-            ],
-            "query": "实现退货原因编辑功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "更新用户信息以包含会员等级",
-                    "description": "修改用户数据结构，使其能够存储用户的会员等级信息。",
-                    "resources": [
-                        "com.macro.mall.model.UmsMemberLevel"
-                    ]
-                },
-                {
-                    "name": "实现会员等级特权逻辑",
-                    "description": "创建服务方法以处理会员等级相关的特权逻辑，如折扣、积分等。",
-                    "resources": []
-                },
-                {
-                    "name": "更新订单管理页面以显示会员价格",
-                    "description": "修改订单管理页面，使其能够根据用户的会员等级显示不同的商品价格。",
-                    "resources": [
-                        "mall-app-web.pages.order.orderDetail",
-                        "mall-app-web.pages.order.order"
-                    ]
-                },
-                {
-                    "name": "创建管理会员等级的页面",
-                    "description": "实现一个用于添加、编辑和删除会员等级的管理界面。",
-                    "resources": [
-                        "mall-app-web.components.upload-images",
-                        "mall-app-web.pages.category.category"
-                    ]
-                },
-                {
-                    "name": "实现会员等级查询功能",
-                    "description": "创建服务方法以查询所有会员等级，并根据是否为默认状态进行筛选。",
-                    "resources": [
-                        "com.macro.mall.controller.UmsMemberLevelController.list"
-                    ]
-                },
-                {
-                    "name": "实现用户注册时选择会员等级",
-                    "description": "在用户注册过程中提供选项让用户选择或设置其会员等级。",
-                    "resources": [
-                        "com.macro.mall.controller.UmsAdminController.list",
-                        "com.macro.mall.controller.UmsAdminController.register"
-                    ]
-                },
-                {
-                    "name": "更新数据库以支持会员等级",
-                    "description": "修改数据库模式以存储会员等级信息。",
-                    "resources": [
-                        "com.macro.mall.model.UmsMemberLevel"
-                    ]
-                },
-                {
-                    "name": "添加会员等级数据结构",
-                    "description": "定义会员等级的数据结构，包括基本信息和特权。",
-                    "resources": [
-                        "com.macro.mall.model.UmsMemberLevel"
-                    ]
-                }
-            ],
-            "query": "实现会员等级管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "优惠券详情获取",
-                    "description": "提供接口以获取指定ID的优惠券详细信息。",
+                    "name": "优惠券与商品关联",
+                    "description": "提供接口以获取指定商品ID相关的优惠券列表。",
                     "resources": [
                         "com.macro.mall.portal.controller.UmsMemberCouponController.listByProduct",
                         "com.macro.mall.controller.SmsCouponController.getItem"
@@ -530,19 +626,11 @@
                     ]
                 },
                 {
-                    "name": "用户优惠券记录管理",
-                    "description": "提供接口以分页获取用户的优惠券领取记录。",
+                    "name": "优惠券详情获取",
+                    "description": "提供接口以获取指定ID的优惠券详细信息。",
                     "resources": [
-                        "com.macro.mall.portal.controller.UmsMemberCouponController.add",
-                        "com.macro.mall.controller.SmsCouponHistoryController.list"
-                    ]
-                },
-                {
-                    "name": "优惠券使用状态更新",
-                    "description": "实现优惠券使用状态的更新逻辑，并在相关页面展示更新后的状态。",
-                    "resources": [
-                        "com.macro.mall.controller.SmsCouponController.update",
-                        "com.macro.mall.portal.controller.UmsMemberCouponController.listHistory"
+                        "com.macro.mall.portal.domain.SmsCouponHistoryDetail",
+                        "com.macro.mall.controller.SmsCouponController.getItem"
                     ]
                 },
                 {
@@ -552,6 +640,14 @@
                         "com.macro.mall.portal.controller.UmsMemberCouponController.listByProduct",
                         "com.macro.mall.portal.controller.UmsMemberCouponController.add"
                     ]
+                },
+                {
+                    "name": "优惠券领取记录管理",
+                    "description": "实现一个页面来展示用户的优惠券领取记录，并支持分页查询。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.UmsMemberCouponController.listHistory",
+                        "com.macro.mall.controller.SmsCouponHistoryController.list"
+                    ]
                 }
             ],
             "query": "实现优惠券领取管理功能"
@@ -559,706 +655,62 @@
         {
             "task": [
                 {
-                    "name": "修改广告状态功能实现",
-                    "description": "实现修改广告的上下线状态的功能。",
+                    "name": "实现分页查询退货申请功能",
+                    "description": "实现一个接口，用于分页查询所有的退货申请记录。",
                     "resources": [
-                        "com.macro.mall.controller.SmsHomeAdvertiseController.updateStatus",
-                        "com.macro.mall.controller.SmsFlashPromotionController.update"
+                        "com.macro.mall.controller.OmsOrderReturnReasonController.list"
                     ]
                 },
                 {
-                    "name": "首页轮播广告页面设计与实现",
-                    "description": "在小程序首页布局中添加轮播广告组件，展示已创建的广告信息，并支持用户交互操作如点击跳转等。",
+                    "name": "添加退货原因管理页面",
+                    "description": "实现一个管理员可以添加和管理退货原因的页面。",
                     "resources": [
-                        "mall-app-web.pages.index.index"
+                        "mall-app-web.pages.order.order"
                     ]
                 },
                 {
-                    "name": "创建广告功能实现",
-                    "description": "实现通过POST请求接收广告信息并调用服务进行创建的功能。",
+                    "name": "展示退货申请列表页面",
+                    "description": "实现一个管理员可以查看所有退货申请的页面，并支持分页查询。",
                     "resources": [
-                        "com.macro.mall.controller.SmsHomeAdvertiseController.create"
+                        "mall-app-web.pages.brand.list"
                     ]
                 },
                 {
-                    "name": "获取广告详情功能实现",
-                    "description": "通过ID获取广告详情并返回。",
+                    "name": "添加退货申请页面",
+                    "description": "实现一个用户可以提交退货申请的页面，包含订单信息、商品详情和退货原因选择。",
                     "resources": [
-                        "com.macro.mall.controller.SmsHomeAdvertiseController.getItem"
-                    ]
-                },
-                {
-                    "name": "首页轮播广告数据结构设计",
-                    "description": "定义和设计用于存储首页轮播广告的数据结构，包括广告的基本信息如ID、名称、类型、图片、时间范围、状态等。",
-                    "resources": [
-                        "com.macro.mall.dto.MinioUploadDto"
-                    ]
-                },
-                {
-                    "name": "查询广告列表功能实现",
-                    "description": "实现分页查询广告的功能，支持根据名称、类型和结束时间进行筛选。",
-                    "resources": [
-                        "com.macro.mall.search.controller.EsProductController.search",
-                        "com.macro.mall.controller.SmsHomeAdvertiseController.list"
-                    ]
-                },
-                {
-                    "name": "删除广告功能实现",
-                    "description": "实现批量删除广告的功能。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsBrandController.deleteBatch",
-                        "com.macro.mall.controller.SmsHomeAdvertiseController.delete"
-                    ]
-                }
-            ],
-            "query": "实现首页轮播广告管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "分页获取商品属性分类列表",
-                    "description": "实现一个服务方法，用于分页获取商品属性分类列表。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getList"
-                    ]
-                },
-                {
-                    "name": "获取所有商品属性分类及其下属性",
-                    "description": "实现一个服务方法，用于获取所有商品属性分类及其下属性的信息。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getListWithAttr"
-                    ]
-                },
-                {
-                    "name": "根据商品分类ID获取商品属性及属性分类信息",
-                    "description": "实现一个服务方法，用于根据商品分类ID获取商品属性及属性分类信息。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
-                    ]
-                },
-                {
-                    "name": "添加商品属性信息",
-                    "description": "实现一个服务方法，用于添加新的商品属性信息。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.create",
-                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
-                    ]
-                },
-                {
-                    "name": "商品属性分类管理页面",
-                    "description": "实现一个页面，用于管理员添加、修改和删除商品属性分类。",
-                    "resources": [
-                        "mall-app-web.pages.category.category"
-                    ]
-                },
-                {
-                    "name": "商品属性分类数据结构",
-                    "description": "定义商品属性分类的数据结构，包括字段如ID、名称等。",
-                    "resources": [
-                        "com.macro.mall.dto.ProductAttrInfo",
-                        "com.macro.mall.model.PmsProductCategory",
-                        "com.macro.mall.dto.PmsProductAttributeParam"
-                    ]
-                },
-                {
-                    "name": "商品属性信息管理页面",
-                    "description": "实现一个页面，用于管理员添加、修改和删除商品属性信息。",
-                    "resources": [
-                        "mall-app-web.components.upload-images",
-                        "mall-app-web.pages.product.list"
-                    ]
-                },
-                {
-                    "name": "批量删除商品属性",
-                    "description": "实现一个服务方法，用于批量删除商品属性。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeController.delete"
-                    ]
-                },
-                {
-                    "name": "商品属性信息数据结构",
-                    "description": "定义商品属性信息的数据结构，包括字段如ID、属性分类ID、名称等。",
-                    "resources": [
-                        "com.macro.mall.dto.ProductAttrInfo",
-                        "com.macro.mall.search.domain.EsProductAttributeValue",
-                        "com.macro.mall.model.PmsProductAttributeCategory"
-                    ]
-                },
-                {
-                    "name": "添加商品属性分类",
-                    "description": "实现一个服务方法，用于添加新的商品属性分类。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.create",
-                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
-                    ]
-                },
-                {
-                    "name": "修改商品属性分类",
-                    "description": "实现一个服务方法，用于修改已有的商品属性分类。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.update",
-                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
-                    ]
-                }
-            ],
-            "query": "实现商品属性管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "获取购物车列表功能实现",
-                    "description": "获取当前登录会员的购物车列表，包括商品ID、SKU ID、数量等信息。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.OmsCartItemController.listPromotion",
-                        "com.macro.mall.portal.controller.OmsCartItemController.list"
-                    ]
-                },
-                {
-                    "name": "购物车页面显示",
-                    "description": "根据用户登录状态和购物车内容显示不同的界面。未登录或购物车为空时提示用户登录或浏览商品；否则显示购物车列表，支持选择、修改数量、删除商品等功能，并提供结算按钮。",
-                    "resources": [
-                        "mall-app-web.pages.cart.cart"
-                    ]
-                },
-                {
-                    "name": "删除购物车中商品功能实现",
-                    "description": "删除购物车中指定的商品，并从数据库中移除相关记录。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.OmsCartItemController.delete"
-                    ]
-                },
-                {
-                    "name": "添加商品到购物车功能实现",
-                    "description": "通过POST请求接收商品信息，并返回操作结果，将商品添加到用户的购物车中。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.OmsCartItemController.add"
-                    ]
-                },
-                {
-                    "name": "商品详情页面加入购物车",
-                    "description": "在商品详情页面底部提供加入购物车的操作按钮，点击后将商品添加到用户的购物车中。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.PmsPortalProductController.detail",
-                        "com.macro.mall.portal.controller.OmsCartItemController.updateQuantity",
-                        "com.macro.mall.portal.controller.MemberAttentionController.add",
-                        "com.macro.mall.portal.controller.OmsCartItemController.updateAttr"
-                    ]
-                },
-                {
-                    "name": "购物车数据结构定义",
-                    "description": "定义表示购物车商品项的数据结构，包含商品ID、SKU ID、会员ID等属性，并提供相应的getter和setter方法。",
-                    "resources": [
-                        "com.macro.mall.model.OmsCartItem"
-                    ]
-                },
-                {
-                    "name": "生成订单功能实现",
-                    "description": "根据购物车信息生成订单并返回结果，包含订单ID、收货地址、商品列表等信息。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.generateConfirmOrder",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.generateOrder"
-                    ]
-                },
-                {
-                    "name": "生成订单确认页面",
-                    "description": "根据购物车信息生成订单确认页面，包括收货地址、商品列表、优惠信息和支付详情，并提供提交订单的功能。",
-                    "resources": [
-                        "mall-app-web.pages.address.addressManage",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.generateConfirmOrder",
+                        "mall-app-web.pages.order.order",
                         "mall-app-web.pages.order.createOrder"
                     ]
                 },
                 {
-                    "name": "清空购物车功能实现",
-                    "description": "清空当前登录会员的购物车，删除所有商品项并更新数据库中的相关信息。",
+                    "name": "处理退货申请逻辑",
+                    "description": "创建服务方法来处理用户的退货申请，包括验证信息、保存记录等。",
                     "resources": [
-                        "com.macro.mall.portal.controller.OmsCartItemController.clear"
+                        "com.macro.mall.portal.controller.OmsPortalOrderReturnApplyController.create",
+                        "com.macro.mall.controller.OmsOrderReturnApplyController.list",
+                        "com.macro.mall.controller.OmsOrderReturnApplyController.getItem",
+                        "com.macro.mall.controller.OmsOrderReturnApplyController.updateStatus"
                     ]
                 },
                 {
-                    "name": "修改购物车中商品数量功能实现",
-                    "description": "修改购物车中指定商品的数量，并更新数据库中的相关信息。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.OmsCartItemController.updateQuantity",
-                        "com.macro.mall.portal.controller.OmsCartItemController.updateAttr"
-                    ]
-                }
-            ],
-            "query": "实现购物车功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "添加推荐品牌实体类",
-                    "description": "创建一个新的实体类来表示推荐品牌的数据结构，包括品牌ID、名称、推荐状态和排序等信息。",
-                    "resources": [
-                        "com.macro.mall.model.SmsHomeBrand"
-                    ]
-                },
-                {
-                    "name": "实现更新指定ID的品牌推荐排序功能",
-                    "description": "开发一个功能，允许管理员更新指定品牌在推荐列表中的排序位置。",
-                    "resources": [
-                        "com.macro.mall.controller.SmsHomeBrandController.updateSort",
-                        "com.macro.mall.portal.controller.PmsPortalBrandController.detail"
-                    ]
-                },
-                {
-                    "name": "实现分页获取推荐品牌列表接口",
-                    "description": "开发一个接口，能够分页查询并返回推荐的品牌列表数据。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsBrandController.getList",
-                        "com.macro.mall.portal.controller.PmsPortalBrandController.recommendList"
-                    ]
-                },
-                {
-                    "name": "实现批量修改推荐品牌状态功能",
-                    "description": "开发一个功能，允许管理员批量修改推荐品牌的推荐状态（启用或禁用）。",
-                    "resources": [
-                        "com.macro.mall.controller.SmsHomeBrandController.updateRecommendStatus",
-                        "com.macro.mall.controller.PmsBrandController.updateShowStatus"
-                    ]
-                },
-                {
-                    "name": "实现批量删除推荐品牌功能",
-                    "description": "开发一个功能，允许管理员批量删除推荐的品牌。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsBrandController.deleteBatch",
-                        "com.macro.mall.controller.SmsHomeBrandController.delete"
-                    ]
-                },
-                {
-                    "name": "添加品牌推荐管理页面",
-                    "description": "创建一个用于管理品牌推荐的页面，包括添加、删除和修改推荐品牌的操作。",
-                    "resources": [
-                        "mall-app-web.pages.user.brandAttention",
-                        "mall-app-web.pages.brand.list"
-                    ]
-                }
-            ],
-            "query": "实现品牌推荐管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "实现添加后台资源功能",
-                    "description": "提供一个接口用于创建新的后台资源，并保存到数据库中。",
-                    "resources": [
-                        "com.macro.mall.controller.UmsResourceCategoryController.create"
-                    ]
-                },
-                {
-                    "name": "添加后台资源管理页面",
-                    "description": "实现一个用于管理后台资源的页面，包含导航栏和操作按钮。",
-                    "resources": [
-                        "mall-app-web.pages.coupon.couponList",
-                        "mall-app-web.pages.user.user",
-                        "mall-app-web.pages.set.set"
-                    ]
-                },
-                {
-                    "name": "创建后台资源数据结构",
-                    "description": "定义后台资源的数据结构，包括字段和关系。",
-                    "resources": []
-                },
-                {
-                    "name": "实现更新后台资源功能",
-                    "description": "提供一个接口用于更新后台资源的信息，根据传入的ID和资源信息进行更新。",
-                    "resources": [
-                        "com.macro.mall.controller.UmsResourceCategoryController.update"
-                    ]
-                },
-                {
-                    "name": "实现删除后台资源功能",
-                    "description": "提供一个接口根据ID删除后台资源，并清除安全数据源。",
-                    "resources": [
-                        "com.macro.mall.controller.UmsResourceController.delete"
-                    ]
-                },
-                {
-                    "name": "实现查询所有后台资源功能",
-                    "description": "提供一个接口用于查询所有的后台资源并返回结果。",
-                    "resources": [
-                        "com.macro.mall.controller.UmsResourceController.list",
-                        "com.macro.mall.controller.UmsResourceController.listAll"
-                    ]
-                }
-            ],
-            "query": "实现后台资源管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "实现会员订单管理页面",
-                    "description": "创建一个会员订单管理页面，允许用户查看、取消、付款等操作。",
-                    "resources": [
-                        "com.macro.mall.controller.OmsOrderSettingController.getItem",
-                        "mall-app-web.pages.order.orderDetail",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.deleteOrder",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelOrder",
-                        "com.macro.mall.controller.OmsOrderController.list",
-                        "com.macro.mall.controller.OmsOrderController.delete",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelUserOrder",
-                        "com.macro.mall.controller.OmsOrderSettingController.update",
-                        "com.macro.mall.controller.OmsOrderController.close",
-                        "com.macro.mall.controller.OmsOrderController.updateNote",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelTimeOutOrder"
-                    ]
-                },
-                {
-                    "name": "实现会员积分和成长值功能",
-                    "description": "在用户数据结构中添加积分和成长值字段，并实现相应的计算逻辑。",
-                    "resources": [
-                        "com.macro.mall.model.UmsIntegrationConsumeSettingExample",
-                        "com.macro.mall.model.UmsMemberTask",
-                        "com.macro.mall.controller.PmsProductCategoryController.update",
-                        "com.macro.mall.model.UmsMemberRuleSetting"
-                    ]
-                },
-                {
-                    "name": "添加会员等级数据结构",
-                    "description": "定义和实现会员等级的数据结构，包括会员等级的基本信息和特权。",
-                    "resources": [
-                        "com.macro.mall.model.UmsMemberLevel"
-                    ]
-                },
-                {
-                    "name": "实现会员信息管理页面",
-                    "description": "创建一个会员信息管理页面，允许用户查看、编辑个人资料等信息。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberAttentionController.detail",
-                        "com.macro.mall.portal.controller.MemberReadHistoryController.create",
-                        "com.macro.mall.controller.PmsProductController.getUpdateInfo",
-                        "com.macro.mall.portal.controller.UmsMemberController.info",
-                        "com.macro.mall.controller.UmsAdminController.list",
-                        "com.macro.mall.controller.UmsResourceCategoryController.update",
-                        "com.macro.mall.portal.controller.UmsMemberController.updatePassword",
-                        "com.macro.mall.controller.UmsAdminController.register",
-                        "mall-app-web.pages.public.login"
-                    ]
-                },
-                {
-                    "name": "更新用户数据结构以支持会员功能",
-                    "description": "修改用户数据结构，添加与会员相关的字段，如会员等级ID等。",
-                    "resources": [
-                        "com.macro.mall.model.PmsMemberPrice",
-                        "com.macro.mall.model.UmsMemberLevel"
-                    ]
-                },
-                {
-                    "name": "实现会员注册页面",
-                    "description": "创建一个会员注册页面，接收用户信息并验证后保存到数据库中。",
-                    "resources": [
-                        "mall-app-web.pages.address.addressManage",
-                        "mall-app-web.components.upload-images",
-                        "com.macro.mall.portal.controller.UmsMemberController.register",
-                        "com.macro.mall.portal.controller.UmsMemberController.info",
-                        "mall-app-web.pages.user.user",
-                        "com.macro.mall.portal.controller.UmsMemberController.login",
-                        "mall-app-web.components.uni-load-more.uni-load-more",
-                        "mall-app-web.pages.address.address",
-                        "com.macro.mall.controller.UmsAdminController.getItem",
-                        "mall-app-web.pages.set.set"
-                    ]
-                },
-                {
-                    "name": "实现会员分享功能",
-                    "description": "在会员信息页面中添加分享按钮，并实现分享功能的弹出层。",
-                    "resources": [
-                        "mall-app-web.components.share"
-                    ]
-                },
-                {
-                    "name": "实现会员等级管理页面",
-                    "description": "创建一个会员等级管理页面，管理员可以添加、修改和删除会员等级。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberAttentionController.detail",
-                        "com.macro.mall.controller.PmsBrandController.delete",
-                        "com.macro.mall.controller.UmsAdminController.logout",
-                        "com.macro.mall.controller.SmsHomeAdvertiseController.create",
-                        "com.macro.mall.controller.OmsOrderSettingController.update",
-                        "mall-app-web.pages.public.login",
-                        "com.macro.mall.controller.PmsProductController.updateDeleteStatus"
-                    ]
-                },
-                {
-                    "name": "实现会员登录页面",
-                    "description": "创建一个会员登录页面，验证用户名和密码，并返回token。",
-                    "resources": [
-                        "com.macro.mall.controller.UmsAdminController.updatePassword",
-                        "com.macro.mall.portal.controller.MemberReadHistoryController.create",
-                        "com.macro.mall.portal.controller.UmsMemberController.register",
-                        "com.macro.mall.controller.UmsAdminController.refreshToken",
-                        "mall-app-web.pages.userinfo.userinfo",
-                        "com.macro.mall.portal.controller.UmsMemberController.info",
-                        "com.macro.mall.portal.controller.UmsMemberController.login",
-                        "mall-app-web.pages.money.paySuccess",
-                        "com.macro.mall.controller.UmsAdminController.getItem"
-                    ]
-                }
-            ],
-            "query": "实现会员管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "更新数据库模式以支持浏览记录",
-                    "description": "修改数据库模式，增加存储浏览记录所需的表或字段。",
-                    "resources": []
-                },
-                {
-                    "name": "在用户中心展示浏览历史",
-                    "description": "在用户中心页面中添加一个部分，用于显示用户的浏览历史，并提供删除选项。",
-                    "resources": [
-                        "mall-app-web.pages.user.user",
-                        "mall-app-web.components.uni-load-more.uni-load-more",
-                        "mall-app-web.pages.user.readHistory"
-                    ]
-                },
-                {
-                    "name": "添加浏览记录数据结构",
-                    "description": "为商品浏览记录添加相应的数据结构，包括用户ID、商品ID和浏览时间等字段。",
-                    "resources": []
-                },
-                {
-                    "name": "创建服务方法来删除浏览记录",
-                    "description": "实现一个服务方法，允许用户删除特定的浏览记录或清空所有浏览记录。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberReadHistoryController.clear",
-                        "com.macro.mall.controller.UmsResourceController.delete"
-                    ]
-                },
-                {
-                    "name": "在商品详情页添加浏览记录功能",
-                    "description": "在商品详情页面中添加逻辑，当用户查看商品时自动记录浏览信息。",
-                    "resources": [
-                        "mall-app-web.pages.user.readHistory"
-                    ]
-                },
-                {
-                    "name": "创建服务方法来获取浏览历史",
-                    "description": "实现一个服务方法，用于分页查询用户的浏览历史记录。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberReadHistoryController.list"
-                    ]
-                },
-                {
-                    "name": "创建服务方法来添加浏览记录",
-                    "description": "实现一个服务方法，用于在用户浏览商品时记录浏览信息。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberReadHistoryController.create",
-                        "com.macro.mall.portal.controller.MemberReadHistoryController.clear"
-                    ]
-                }
-            ],
-            "query": "实现商品浏览记录管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "实现SKU库存更新逻辑",
-                    "description": "编写服务方法以批量更新商品SKU库存信息，确保数据一致性。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsSkuStockController.update"
-                    ]
-                },
-                {
-                    "name": "添加商品SKU库存数据结构",
-                    "description": "定义并实现商品SKU库存的数据结构，包括ID、产品ID、SKU编码、价格、库存量等属性。",
-                    "resources": [
-                        "com.macro.mall.model.PmsSkuStockExample",
-                        "com.macro.mall.model.PmsSkuStock"
-                    ]
-                },
-                {
-                    "name": "创建SKU库存更新页面",
-                    "description": "实现一个页面用于批量更新商品SKU库存信息。",
-                    "resources": [
-                        "mall-app-web.components.upload-images"
-                    ]
-                },
-                {
-                    "name": "实现SKU库存查询逻辑",
-                    "description": "编写服务方法以根据商品ID及SKU编码模糊搜索SKU库存信息，并返回结果。",
-                    "resources": [
-                        "com.macro.mall.controller.UmsResourceController.getItem",
-                        "com.macro.mall.controller.PmsSkuStockController.getList"
-                    ]
-                },
-                {
-                    "name": "创建SKU库存查询页面",
-                    "description": "实现一个页面用于查询和显示商品SKU库存信息，支持模糊搜索功能。",
-                    "resources": [
-                        "mall-app-web.components.upload-images"
-                    ]
-                },
-                {
-                    "name": "更新数据库以支持SKU库存管理",
-                    "description": "修改数据库模式以存储和管理商品SKU库存信息，确保数据持久化。",
-                    "resources": [
-                        "com.macro.mall.search.domain.EsProduct",
-                        "com.macro.mall.model.PmsSkuStock"
-                    ]
-                }
-            ],
-            "query": "实现商品SKU库存管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "实现查询SKU库存功能",
-                    "description": "创建服务方法来根据商品ID及SKU编码模糊搜索SKU库存信息。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsSkuStockController.getList"
-                    ]
-                },
-                {
-                    "name": "更新数据库以支持SKU库存管理",
-                    "description": "修改数据库模式以存储和管理商品SKU库存信息。",
-                    "resources": [
-                        "com.macro.mall.model.PmsSkuStockExample",
-                        "com.macro.mall.model.PmsSkuStock"
-                    ]
-                },
-                {
-                    "name": "创建商品SKU库存数据结构",
-                    "description": "定义商品SKU库存的数据结构，包括ID、产品ID、SKU编码、价格、库存量等属性。",
-                    "resources": [
-                        "com.macro.mall.model.PmsSkuStock"
-                    ]
-                },
-                {
-                    "name": "展示SKU库存管理页面",
-                    "description": "设计并实现一个用于管理SKU库存的用户界面，包括添加、更新、删除和查询功能。",
-                    "resources": [
-                        "mall-app-web.components.uni-load-more.uni-load-more",
-                        "mall-app-web.pages.product.newProductList"
-                    ]
-                },
-                {
-                    "name": "实现更新SKU库存功能",
-                    "description": "创建服务方法来更新现有的SKU库存信息。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsSkuStockController.update"
-                    ]
-                },
-                {
-                    "name": "实现删除SKU库存功能",
-                    "description": "创建服务方法来删除指定的SKU库存记录。",
-                    "resources": [
-                        "com.macro.mall.controller.SmsFlashPromotionController.delete"
-                    ]
-                },
-                {
-                    "name": "实现添加SKU库存功能",
-                    "description": "创建服务方法来添加新的SKU库存记录到数据库中。",
-                    "resources": [
-                        "com.macro.mall.controller.SmsHomeAdvertiseController.create"
-                    ]
-                }
-            ],
-            "query": "实现商品SKU库存的CRUD管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "更新订单状态字段",
-                    "description": "在订单实体中添加或更新表示订单是否已取消的状态字段。",
-                    "resources": [
-                        "com.macro.mall.model.OmsOrderExample"
-                    ]
-                },
-                {
-                    "name": "更新订单列表页面以显示取消状态",
-                    "description": "在订单列表页面中添加逻辑以显示哪些订单已被取消。",
-                    "resources": [
-                        "mall-app-web.pages.order.orderDetail",
-                        "mall-app-web.pages.order.order"
-                    ]
-                },
-                {
-                    "name": "在订单详情页面显示取消状态",
-                    "description": "在订单详情页面中添加逻辑以显示订单是否已被取消的信息。",
-                    "resources": [
-                        "mall-app-web.pages.order.orderDetail",
-                        "mall-app-web.pages.order.order"
-                    ]
-                },
-                {
-                    "name": "添加超时订单取消逻辑",
-                    "description": "实现自动检测并取消超时未支付的订单。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelOrder",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelTimeOutOrder"
-                    ]
-                },
-                {
-                    "name": "修改数据库模式以支持新字段",
-                    "description": "更新数据库表结构，确保能够存储新的订单状态信息。",
-                    "resources": [
-                        "com.macro.mall.model.OmsOrderExample"
-                    ]
-                }
-            ],
-            "query": "实现超时订单取消功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "添加退货原因管理页面",
-                    "description": "实现一个管理员可以添加、编辑和删除退货原因的管理页面。",
-                    "resources": []
-                },
-                {
-                    "name": "展示退货原因列表",
-                    "description": "在退货申请页面中提供一个下拉菜单或选择框，列出所有可用的退货原因。",
-                    "resources": [
-                        "com.macro.mall.model.OmsOrderReturnReason",
-                        "com.macro.mall.model.OmsOrderReturnReasonExample"
-                    ]
-                },
-                {
-                    "name": "处理退货原因增删改操作",
-                    "description": "创建服务方法来处理管理员对退货原因的操作，并更新数据库中的数据。",
+                    "name": "实现分页查询退货原因功能",
+                    "description": "实现一个接口，用于分页查询所有可用的退货原因。",
                     "resources": [
                         "com.macro.mall.controller.OmsOrderReturnReasonController.list",
                         "com.macro.mall.controller.OmsOrderReturnReasonController.getItem",
-                        "com.macro.mall.model.OmsOrderReturnReasonExample",
                         "com.macro.mall.controller.OmsOrderReturnReasonController.update",
                         "com.macro.mall.controller.OmsOrderReturnReasonController.create",
                         "com.macro.mall.controller.OmsOrderReturnReasonController.delete"
                     ]
                 },
                 {
-                    "name": "展示订单详情页面的退货选项",
-                    "description": "在订单详情页面中添加一个按钮或链接，允许用户发起退货申请。",
+                    "name": "更新订单状态",
+                    "description": "在数据库中添加或修改订单状态字段以支持退货流程，并更新相关逻辑。",
                     "resources": [
-                        "mall-app-web.pages.order.orderDetail",
-                        "com.macro.mall.model.OmsOrderReturnReasonExample",
-                        "com.macro.mall.model.OmsOrderReturnApply"
-                    ]
-                },
-                {
-                    "name": "分页查询退货申请列表",
-                    "description": "实现服务方法来分页查询所有退货申请，并返回结果给前端页面展示。",
-                    "resources": [
-                        "com.macro.mall.controller.OmsOrderReturnApplyController.list",
-                        "com.macro.mall.model.OmsOrderReturnApplyExample"
-                    ]
-                },
-                {
-                    "name": "添加退货申请页面",
-                    "description": "实现一个用户可以提交退货申请的页面，包含必要的表单字段和提交按钮。",
-                    "resources": [
-                        "mall-app-web.pages.order.createOrder"
-                    ]
-                },
-                {
-                    "name": "处理退货申请提交",
-                    "description": "创建服务方法来处理用户提交的退货申请，并将数据保存到数据库中。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.OmsPortalOrderReturnApplyController.create",
-                        "com.macro.mall.model.OmsOrderReturnApplyExample"
+                        "com.macro.mall.portal.domain.OmsOrderReturnApplyParam",
+                        "com.macro.mall.controller.OmsOrderReturnApplyController.updateStatus",
+                        "com.macro.mall.controller.OmsOrderController.updateNote"
                     ]
                 }
             ],
@@ -1267,484 +719,245 @@
         {
             "task": [
                 {
-                    "name": "定义管理员角色关系数据结构",
-                    "description": "定义管理员角色关系的数据结构，包含ID、管理员ID和角色ID。",
-                    "resources": [
-                        "com.macro.mall.model.UmsAdminRoleRelation"
-                    ]
-                },
-                {
-                    "name": "定义角色数据结构",
-                    "description": "定义用户角色的数据结构，包括角色ID、名称、描述等属性。",
+                    "name": "验证编辑逻辑",
+                    "description": "实现必要的验证规则，以确保用户输入的数据符合要求。",
                     "resources": []
                 },
                 {
-                    "name": "实现获取管理员信息功能",
-                    "description": "获取当前登录管理员的信息，包括用户名、菜单列表、头像和角色列表。",
+                    "name": "更新退货原因数据结构",
+                    "description": "在现有退货原因的数据模型中添加或修改必要的字段以支持编辑功能。",
                     "resources": [
-                        "com.macro.mall.controller.UmsAdminController.getAdminInfo"
+                        "com.macro.mall.model.OmsOrderReturnReason",
+                        "com.macro.mall.portal.domain.OmsOrderReturnApplyParam"
                     ]
                 },
                 {
-                    "name": "实现分页查询角色列表功能",
-                    "description": "根据角色名称分页获取角色列表。",
+                    "name": "添加退货原因编辑页面",
+                    "description": "实现一个用于编辑退货原因的用户界面，包含必要的输入字段和提交按钮。",
                     "resources": [
-                        "com.macro.mall.controller.UmsRoleController.list"
+                        "mall-app-web.components.uni-number-box",
+                        "mall-app-web.pages.address.address"
                     ]
                 },
                 {
-                    "name": "实现添加角色功能",
-                    "description": "通过POST请求接收角色信息并调用服务进行创建。",
+                    "name": "实现更新退货原因的服务方法",
+                    "description": "创建一个服务方法，用于处理退货原因的更新请求，并确保数据的一致性和有效性。",
                     "resources": [
-                        "com.macro.mall.controller.UmsRoleController.create"
+                        "com.macro.mall.controller.OmsOrderReturnReasonController.getItem",
+                        "com.macro.mall.controller.OmsOrderReturnReasonController.update"
+                    ]
+                }
+            ],
+            "query": "实现退货原因编辑功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "展示品牌信息页面",
+                    "description": "实现一个页面用于展示品牌的详细信息，包括品牌故事和相关商品列表，并提供收藏功能。",
+                    "resources": [
+                        "mall-app-web.pages.brand.brandDetail",
+                        "mall-app-web.pages.brand.list",
+                        "mall-app-web.pages.product.newProductList"
                     ]
                 },
                 {
-                    "name": "创建角色管理页面",
-                    "description": "实现一个后台用户角色管理的页面，包含添加、编辑和删除角色的功能。",
+                    "name": "添加品牌关注功能",
+                    "description": "实现用户可以关注品牌的逻辑，并将关注信息保存到数据库中。",
                     "resources": [
+                        "com.macro.mall.portal.controller.MemberAttentionController.detail",
+                        "com.macro.mall.portal.controller.MemberAttentionController.add",
+                        "com.macro.mall.portal.domain.MemberBrandAttention"
+                    ]
+                },
+                {
+                    "name": "会员关注品牌实体类定义",
+                    "description": "定义会员关注品牌的实体类，包含会员和品牌的基本信息。",
+                    "resources": [
+                        "com.macro.mall.portal.domain.MemberBrandAttention"
+                    ]
+                },
+                {
+                    "name": "展示品牌列表页面",
+                    "description": "实现一个页面用于展示品牌列表，点击每个品牌可跳转到详情页，并显示商品数量。",
+                    "resources": [
+                        "mall-app-web.pages.user.brandAttention",
+                        "mall-app-web.pages.brand.list"
+                    ]
+                },
+                {
+                    "name": "品牌实体类定义",
+                    "description": "定义品牌信息的实体类，包含品牌ID、名称、首字母、排序等属性。",
+                    "resources": [
+                        "com.macro.mall.model.SmsHomeBrand"
+                    ]
+                }
+            ],
+            "query": "实现会员品牌管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "首页轮播广告数据管理",
+                    "description": "实现对首页轮播广告的数据操作，包括创建、更新状态和删除广告。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.HomeController.content",
+                        "com.macro.mall.controller.UmsMenuController.list",
+                        "com.macro.mall.controller.SmsHomeAdvertiseController.getItem",
+                        "com.macro.mall.controller.SmsHomeAdvertiseController.delete",
+                        "com.macro.mall.controller.SmsHomeAdvertiseController.create",
+                        "com.macro.mall.controller.SmsHomeAdvertiseController.updateStatus",
+                        "com.macro.mall.portal.domain.HomeContentResult"
+                    ]
+                },
+                {
+                    "name": "获取首页内容接口实现",
+                    "description": "实现一个接口，用于获取首页的所有内容信息，包括轮播广告、推荐品牌等，并返回给前端展示。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.HomeController.content",
+                        "com.macro.mall.controller.SmsHomeNewProductController.list",
+                        "com.macro.mall.portal.domain.HomeContentResult"
+                    ]
+                },
+                {
+                    "name": "首页轮播广告页面展示",
+                    "description": "在小程序首页布局中添加轮播广告的显示功能，并根据数据动态更新广告内容。",
+                    "resources": [
+                        "mall-app-web.pages.index.index",
+                        "com.macro.mall.controller.SmsHomeAdvertiseController.getItem",
+                        "com.macro.mall.controller.SmsHomeAdvertiseController.delete",
+                        "com.macro.mall.controller.SmsHomeAdvertiseController.create",
+                        "com.macro.mall.controller.SmsHomeAdvertiseController.updateStatus",
+                        "com.macro.mall.controller.SmsHomeAdvertiseController.list"
+                    ]
+                }
+            ],
+            "query": "实现首页轮播广告管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "实现更新品牌推荐排序功能",
+                    "description": "提供一个接口用于更新指定ID的品牌推荐排序。",
+                    "resources": [
+                        "com.macro.mall.controller.SmsHomeBrandController.updateSort"
+                    ]
+                },
+                {
+                    "name": "展示推荐品牌列表",
+                    "description": "在首页或其他页面上显示推荐品牌列表，点击可跳转到详情页。",
+                    "resources": [
+                        "mall-app-web.pages.user.brandAttention",
                         "mall-app-web.pages.category.category",
-                        "mall-app-web.components.upload-images",
-                        "mall-app-web.components.uni-load-more.uni-load-more"
+                        "mall-app-web.pages.product.newProductList"
                     ]
                 },
                 {
-                    "name": "实现分配角色功能",
-                    "description": "给用户分配角色。",
+                    "name": "实现批量修改推荐状态功能",
+                    "description": "提供一个接口用于批量修改品牌的推荐状态。",
                     "resources": [
-                        "com.macro.mall.controller.UmsRoleController.allocMenu",
-                        "com.macro.mall.controller.UmsRoleController.allocResource",
-                        "com.macro.mall.controller.UmsAdminController.updateRole"
-                    ]
-                }
-            ],
-            "query": "实现后台用户角色管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "更新数据库模式以支持收藏功能",
-                    "description": "修改数据库表结构，添加必要的字段来存储用户的收藏信息。",
-                    "resources": [
-                        "com.macro.mall.controller.UmsResourceController.create",
-                        "com.macro.mall.controller.UmsResourceController.update"
+                        "com.macro.mall.controller.SmsHomeBrandController.updateRecommendStatus",
+                        "com.macro.mall.controller.PmsBrandController.updateShowStatus"
                     ]
                 },
                 {
-                    "name": "添加商品收藏功能",
-                    "description": "实现用户可以将商品添加到收藏列表的功能。",
+                    "name": "创建品牌推荐接口",
+                    "description": "实现一个接口用于分页获取推荐品牌列表。",
                     "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.delete",
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.add"
+                        "com.macro.mall.portal.controller.PmsPortalBrandController.recommendList"
                     ]
                 },
                 {
-                    "name": "添加收藏状态字段到商品实体",
-                    "description": "在商品数据结构中增加一个表示是否被收藏的字段。",
+                    "name": "添加品牌关注功能",
+                    "description": "在用户界面中提供关注品牌的选项，并处理相关逻辑。",
+                    "resources": [
+                        "mall-app-web.pages.user.brandAttention",
+                        "com.macro.mall.portal.controller.MemberAttentionController.detail",
+                        "com.macro.mall.portal.controller.MemberAttentionController.add",
+                        "com.macro.mall.portal.controller.MemberAttentionController.delete",
+                        "com.macro.mall.portal.controller.MemberAttentionController.list",
+                        "com.macro.mall.portal.controller.MemberAttentionController.clear"
+                    ]
+                },
+                {
+                    "name": "添加推荐品牌数据字段",
+                    "description": "在相关实体类中添加用于标识品牌是否被推荐的字段。",
+                    "resources": [
+                        "com.macro.mall.dto.PmsBrandParam",
+                        "com.macro.mall.portal.domain.MemberBrandAttention"
+                    ]
+                },
+                {
+                    "name": "更新数据库模式以支持推荐状态",
+                    "description": "修改数据库表结构，以便存储品牌的推荐状态和排序信息。",
                     "resources": []
-                },
-                {
-                    "name": "删除商品收藏",
-                    "description": "实现用户可以删除已收藏的商品的功能。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.clear",
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.delete"
-                    ]
-                },
-                {
-                    "name": "清空当前用户商品收藏列表",
-                    "description": "提供功能让用户一次性清空所有已收藏的商品。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.clear",
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.delete"
-                    ]
-                },
-                {
-                    "name": "显示当前用户分页的商品收藏列表",
-                    "description": "展示当前用户的商品收藏列表，并支持分页浏览。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.list"
-                    ]
-                },
-                {
-                    "name": "显示商品收藏详情",
-                    "description": "展示指定商品的收藏详情页面，包括商品信息和收藏状态。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.MemberProductCollectionController.detail"
-                    ]
                 }
             ],
-            "query": "实现商品收藏功能"
+            "query": "实现品牌推荐功能"
         },
         {
             "task": [
                 {
-                    "name": "订单取消功能实现",
-                    "description": "实现用户取消订单的功能，并更新订单状态。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.detail",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelUserOrder"
-                    ]
-                },
-                {
-                    "name": "订单付款功能实现",
-                    "description": "实现用户付款订单的功能，并更新订单状态。",
-                    "resources": [
-                        "com.macro.mall.controller.OmsOrderController.list",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.paySuccess"
-                    ]
-                },
-                {
-                    "name": "订单详情页面实现",
-                    "description": "实现一个订单详情页面，显示订单状态、收货地址、商品信息、金额明细和操作按钮。",
-                    "resources": [
-                        "mall-app-web.pages.order.orderDetail"
-                    ]
-                },
-                {
-                    "name": "确认收货功能实现",
-                    "description": "实现用户确认收货的功能，并更新订单状态。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.detail",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.confirmReceiveOrder"
-                    ]
-                },
-                {
-                    "name": "订单确认页面实现",
-                    "description": "实现一个订单确认页面，包括收货地址、商品列表、优惠信息和支付详情，并提供提交订单的功能。",
-                    "resources": [
-                        "mall-app-web.pages.address.addressManage",
-                        "mall-app-web.pages.order.createOrder"
-                    ]
-                },
-                {
-                    "name": "支付成功回调处理",
-                    "description": "处理用户支付成功的回调，更新订单状态并返回成功结果。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.paySuccess",
-                        "com.macro.mall.portal.controller.AlipayController.notify"
-                    ]
-                },
-                {
-                    "name": "查询订单功能实现",
-                    "description": "实现分页查询订单的功能，支持按状态筛选并返回订单列表。",
-                    "resources": [
-                        "com.macro.mall.controller.OmsOrderController.list",
-                        "com.macro.mall.model.OmsOrderExample"
-                    ]
-                },
-                {
-                    "name": "订单管理页面实现",
-                    "description": "实现一个包含导航栏和滑动切换的订单列表页面，用户可以查看不同状态的订单并进行操作。",
-                    "resources": [
-                        "mall-app-web.pages.order.order"
-                    ]
-                },
-                {
-                    "name": "支付成功页面实现",
-                    "description": "实现一个支付成功页面，显示支付成功信息，并提供查看订单和返回首页的导航按钮。",
-                    "resources": [
-                        "mall-app-web.pages.money.paySuccess"
-                    ]
-                },
-                {
-                    "name": "订单发货处理",
-                    "description": "批量处理订单发货，返回成功或失败结果，并更新订单状态。",
-                    "resources": [
-                        "com.macro.mall.controller.OmsOrderController.delivery",
-                        "com.macro.mall.controller.OmsOrderController.updateNote"
-                    ]
-                }
-            ],
-            "query": "实现订单管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "创建商品专题页面",
-                    "description": "实现一个用于管理商品专题的页面，包括添加、编辑和删除专题的功能。",
-                    "resources": []
-                },
-                {
-                    "name": "展示专题列表",
-                    "description": "在管理页面中展示所有商品专题的列表，并提供分页功能。",
-                    "resources": [
-                        "com.macro.mall.controller.CmsSubjectController.getList",
-                        "com.macro.mall.controller.SmsHomeRecommendSubjectController.list"
-                    ]
-                },
-                {
-                    "name": "批量修改专题推荐状态",
-                    "description": "实现一个接口，允许管理员批量更改多个商品专题的推荐状态。",
+                    "name": "实现修改推荐商品状态接口",
+                    "description": "创建一个API接口用于批量修改首页推荐商品的状态（如启用或禁用）。",
                     "resources": [
                         "com.macro.mall.controller.PmsProductController.updateRecommendStatus"
                     ]
                 },
                 {
-                    "name": "添加商品专题",
-                    "description": "实现一个接口，允许管理员添加新的商品专题。",
+                    "name": "实现添加推荐商品接口",
+                    "description": "创建一个API接口用于向首页添加推荐商品。",
                     "resources": [
-                        "com.macro.mall.controller.CmsPrefrenceAreaController.listAll",
-                        "com.macro.mall.controller.SmsHomeNewProductController.create"
+                        "com.macro.mall.controller.SmsHomeRecommendProductController.create"
                     ]
                 },
                 {
-                    "name": "编辑商品专题",
-                    "description": "实现一个接口，允许管理员编辑已有的商品专题信息。",
+                    "name": "实现获取推荐商品列表接口",
+                    "description": "创建一个API接口用于分页查询首页推荐商品的列表。",
                     "resources": [
-                        "com.macro.mall.controller.PmsProductController.getUpdateInfo",
-                        "com.macro.mall.controller.SmsFlashPromotionProductRelationController.update"
+                        "com.macro.mall.portal.controller.HomeController.recommendProductList"
                     ]
                 },
                 {
-                    "name": "删除商品专题",
-                    "description": "实现一个接口，允许管理员删除指定的商品专题。",
+                    "name": "创建推荐商品实体类",
+                    "description": "定义一个新的实体类来表示推荐商品的数据结构，包含产品ID、名称、推荐状态等信息。",
                     "resources": [
-                        "com.macro.mall.portal.controller.OmsCartItemController.delete"
+                        "com.macro.mall.model.SmsHomeNewProduct"
                     ]
                 },
                 {
-                    "name": "修改专题推荐排序",
-                    "description": "实现一个接口，允许管理员调整商品专题的推荐顺序。",
+                    "name": "添加推荐商品管理页面",
+                    "description": "在后台管理系统中添加一个用于管理首页推荐商品的页面，包括添加、删除和修改推荐商品的功能。",
                     "resources": [
-                        "com.macro.mall.controller.SmsHomeRecommendProductController.updateSort"
-                    ]
-                },
-                {
-                    "name": "根据分类获取专题列表",
-                    "description": "实现一个接口，允许根据指定的分类获取相应的商品专题列表。",
-                    "resources": [
-                        "com.macro.mall.controller.CmsSubjectController.getList",
-                        "com.macro.mall.portal.controller.HomeController.getSubjectList"
-                    ]
-                },
-                {
-                    "name": "获取所有商品专题",
-                    "description": "定义一个接口，用于获取系统中所有的商品专题列表。",
-                    "resources": [
-                        "com.macro.mall.controller.CmsPrefrenceAreaController.listAll"
-                    ]
-                }
-            ],
-            "query": "实现商品专题管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "实现商品分类列表页面",
-                    "description": "创建一个页面用于展示所有商品分类，支持分页和搜索功能。",
-                    "resources": [
-                        "mall-app-web.pages.category.category"
-                    ]
-                },
-                {
-                    "name": "添加商品分类管理功能到首页",
-                    "description": "在小程序首页中添加分类导航，方便用户快速访问不同分类。",
-                    "resources": [
-                        "mall-app-web.pages.index.index"
-                    ]
-                },
-                {
-                    "name": "添加商品分类数据结构",
-                    "description": "定义商品分类的数据结构，包括字段如分类ID、名称、父分类ID等。",
-                    "resources": [
-                        "com.macro.mall.dto.ProductAttrInfo",
-                        "com.macro.mall.model.PmsProductCategory",
-                        "com.macro.mall.dto.PmsProductAttributeParam",
-                        "com.macro.mall.dto.PmsProductCategoryParam"
-                    ]
-                },
-                {
-                    "name": "实现商品分类详情页面",
-                    "description": "创建一个页面用于展示单个商品分类的详细信息，并允许编辑。",
-                    "resources": [
-                        "mall-app-web.pages.brand.brandDetail"
-                    ]
-                },
-                {
-                    "name": "实现商品分类属性管理功能",
-                    "description": "允许管理员为每个商品分类定义特定的属性，并支持这些属性的增删改查操作。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.create",
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.update",
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getListWithAttr",
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getItem",
-                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo",
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.delete"
-                    ]
-                },
-                {
-                    "name": "实现商品分类的增删改查服务方法",
-                    "description": "创建服务方法用于添加、删除、更新和查询商品分类信息。",
-                    "resources": [
-                        "com.macro.mall.controller.PmsProductCategoryController.getItem",
-                        "com.macro.mall.controller.PmsProductCategoryController.delete",
-                        "com.macro.mall.controller.PmsProductCategoryController.listWithChildren",
-                        "com.macro.mall.controller.PmsProductCategoryController.update",
-                        "com.macro.mall.controller.PmsProductCategoryController.create"
-                    ]
-                },
-                {
-                    "name": "更新数据库以支持商品分类",
-                    "description": "修改数据库模式以存储和管理商品分类信息。",
-                    "resources": [
-                        "com.macro.mall.dto.ProductAttrInfo",
-                        "com.macro.mall.dto.PmsProductAttributeParam"
-                    ]
-                }
-            ],
-            "query": "实现商品分类管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "关联商品与限时购活动",
-                    "description": "实现将商品与特定限时购活动进行关联的功能，允许批量添加或修改关联关系。",
-                    "resources": [
-                        "com.macro.mall.controller.SmsFlashPromotionProductRelationController.create",
-                        "com.macro.mall.controller.SmsFlashPromotionProductRelationController.getItem",
-                        "com.macro.mall.controller.SmsFlashPromotionProductRelationController.list",
-                        "com.macro.mall.controller.SmsFlashPromotionProductRelationController.update"
-                    ]
-                },
-                {
-                    "name": "查询限时购活动列表页面",
-                    "description": "实现一个用于展示所有限时购活动的列表页面，支持分页和筛选功能。",
-                    "resources": [
-                        "mall-app-web.pages.product.hotProductList",
-                        "mall-app-web.pages.brand.list",
-                        "mall-app-web.pages.product.newProductList"
-                    ]
-                },
-                {
-                    "name": "创建限时购活动页面",
-                    "description": "实现一个用于创建限时购活动的管理页面，包含必要的输入字段和提交按钮。",
-                    "resources": [
-                        "mall-app-web.pages.brand.list",
-                        "mall-app-web.pages.product.newProductList"
-                    ]
-                },
-                {
-                    "name": "获取可选场次列表",
-                    "description": "提供一个接口用于获取指定闪购活动的所有可选场次及其数量。",
-                    "resources": [
-                        "com.macro.mall.controller.SmsFlashPromotionSessionController.getItem",
-                        "com.macro.mall.controller.SmsFlashPromotionSessionController.selectList",
-                        "com.macro.mall.controller.SmsFlashPromotionSessionController.list"
-                    ]
-                },
-                {
-                    "name": "限时购商品关系数据结构",
-                    "description": "定义或更新限时购商品关系的数据结构，包含必要的字段如商品ID、活动ID等。",
-                    "resources": [
-                        "com.macro.mall.model.SmsFlashPromotionProductRelation",
-                        "com.macro.mall.dto.PmsProductQueryParam",
-                        "com.macro.mall.model.PmsSkuStock"
-                    ]
-                },
-                {
-                    "name": "查询关联商品信息",
-                    "description": "根据限时购活动ID和场次ID分页查询关联的商品信息，支持筛选功能。",
-                    "resources": [
-                        "com.macro.mall.controller.SmsFlashPromotionProductRelationController.getItem",
-                        "com.macro.mall.portal.controller.PmsPortalProductController.search",
-                        "com.macro.mall.controller.SmsFlashPromotionProductRelationController.list"
-                    ]
-                },
-                {
-                    "name": "订单设置数据结构",
-                    "description": "更新订单设置的数据结构，添加与限时购相关的配置项，如秒杀订单超时关闭时间等。",
-                    "resources": [
-                        "com.macro.mall.model.OmsOrderItem",
-                        "com.macro.mall.model.OmsOrderSetting",
-                        "com.macro.mall.model.OmsOrder"
-                    ]
-                },
-                {
-                    "name": "更新限时购活动页面",
-                    "description": "实现一个用于更新现有限时购活动信息的管理页面，允许管理员修改活动详情。",
-                    "resources": [
-                        "mall-app-web.components.uni-load-more.uni-load-more",
-                        "mall-app-web.pages.product.newProductList"
-                    ]
-                }
-            ],
-            "query": "实现限时购活动管理功能"
-        },
-        {
-            "task": [
-                {
-                    "name": "返回相关品牌、分类及筛选属性信息",
-                    "description": "根据用户输入的关键字，返回相关的品牌、分类和筛选属性信息。",
-                    "resources": [
-                        "com.macro.mall.search.controller.EsProductController.searchRelatedInfo",
-                        "com.macro.mall.search.domain.EsProductRelatedInfo",
-                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
-                    ]
-                },
-                {
-                    "name": "提供搜索功能",
-                    "description": "实现根据用户输入的关键字、品牌和分类筛选商品的功能。",
-                    "resources": [
-                        "com.macro.mall.search.controller.EsProductController.searchRelatedInfo",
-                        "com.macro.mall.portal.controller.PmsPortalProductController.search",
-                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getListWithAttr",
-                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
-                    ]
-                },
-                {
-                    "name": "展示搜索结果列表",
-                    "description": "在搜索页面中展示符合用户条件的商品列表，并提供加载更多功能。",
-                    "resources": [
-                        "mall-app-web.pages.user.productCollection",
-                        "mall-app-web.pages.product.newProductList"
-                    ]
-                },
-                {
-                    "name": "实现商品搜索页面",
-                    "description": "创建一个用户可以输入关键字、选择品牌和分类进行搜索的页面。",
-                    "resources": [
-                        "mall-app-web.pages.category.category",
+                        "mall-app-web.components.upload-images",
                         "mall-app-web.pages.product.list"
                     ]
                 },
                 {
-                    "name": "支持排序功能",
-                    "description": "在搜索结果页面提供按销量优先或价格排序的选项。",
+                    "name": "实现删除推荐商品接口",
+                    "description": "创建一个API接口用于批量删除首页推荐商品。",
                     "resources": [
-                        "com.macro.mall.portal.controller.PmsPortalProductController.search"
+                        "com.macro.mall.controller.PmsBrandController.deleteBatch"
+                    ]
+                },
+                {
+                    "name": "更新首页内容返回信息类",
+                    "description": "在HomeContentResult实体类中添加推荐商品的相关字段，以便在获取首页内容时包含推荐商品的信息。",
+                    "resources": [
+                        "com.macro.mall.model.SmsHomeRecommendProduct",
+                        "com.macro.mall.portal.domain.HomeContentResult"
                     ]
                 }
             ],
-            "query": "实现商品搜索功能"
+            "query": "实现首页推荐商品管理功能"
         },
         {
             "task": [
                 {
-                    "name": "处理异步回调请求",
-                    "description": "处理支付宝的异步回调请求，更新订单状态并返回结果。",
+                    "name": "显示支付成功信息",
+                    "description": "在支付成功后，显示支付成功的页面，并提供查看订单和返回首页的导航按钮。",
                     "resources": [
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.paySuccess",
-                        "com.macro.mall.portal.controller.AlipayController.notify"
-                    ]
-                },
-                {
-                    "name": "创建订单",
-                    "description": "用户在购物车页面确认收货地址、商品列表、优惠信息和支付详情后，提交订单。",
-                    "resources": [
-                        "mall-app-web.pages.address.addressManage",
-                        "com.macro.mall.portal.controller.OmsCartItemController.listPromotion",
-                        "com.macro.mall.portal.controller.OmsPortalOrderController.generateConfirmOrder",
-                        "mall-app-web.pages.order.createOrder"
-                    ]
-                },
-                {
-                    "name": "处理支付宝支付请求",
-                    "description": "生成并返回支付宝支付页面，处理用户的支付请求。",
-                    "resources": [
-                        "com.macro.mall.portal.controller.AlipayController.webPay",
-                        "com.macro.mall.portal.controller.AlipayController.pay",
-                        "com.macro.mall.portal.domain.AliPayParam"
+                        "mall-app-web.pages.money.paySuccess"
                     ]
                 },
                 {
@@ -1757,20 +970,510 @@
                 },
                 {
                     "name": "查询交易状态",
-                    "description": "查询支付宝交易状态，确认订单是否支付成功。",
+                    "description": "查询支付宝线下交易的状态，以确认支付是否成功。",
                     "resources": [
                         "com.macro.mall.portal.controller.AlipayController.query"
                     ]
                 },
                 {
-                    "name": "显示支付成功信息",
-                    "description": "在支付成功后，显示支付成功的页面，并提供查看订单和返回首页的导航按钮。",
+                    "name": "处理异步回调请求",
+                    "description": "处理支付宝的异步回调请求，更新订单状态并返回结果。",
                     "resources": [
-                        "mall-app-web.pages.money.paySuccess"
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.paySuccess",
+                        "com.macro.mall.portal.controller.AlipayController.notify"
+                    ]
+                },
+                {
+                    "name": "处理支付宝支付请求",
+                    "description": "生成并返回支付宝支付页面，处理用户的支付请求。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.AlipayController.webPay",
+                        "com.macro.mall.portal.controller.AlipayController.pay",
+                        "com.macro.mall.portal.controller.AlipayController.notify",
+                        "com.macro.mall.portal.domain.AliPayParam"
                     ]
                 }
             ],
             "query": "实现支付宝支付功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "添加浏览记录数据结构",
+                    "description": "定义会员商品浏览历史记录的数据结构，包括会员和产品信息。",
+                    "resources": [
+                        "com.macro.mall.portal.domain.MemberReadHistory"
+                    ]
+                },
+                {
+                    "name": "实现删除浏览记录的功能",
+                    "description": "允许用户批量删除特定的浏览记录。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.MemberReadHistoryController.delete"
+                    ]
+                },
+                {
+                    "name": "实现添加浏览记录的功能",
+                    "description": "创建服务方法来记录用户对商品的浏览行为。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.MemberReadHistoryController.create"
+                    ]
+                },
+                {
+                    "name": "创建浏览记录页面",
+                    "description": "实现一个页面用于展示用户的浏览历史记录，并提供分页功能。",
+                    "resources": [
+                        "mall-app-web.pages.user.user",
+                        "mall-app-web.pages.user.readHistory"
+                    ]
+                },
+                {
+                    "name": "实现清空浏览记录的功能",
+                    "description": "提供一个功能让用户可以清空自己的浏览历史记录。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.MemberReadHistoryController.clear",
+                        "com.macro.mall.portal.controller.MemberReadHistoryController.delete"
+                    ]
+                }
+            ],
+            "query": "实现商品浏览记录管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "根据分类ID和类型分页查询商品属性或参数列表",
+                    "description": "实现根据分类ID和类型分页查询商品属性或参数列表的功能，包括查询数据结构和业务逻辑。",
+                    "resources": [
+                        "com.macro.mall.dto.PmsProductAttributeParam",
+                        "com.macro.mall.controller.PmsProductAttributeController.getList",
+                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
+                    ]
+                },
+                {
+                    "name": "展示商品属性分类编辑页面",
+                    "description": "在商品管理界面中添加一个页面用于编辑和修改商品属性分类信息。",
+                    "resources": [
+                        "mall-app-web.pages.product.newProductList"
+                    ]
+                },
+                {
+                    "name": "根据商品分类ID获取商品属性及属性分类信息",
+                    "description": "实现根据商品分类ID获取商品属性及属性分类信息的功能，包括查询数据结构和业务逻辑。",
+                    "resources": [
+                        "com.macro.mall.dto.ProductAttrInfo",
+                        "com.macro.mall.dto.PmsProductAttributeParam",
+                        "com.macro.mall.controller.PmsProductAttributeController.getList",
+                        "com.macro.mall.model.PmsProductAttribute",
+                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
+                    ]
+                },
+                {
+                    "name": "修改商品属性分类",
+                    "description": "实现修改商品属性分类的功能，包括更新数据结构和业务逻辑。",
+                    "resources": [
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.create",
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.update",
+                        "com.macro.mall.dto.ProductAttrInfo",
+                        "com.macro.mall.dto.PmsProductAttributeParam",
+                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo",
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getList"
+                    ]
+                },
+                {
+                    "name": "分页获取商品属性分类列表",
+                    "description": "实现分页获取商品属性分类列表的功能，包括查询数据结构和业务逻辑。",
+                    "resources": [
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getListWithAttr",
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getList",
+                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
+                    ]
+                },
+                {
+                    "name": "添加商品属性分类",
+                    "description": "实现添加商品属性分类的功能，包括定义数据结构和业务逻辑。",
+                    "resources": [
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.create",
+                        "com.macro.mall.dto.ProductAttrInfo",
+                        "com.macro.mall.model.PmsProductCategory",
+                        "com.macro.mall.dto.PmsProductAttributeParam",
+                        "com.macro.mall.model.PmsProductAttribute"
+                    ]
+                },
+                {
+                    "name": "展示商品属性分类列表页面",
+                    "description": "在商品管理界面中添加一个页面用于展示所有商品属性分类及其下属性。",
+                    "resources": [
+                        "mall-app-web.pages.product.newProductList"
+                    ]
+                },
+                {
+                    "name": "获取所有商品属性分类及其下属性",
+                    "description": "实现获取所有商品属性分类及其下属性的功能，包括查询数据结构和业务逻辑。",
+                    "resources": [
+                        "com.macro.mall.dto.ProductAttrInfo",
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getListWithAttr",
+                        "com.macro.mall.dto.PmsProductAttributeParam",
+                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo",
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getList"
+                    ]
+                },
+                {
+                    "name": "批量删除商品属性分类",
+                    "description": "实现批量删除商品属性分类的功能，包括处理数据结构和业务逻辑。",
+                    "resources": [
+                        "com.macro.mall.controller.PmsProductAttributeController.delete",
+                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
+                    ]
+                },
+                {
+                    "name": "删除商品属性分类",
+                    "description": "实现删除指定ID的商品属性分类的功能，包括处理数据结构和业务逻辑。",
+                    "resources": [
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.delete",
+                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
+                    ]
+                }
+            ],
+            "query": "实现商品属性分类功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "实现商品分类排序功能",
+                    "description": "允许用户根据名称、创建时间等字段对商品分类进行排序。",
+                    "resources": [
+                        "com.macro.mall.controller.SmsHomeAdvertiseController.list"
+                    ]
+                },
+                {
+                    "name": "更新数据库以支持商品分类",
+                    "description": "修改数据库模式以存储和管理商品分类信息。",
+                    "resources": [
+                        "com.macro.mall.portal.domain.PmsProductCategoryNode",
+                        "com.macro.mall.dto.ProductAttrInfo"
+                    ]
+                },
+                {
+                    "name": "实现修改商品分类功能",
+                    "description": "提供一个接口或页面用于管理员修改现有商品分类的信息。",
+                    "resources": [
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.update",
+                        "com.macro.mall.controller.PmsProductAttributeCategoryController.getItem"
+                    ]
+                },
+                {
+                    "name": "实现商品分类列表页面",
+                    "description": "创建一个页面用于展示所有商品分类，支持分页和搜索功能。",
+                    "resources": [
+                        "mall-app-web.pages.user.brandAttention",
+                        "mall-app-web.pages.category.category",
+                        "mall-app-web.pages.user.productCollection",
+                        "mall-app-web.pages.user.readHistory",
+                        "mall-app-web.pages.product.newProductList"
+                    ]
+                },
+                {
+                    "name": "添加商品分类数据结构",
+                    "description": "定义商品分类的数据结构，包括字段如ID、名称、父分类ID等。",
+                    "resources": [
+                        "com.macro.mall.portal.domain.PmsProductCategoryNode",
+                        "com.macro.mall.dto.ProductAttrInfo",
+                        "com.macro.mall.model.PmsProductAttributeCategory",
+                        "com.macro.mall.model.PmsProductAttribute",
+                        "com.macro.mall.dto.PmsProductCategoryParam"
+                    ]
+                },
+                {
+                    "name": "实现商品分类详情页面",
+                    "description": "创建一个页面用于展示单个商品分类的详细信息，包括子分类列表。",
+                    "resources": [
+                        "mall-app-web.pages.user.readHistory",
+                        "mall-app-web.pages.product.newProductList"
+                    ]
+                },
+                {
+                    "name": "实现添加商品分类功能",
+                    "description": "提供一个接口或页面用于管理员添加新的商品分类。",
+                    "resources": [
+                        "com.macro.mall.controller.SmsHomeRecommendProductController.create"
+                    ]
+                },
+                {
+                    "name": "实现删除商品分类功能",
+                    "description": "提供一个接口或页面用于管理员删除商品分类，确保子分类处理正确。",
+                    "resources": [
+                        "com.macro.mall.controller.PmsProductCategoryController.delete"
+                    ]
+                }
+            ],
+            "query": "实现商品分类管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "实现更新角色功能",
+                    "description": "允许编辑和更新现有角色的信息。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsRoleController.updateStatus"
+                    ]
+                },
+                {
+                    "name": "实现为角色分配资源功能",
+                    "description": "允许为角色分配相应的资源权限。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsRoleController.allocResource",
+                        "com.macro.mall.controller.UmsRoleController.listResource",
+                        "com.macro.mall.controller.UmsResourceCategoryController.listAll"
+                    ]
+                },
+                {
+                    "name": "定义角色数据结构",
+                    "description": "定义用户角色的数据结构，包括角色ID、名称、描述等属性。",
+                    "resources": []
+                },
+                {
+                    "name": "实现删除角色功能",
+                    "description": "提供删除角色的功能，确保数据一致性。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsRoleController.delete"
+                    ]
+                },
+                {
+                    "name": "添加角色管理页面",
+                    "description": "实现后台用户角色管理的页面，包含角色列表展示、创建角色、编辑角色和删除角色等功能。",
+                    "resources": [
+                        "mall-app-web.pages.product.list"
+                    ]
+                },
+                {
+                    "name": "定义角色与资源关系数据结构",
+                    "description": "定义角色与资源之间的关联关系的数据结构。",
+                    "resources": [
+                        "com.macro.mall.model.UmsRoleResourceRelation",
+                        "com.macro.mall.model.UmsRoleResourceRelationExample"
+                    ]
+                },
+                {
+                    "name": "定义角色与菜单关系数据结构",
+                    "description": "定义角色与菜单之间的关联关系的数据结构。",
+                    "resources": [
+                        "com.macro.mall.model.UmsRoleMenuRelation",
+                        "com.macro.mall.model.UmsRoleMenuRelationExample"
+                    ]
+                },
+                {
+                    "name": "实现为角色分配菜单功能",
+                    "description": "允许为角色分配相应的后台菜单权限。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsRoleController.allocMenu",
+                        "com.macro.mall.controller.UmsRoleController.listMenu"
+                    ]
+                },
+                {
+                    "name": "定义管理员角色关系数据结构",
+                    "description": "定义管理员与角色之间的关联关系的数据结构。",
+                    "resources": [
+                        "com.macro.mall.model.UmsAdminRoleRelation",
+                        "com.macro.mall.model.UmsAdminRoleRelationExample"
+                    ]
+                },
+                {
+                    "name": "实现创建角色功能",
+                    "description": "通过POST请求接收角色信息并调用服务进行创建。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsRoleController.create"
+                    ]
+                }
+            ],
+            "query": "实现后台用户角色管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "添加后台资源管理页面",
+                    "description": "实现一个用于管理后台资源的页面，包含导航栏和操作按钮。",
+                    "resources": []
+                },
+                {
+                    "name": "更新后台资源接口",
+                    "description": "实现一个接口，允许用户更新已有的后台资源，并将更改保存到数据库中。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsResourceController.create",
+                        "com.macro.mall.controller.UmsResourceController.update"
+                    ]
+                },
+                {
+                    "name": "更新后台资源分类接口",
+                    "description": "实现一个接口，允许用户更新已有的后台资源分类，并将更改保存到数据库中。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsResourceCategoryController.create",
+                        "com.macro.mall.controller.UmsResourceCategoryController.update"
+                    ]
+                },
+                {
+                    "name": "删除后台资源分类接口",
+                    "description": "实现一个接口，允许用户根据ID删除指定的后台资源分类，并从数据库中移除相关数据。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsResourceCategoryController.delete",
+                        "com.macro.mall.controller.UmsResourceCategoryController.listAll"
+                    ]
+                },
+                {
+                    "name": "查询所有后台资源接口",
+                    "description": "实现一个接口，用于查询并返回所有的后台资源信息。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsResourceController.list",
+                        "com.macro.mall.controller.UmsResourceController.listAll"
+                    ]
+                },
+                {
+                    "name": "查询所有后台资源分类接口",
+                    "description": "实现一个接口，用于查询并返回所有的后台资源分类信息。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsResourceController.list",
+                        "com.macro.mall.controller.UmsResourceCategoryController.listAll"
+                    ]
+                },
+                {
+                    "name": "创建后台资源分类接口",
+                    "description": "实现一个接口，允许用户添加新的后台资源分类，并将数据存储到数据库中。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsResourceCategoryController.create",
+                        "com.macro.mall.controller.UmsResourceCategoryController.listAll"
+                    ]
+                },
+                {
+                    "name": "删除后台资源接口",
+                    "description": "实现一个接口，允许用户根据ID删除指定的后台资源，并从数据库中移除相关数据。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsResourceController.list",
+                        "com.macro.mall.controller.UmsResourceController.delete"
+                    ]
+                },
+                {
+                    "name": "创建后台资源接口",
+                    "description": "实现一个接口，允许用户添加新的后台资源，并将数据存储到数据库中。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsResourceController.create",
+                        "com.macro.mall.controller.UmsResourceController.listAll"
+                    ]
+                }
+            ],
+            "query": "实现后台资源管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "提供搜索相关的信息",
+                    "description": "返回与用户输入关键字相关的品牌、分类及筛选属性信息，以辅助搜索功能。",
+                    "resources": [
+                        "com.macro.mall.search.controller.EsProductController.searchRelatedInfo",
+                        "com.macro.mall.portal.controller.MemberAttentionController.detail",
+                        "com.macro.mall.search.domain.EsProductRelatedInfo",
+                        "com.macro.mall.controller.PmsBrandController.getItem",
+                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
+                    ]
+                },
+                {
+                    "name": "导入商品数据到ES",
+                    "description": "将所有数据库中的商品信息导入Elasticsearch（ES），以便后续的搜索功能使用。",
+                    "resources": [
+                        "com.macro.mall.search.domain.EsProduct",
+                        "com.macro.mall.search.domain.EsProductAttributeValue",
+                        "com.macro.mall.search.controller.EsProductController.importAllList",
+                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
+                    ]
+                },
+                {
+                    "name": "实现商品搜索功能",
+                    "description": "根据用户输入的关键字、品牌和分类，从ES中检索相关商品，并支持排序。",
+                    "resources": [
+                        "com.macro.mall.search.controller.EsProductController.search",
+                        "com.macro.mall.search.controller.EsProductController.recommend",
+                        "com.macro.mall.controller.PmsProductAttributeController.getAttrInfo"
+                    ]
+                },
+                {
+                    "name": "实现商品搜索页面",
+                    "description": "创建一个用于商品搜索的用户界面，支持输入关键字、品牌和分类进行筛选，并提供排序选项。",
+                    "resources": [
+                        "mall-app-web.pages.category.category",
+                        "mall-app-web.pages.product.list"
+                    ]
+                }
+            ],
+            "query": "采用 ES 实现对商品的简单搜索"
+        },
+        {
+            "task": [
+                {
+                    "name": "添加订单超时时间设置",
+                    "description": "在系统中添加或更新订单超时时间的配置，以便确定哪些订单需要被自动取消。",
+                    "resources": [
+                        "com.macro.mall.controller.SmsFlashPromotionProductRelationController.create",
+                        "com.macro.mall.controller.OmsOrderSettingController.getItem",
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelTimeOutOrder"
+                    ]
+                },
+                {
+                    "name": "自动取消超时订单",
+                    "description": "开发一个功能，用于自动取消那些超过设定时间仍未完成支付或处理的订单。",
+                    "resources": [
+                        "com.macro.mall.controller.OmsOrderSettingController.getItem",
+                        "com.macro.mall.model.OmsOrderReturnReason",
+                        "com.macro.mall.controller.OmsOrderController.updateNote",
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelTimeOutOrder"
+                    ]
+                },
+                {
+                    "name": "通知用户订单已取消",
+                    "description": "向用户发送通知，告知其订单因超时已被自动取消，并提供可能的解决方案或补偿措施。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.detail",
+                        "mall-app-web.pages.notice.notice",
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelTimeOutOrder"
+                    ]
+                },
+                {
+                    "name": "更新订单状态记录",
+                    "description": "在取消超时订单后，更新订单的状态记录以反映最新的订单状态。",
+                    "resources": [
+                        "com.macro.mall.model.OmsOrderOperateHistory",
+                        "com.macro.mall.controller.OmsOrderSettingController.update"
+                    ]
+                },
+                {
+                    "name": "监控订单状态",
+                    "description": "实现一个后台服务来定期检查订单的状态，并识别出已超时但尚未取消的订单。",
+                    "resources": [
+                        "com.macro.mall.controller.OmsOrderController.list",
+                        "com.macro.mall.portal.controller.OmsPortalOrderController.cancelTimeOutOrder"
+                    ]
+                }
+            ],
+            "query": "我希望当订单超时执行自动取消的操作"
+        },
+        {
+            "task": [
+                {
+                    "name": "修改指定商品的数量",
+                    "description": "在购物车页面中提供功能，允许用户修改购物车中指定商品的数量。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsCartItemController.getCartProduct",
+                        "com.macro.mall.portal.controller.OmsCartItemController.updateQuantity"
+                    ]
+                },
+                {
+                    "name": "获取当前会员的购物车列表",
+                    "description": "实现一个接口或页面功能，用于获取并显示当前登录会员的购物车列表。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.OmsCartItemController.getCartProduct",
+                        "mall-app-web.pages.cart.cart",
+                        "com.macro.mall.portal.controller.OmsCartItemController.list"
+                    ]
+                }
+            ],
+            "query": "修改购物车列表中指定商品的数量"
         }
     ]
 }

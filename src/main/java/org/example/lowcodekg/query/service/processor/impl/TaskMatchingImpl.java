@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.example.lowcodekg.query.utils.Constants.MAX_RESOURCE_RECOMMEND_NUM;
+import static org.example.lowcodekg.query.utils.Constants.MAX_WORKFLOW_NUM;
 import static org.example.lowcodekg.query.utils.Prompt.FILTER_BY_DEPENDENCY_PROMPT;
 
 /**
@@ -44,6 +45,7 @@ public class TaskMatchingImpl implements TaskMatching {
         try {
             List<Node> nodeList = templateRetrieve.queryBySubTask(task).getData();
             if(debugConfig.isDebugMode()) {
+                System.out.println("子任务名称：" + task.getName() + ":" + task.getDescription());
                 System.out.println("子任务检索结果个数:" + nodeList.size());
                 System.out.println("子任务检索资源:");
                 for(Node node : nodeList) {
@@ -75,7 +77,19 @@ public class TaskMatchingImpl implements TaskMatching {
                     .limit(MAX_RESOURCE_RECOMMEND_NUM * Math.max(1, task.getCategory().size()))
                     .collect(Collectors.toList());
 
+
+//            List<Node> selectedNodes = new ArrayList<>();
+//            int categorySize = task.getCategory().size();
+//            for (int i = 0; i < categorySize; i++) {
+//                int startIndex = i * MAX_WORKFLOW_NUM;
+//                int endIndex = Math.min(startIndex + MAX_RESOURCE_RECOMMEND_NUM, nodeList.size());
+//                if (startIndex < nodeList.size()) {
+//                    selectedNodes.addAll(nodeList.subList(startIndex, endIndex));
+//                }
+//            }
+
             // 更新任务资源列表
+//            task.setResourceList(selectedNodes);
             task.setResourceList(sortedNodeList);
             if(debugConfig.isDebugMode()) {
                 System.out.println("重排序分数:");

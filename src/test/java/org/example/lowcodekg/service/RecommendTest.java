@@ -66,7 +66,7 @@ public class RecommendTest {
     void test() {
         FormatUtil.setPrintStream(logFilePath);
 
-        String query = "实现商品收藏功能";
+        String query = "获取当前会员的购物车列表，并修改指定商品的数量";
 
         // 需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
@@ -83,18 +83,18 @@ public class RecommendTest {
     @Test
     void testSingleQuery() {
         Task task = new Task();
-        task.setName("编辑博客文章页面");
-        task.setDescription("创建或更新前端表单组件，允许用户编辑和发布博客文章。");
+        task.setName("添加商品收藏功能");
+        task.setDescription("实现用户可以将商品添加到收藏列表的功能。");
         List<IR> irList = irGenerate.generateIR(
                 task.getName() + ":" + task.getDescription(),
-                "PageTemplate")
+                "Workflow")
                 .getData();
         for(IR ir : irList) {
             System.out.println("ir = " + ir.toString());
         }
         task.setIrList(irList);
         task.setIsWorkflow(true);
-        task.setCategory(List.of("page"));
+        task.setCategory(List.of("workflow"));
 
         List<Node> resourceList = templateRetrieve.queryBySubTask(task).getData();
         taskMatching.rerankResource(task);

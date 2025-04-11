@@ -31,8 +31,10 @@ public class FormatUtil {
      */
     public static void saveResult(String query, Map<Task, Set<Node>> resources, String savePath) {
         // 读取现有文件内容
-        JSONObject result;
+        JSONObject result = new JSONObject();
         File file = new File(savePath);
+        // 获取现有的predicted数组
+        JSONArray predicted = new JSONArray();
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 StringBuilder content = new StringBuilder();
@@ -41,13 +43,12 @@ public class FormatUtil {
                     content.append(line);
                 }
                 result = JSONObject.parseObject(content.toString());
+                if(!Objects.isNull(result))
+                    predicted = result.getJSONArray("predicted");
             } catch (IOException e) {
                 throw new RuntimeException("Error reading existing results: " + e.getMessage());
             }
         } else {
-            // 如果文件不存在，创建新的JSON对象
-            result = new JSONObject();
-            result.put("predicted", new JSONArray());
             file.getParentFile().mkdirs();
             try {
                 file.createNewFile();
@@ -55,10 +56,6 @@ public class FormatUtil {
                 throw new RuntimeException(e);
             }
         }
-
-        // 获取现有的predicted数组
-        JSONArray predicted = result.getJSONArray("predicted");
-        
         // 创建新的查询结果
         JSONObject queryResult = new JSONObject();
         JSONArray tasks = new JSONArray();
@@ -85,6 +82,8 @@ public class FormatUtil {
 
         queryResult.put("task", tasks);
         predicted.add(queryResult);
+        if(result == null) result = new JSONObject();
+        result.put("predicted", predicted);
 
         // 写入更新后的内容
         try (FileWriter writer = new FileWriter(savePath)) {
