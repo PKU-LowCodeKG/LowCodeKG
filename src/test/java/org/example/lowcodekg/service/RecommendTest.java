@@ -4,6 +4,7 @@ import org.example.lowcodekg.query.model.IR;
 import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
+import org.example.lowcodekg.query.service.evaluation.DataProcess;
 import org.example.lowcodekg.query.service.evaluation.Evaluate;
 import org.example.lowcodekg.query.service.processor.TaskMatching;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
@@ -63,28 +64,24 @@ public class RecommendTest {
 
     @Test
     void test() {
-
         FormatUtil.setPrintStream(logFilePath);
 
-        String query = "实现用户登录功能";
+        String query = "实现商品收藏功能";
 
         // 需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
-
         // 基于IR的需求-资源匹配并重排序
         for(Task task : taskGraph.getTasks().values()) {
-            System.out.println("task = " + task.toString());
             taskMatching.rerankResource(task);
         }
-
         // 任务合并
         Map<Task, Set<Node>> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
 
-        saveResult(query, resourceList);
+        saveResult(query, resourceList, SAVE_EM_RESULT_PATH);
     }
 
     @Test
-    void testUnit() {
+    void testSingleQuery() {
         Task task = new Task();
         task.setName("编辑博客文章页面");
         task.setDescription("创建或更新前端表单组件，允许用户编辑和发布博客文章。");
@@ -104,8 +101,23 @@ public class RecommendTest {
     }
 
     @Test
-    void testEvaluate() {
-        FormatUtil.setPrintStream(BLOG_RESULT_PATH);
-        evaluate.evaluate();
+    void testEmQueryList() {
+        FormatUtil.setPrintStream(logFilePath);
+
+        Map<String, List<String>> groundTruth = DataProcess.getQueryResultMap(EM_GROUND_TRUTH_JSON_FILE_PATH);
+        for (Map.Entry<String, List<String>> entry : groundTruth.entrySet()) {
+            String query = entry.getKey();
+            try {
+                TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
+                for(Task task : taskGraph.getTasks().values()) {
+                    taskMatching.rerankResource(task);
+                }
+                Map<Task, Set<Node>> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
+                saveResult(query, resourceList, SAVE_EM_RESULT_PATH);
+            } catch (Exception e) {
+                System.out.println("query = " + query);
+            }
+        }
+        evaluate.evaluate(EM_GROUND_TRUTH_JSON_FILE_PATH, EM_EVALUATE_RESULT_PATH);
     }
 }

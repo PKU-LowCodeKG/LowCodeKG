@@ -9,10 +9,15 @@ import org.example.lowcodekg.query.service.processor.MainService;
 import org.example.lowcodekg.query.service.processor.TaskMatching;
 import org.example.lowcodekg.query.service.processor.TaskMerge;
 import org.example.lowcodekg.query.service.processor.TaskSplit;
+import org.example.lowcodekg.query.utils.FormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
+import static org.example.lowcodekg.query.utils.Constants.SAVE_EM_RESULT_PATH;
+import static org.example.lowcodekg.query.utils.Constants.logFilePath;
+import static org.example.lowcodekg.query.utils.FormatUtil.saveResult;
 
 @Service
 public class MainServiceImpl implements MainService {
@@ -23,6 +28,24 @@ public class MainServiceImpl implements MainService {
     private TaskMatching taskMatching;
     @Autowired
     private TaskMerge taskMerge;
+
+    @Override
+    public Result<Void> recommendList(List<String> queryList, String savePath) {
+        try {
+            for(String query: queryList) {
+                TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
+                for(Task task : taskGraph.getTasks().values()) {
+                    taskMatching.rerankResource(task);
+                }
+                Map<Task, Set<Node>> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
+                saveResult(query, resourceList, savePath);
+            }
+        } catch(Exception e) {
+            System.err.println("Error in recommendList: " + e.getMessage());
+            throw new RuntimeException("Error in recommendList: " + e.getMessage());
+        }
+        return Result.build(null, ResultCodeEnum.SUCCESS);
+    }
 
     @Override
     public Result<List<Node>> recommend(String query) {

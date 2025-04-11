@@ -17,8 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.example.lowcodekg.query.utils.Constants.SAVE_RESULT_PATH;
-
 
 /**
  * @Description 数据对象类型转换
@@ -29,11 +27,12 @@ public class FormatUtil {
 
     /**
      * 保存资源推荐结果到本地
+     * @Param savePath 推荐资源结果保存路径
      */
-    public static void saveResult(String query, Map<Task, Set<Node>> resources) {
+    public static void saveResult(String query, Map<Task, Set<Node>> resources, String savePath) {
         // 读取现有文件内容
         JSONObject result;
-        File file = new File(SAVE_RESULT_PATH);
+        File file = new File(savePath);
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 StringBuilder content = new StringBuilder();
@@ -88,7 +87,7 @@ public class FormatUtil {
         predicted.add(queryResult);
 
         // 写入更新后的内容
-        try (FileWriter writer = new FileWriter(SAVE_RESULT_PATH)) {
+        try (FileWriter writer = new FileWriter(savePath)) {
             writer.write(result.toJSONString());
         } catch (IOException e) {
             throw new RuntimeException("Error saving results to file: " + e.getMessage());

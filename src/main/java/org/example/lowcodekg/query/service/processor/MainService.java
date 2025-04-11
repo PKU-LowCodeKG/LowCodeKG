@@ -17,4 +17,8 @@ public interface MainService {
      */
     Result<List<Node>> recommend(String query);
 
+    /**
+     * 给定用户需求列表，推荐相关资源，结果存储到本地
+     */
+    Result<Void> recommendList(List<String> query, String savePath);
 }

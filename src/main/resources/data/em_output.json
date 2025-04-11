@@ -1,0 +1,60 @@
+{
+    "predicted": [
+        {
+            "task": [
+                {
+                    "name": "更新数据库模式以支持收藏功能",
+                    "description": "修改数据库表结构，添加必要的字段来存储用户的收藏信息。",
+                    "resources": [
+                        "com.macro.mall.controller.UmsResourceController.create",
+                        "com.macro.mall.controller.UmsResourceController.update"
+                    ]
+                },
+                {
+                    "name": "添加商品收藏功能",
+                    "description": "实现用户可以将商品添加到收藏列表的功能。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.MemberProductCollectionController.delete",
+                        "com.macro.mall.portal.controller.MemberProductCollectionController.add"
+                    ]
+                },
+                {
+                    "name": "添加收藏状态字段到商品实体",
+                    "description": "在商品数据结构中增加一个表示是否被收藏的字段。",
+                    "resources": []
+                },
+                {
+                    "name": "删除商品收藏",
+                    "description": "实现用户可以删除已收藏的商品的功能。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.MemberProductCollectionController.clear",
+                        "com.macro.mall.portal.controller.MemberProductCollectionController.delete"
+                    ]
+                },
+                {
+                    "name": "清空当前用户商品收藏列表",
+                    "description": "提供功能让用户一次性清空所有已收藏的商品。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.MemberProductCollectionController.clear",
+                        "com.macro.mall.portal.controller.MemberProductCollectionController.delete"
+                    ]
+                },
+                {
+                    "name": "显示当前用户分页的商品收藏列表",
+                    "description": "展示当前用户的商品收藏列表，并支持分页浏览。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.MemberProductCollectionController.list"
+                    ]
+                },
+                {
+                    "name": "显示商品收藏详情",
+                    "description": "展示指定商品的收藏详情页面，包括商品信息和收藏状态。",
+                    "resources": [
+                        "com.macro.mall.portal.controller.MemberProductCollectionController.detail"
+                    ]
+                }
+            ],
+            "query": "实现商品收藏功能"
+        }
+    ]
+}

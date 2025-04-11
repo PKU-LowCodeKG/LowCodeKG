@@ -56,7 +56,7 @@ public class JavaProject {
         File file = new File(projectDir + "/" + jsonFilePath);
         if(!file.exists()) {
             System.out.println("json file not found");
-            throw new RuntimeException("json file not found");
+            return;
         }
         jsonMap = JsonUtil.loadJsonFile(file.getAbsolutePath());
         System.out.println("jsonObject number:" + jsonMap.size());

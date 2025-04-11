@@ -9,8 +9,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-import static org.example.lowcodekg.query.utils.Constants.GROUND_TRUTH_JSON_FILE_PATH;
-
 /**
  * 数据处理类
  */
@@ -63,10 +61,10 @@ public class DataProcess {
      * 获取查询结果映射
      * @return 查询到结果列表的映射
      */
-    public static Map<String, List<String>> getQueryResultMap() {
+    public static Map<String, List<String>> getQueryResultMap(String path) {
         JSONObject jsonObject = null;
         try {
-            jsonObject = loadDataFromJson(GROUND_TRUTH_JSON_FILE_PATH);
+            jsonObject = loadDataFromJson(path);
             if (jsonObject == null) {
                 return Collections.emptyMap();
             }

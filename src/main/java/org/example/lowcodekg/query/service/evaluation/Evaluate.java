@@ -12,7 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-import static org.example.lowcodekg.query.utils.Constants.SAVE_RESULT_PATH;
 
 /**
  * 执行实验验证方法效果
@@ -21,21 +20,20 @@ import static org.example.lowcodekg.query.utils.Constants.SAVE_RESULT_PATH;
 public class Evaluate {
 
     @Autowired
-    private MainService mainService;
-    @Autowired
     private Metric metric;
 
     /**
      * 执行评估并返回整体评估结果
+     * @Param resultPath 预测结果保存路径
      * @return double[] 包含[平均准确率, 平均召回率]
      */
-    public double[] evaluate() {
+    public double[] evaluate(String groundTruthPath, String resultPath) {
         try {
             // 加载真实结果
-            Map<String, List<String>> groundTruth = DataProcess.getQueryResultMap();
+            Map<String, List<String>> groundTruth = DataProcess.getQueryResultMap(groundTruthPath);
             
             // 加载预测结果
-            JSONObject predictedJson = loadPredictedResults();
+            JSONObject predictedJson = loadPredictedResults(resultPath);
 
             double totalPrecision = 0.0;
             double totalRecall = 0.0;
@@ -113,8 +111,8 @@ public class Evaluate {
         }
     }
 
-    private JSONObject loadPredictedResults() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(SAVE_RESULT_PATH))) {
+    private JSONObject loadPredictedResults(String resultPath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(resultPath))) {
             StringBuilder content = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
