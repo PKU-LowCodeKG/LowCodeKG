@@ -53,7 +53,11 @@ Precision: 0.7143, Recall: 1.0000
 Predicted: [com.macro.mall.controller.PmsSkuStockController.getList, com.macro.mall.portal.domain.OmsOrderDetail, mall-app-web.components.uni-load-more.uni-load-more, com.macro.mall.model.PmsSkuStock, com.macro.mall.portal.controller.OmsPortalOrderController.detail, mall-app-web.pages.order.createOrder, com.macro.mall.model.OmsOrderItem]
 Ground Truth: [com.macro.mall.controller.PmsSkuStockController.getList, com.macro.mall.portal.domain.OmsOrderDetail, com.macro.mall.model.OmsOrderItem, com.macro.mall.model.PmsSkuStock, mall-app-web.pages.order.createOrder]
 ----------------------------------------
-Skipping query: 实现商品SKU库存的CRUD(增删改查)管理功能, not found in ground truth.
+Query: 实现商品SKU库存的CRUD(增删改查)管理功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [com.macro.mall.controller.PmsProductAttributeController.create, com.macro.mall.controller.PmsSkuStockController.update, com.macro.mall.controller.PmsProductCategoryController.getList, com.macro.mall.controller.PmsProductCategoryController.delete, com.macro.mall.model.PmsSkuStock]
+Ground Truth: [com.macro.mall.controller.PmsProductAttributeController.create, com.macro.mall.controller.PmsSkuStockController.update, com.macro.mall.controller.PmsProductCategoryController.getList, com.macro.mall.controller.PmsProductCategoryController.delete, com.macro.mall.model.PmsSkuStock]
+----------------------------------------
 Query: 实现优惠券领取管理功能
 Precision: 0.7500, Recall: 0.7500
 Predicted: [com.macro.mall.controller.SmsCouponHistoryController.list, com.macro.mall.controller.SmsCouponController.getItem, com.macro.mall.portal.domain.SmsCouponHistoryDetail, com.macro.mall.portal.controller.UmsMemberCouponController.add, com.macro.mall.portal.controller.UmsMemberCouponController.listByProduct, mall-app-web.pages.brand.list, com.macro.mall.controller.SmsFlashPromotionProductRelationController.update, com.macro.mall.portal.controller.UmsMemberCouponController.listHistory]
@@ -132,6 +136,6 @@ Ground Truth: [com.macro.mall.portal.controller.OmsCartItemController.list, com.
 ----------------------------------------
 
 === Overall Evaluation Results ===
-Average Precision: 0.8144
-Average Recall: 0.9042
-Total Valid Queries: 26
+Average Precision: 0.8213
+Average Recall: 0.9077
+Total Valid Queries: 27

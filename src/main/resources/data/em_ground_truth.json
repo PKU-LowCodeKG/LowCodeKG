@@ -142,7 +142,7 @@
             ]
         },
         {
-            "query": "实现商品SKU库存的CRUD管理功能",
+            "query": "实现商品SKU库存的CRUD(增删改查)管理功能",
             "result": [
                 "com.macro.mall.controller.PmsProductAttributeController.create",
                 "com.macro.mall.controller.PmsSkuStockController.update",
