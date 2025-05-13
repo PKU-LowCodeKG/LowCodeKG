@@ -69,7 +69,7 @@ public class IRGenerateImpl implements IRGenerate {
     }
 
     @Override
-    public Result<List<IR>>  convertTemplateToIR(Node template) {
+    public Result<List<IR>> convertTemplateToIR(Node template) {
         try {
             String label = template.getLabel();
             List<IR> irList = new ArrayList<>();

@@ -66,7 +66,7 @@ public class RecommendTest {
     void test() {
         FormatUtil.setPrintStream(logFilePath);
 
-        String query = "获取当前会员的购物车列表，并修改指定商品的数量";
+        String query = "实现商品SKU库存的CRUD(增删改查)管理功能";
 
         // 需求分解
         TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
