@@ -57,6 +57,55 @@ public class ExtractorTest {
     private FuncGenerate funcGenerate;
 
     @Test
+    public void testKG() {
+        // 读取JSON文件中的统计数据
+        String jsonPath = "src/main/resources/test/kg_statistic.json";
+        String jsonContent = FileUtil.readFile(jsonPath);
+        JSONObject fileStats = JSONObject.parseObject(jsonContent);
+        
+        // 从Neo4j读取统计数据
+        JSONObject neo4jStats = new JSONObject();
+        JSONObject entityStats = new JSONObject();
+        JSONObject relationStats = new JSONObject();
+        
+        // 统计实体
+        String nodeCountCypher = "MATCH (n) RETURN DISTINCT labels(n) as label, count(*) as count";
+        QueryRunner runner = neo4jClient.getQueryRunner();
+        Result nodeResult = runner.run(nodeCountCypher);
+        while(nodeResult.hasNext()) {
+            var record = nodeResult.next();
+            String label = String.join("+", record.get("label").asList().stream().map(Object::toString).toList());
+            entityStats.put(label, record.get("count").asInt());
+        }
+        
+        // 统计关系
+        String relCountCypher = "MATCH ()-[r]->() RETURN DISTINCT type(r) as type, count(*) as count";
+        Result relResult = runner.run(relCountCypher);
+        while(relResult.hasNext()) {
+            var record = relResult.next();
+            relationStats.put(record.get("type").asString(), record.get("count").asInt());
+        }
+        
+        neo4jStats.put("entities", entityStats);
+        neo4jStats.put("relations", relationStats);
+        
+        // 比较两个JSON对象是否完全相同
+        boolean isEqual = fileStats.equals(neo4jStats);
+        
+        if (isEqual) {
+            System.out.println("测试通过：JSON文件数据与Neo4j数据完全一致");
+        } else {
+            System.out.println("测试不通过：数据不一致");
+            System.out.println("\nJSON文件中的数据：");
+            System.out.println(fileStats.toJSONString());
+            System.out.println("\nNeo4j中的数据：");
+            System.out.println(neo4jStats.toJSONString());
+        }
+        
+        assert isEqual : "统计数据不一致";
+    }
+
+    @Test
     public void test() {
         String prompt = """
                 给定下面的代码内容，你的任务是对其进行解析返回一个json对象。注意，如果key对应的value包含了表达式或函数调用，将其转为字符串格式
