@@ -77,7 +77,7 @@ public class RecommendTest {
         // 任务合并
         Map<Task, Set<Node>> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
 
-        saveResult(query, resourceList, SAVE_EM_RESULT_PATH);
+//        saveResult(query, resourceList, SAVE_EM_RESULT_PATH);
     }
 
     @Test

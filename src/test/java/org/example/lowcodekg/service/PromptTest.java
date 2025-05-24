@@ -21,6 +21,13 @@ public class PromptTest {
     @Autowired
     private TaskMatching taskMatch;
 
+
+    @Test
+    public void testLLM() {
+        String prompt = "hi there";
+        System.out.println(llmService.chat(prompt));
+    }
+
     @Test
     void test() {
         String prompt = """
