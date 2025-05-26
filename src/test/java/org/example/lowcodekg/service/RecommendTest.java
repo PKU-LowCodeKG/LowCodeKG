@@ -122,12 +122,13 @@ public class RecommendTest {
 
     @Test
     void testBlogQueryList() {
-        FormatUtil.setPrintStream(logFilePath);
+//        FormatUtil.setPrintStream(logFilePath);
 
         // load data and run
         Map<String, List<String>> groundTruth = DataProcess.getQueryResultMap(BLOG_GROUND_TRUTH_JSON_FILE_PATH);
         for (Map.Entry<String, List<String>> entry : groundTruth.entrySet()) {
             String query = entry.getKey();
+            System.out.println("testing query: " + query);
             try {
                 TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
                 for(Task task : taskGraph.getTasks().values()) {

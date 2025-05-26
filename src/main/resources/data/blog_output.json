@@ -917,6 +917,45 @@
                 }
             ],
             "query": "实现用户登录功能"
+        },
+        {
+            "task": [
+                "top.naccl.model.dto.Blog",
+                "blog-cms.src.views.blog.blog.WriteBlog",
+                "top.naccl.controller.admin.BlogAdminController.updateBlog",
+                "top.naccl.model.vo.BlogDetail",
+                "top.naccl.entity.Category",
+                "top.naccl.controller.admin.BlogAdminController.saveBlog",
+                "top.naccl.entity.Tag",
+                "top.naccl.entity.Blog"
+            ],
+            "query": "实现博客文章编辑功能"
+        },
+        {
+            "task": [
+                "blog-cms.src.views.page.About",
+                "top.naccl.controller.admin.AboutAdminController.updateAbout",
+                "top.naccl.controller.admin.SiteSettingAdminController.updateAll",
+                "top.naccl.controller.TelegramBotController.getUpdate",
+                "top.naccl.controller.admin.AboutAdminController.about",
+                "blog-cms.src.views.page.SiteSetting"
+            ],
+            "query": "实现关于我页面配置"
+        },
+        {
+            "task": [
+                "top.naccl.model.dto.Blog",
+                "top.naccl.model.dto.BlogPassword",
+                "blog-view.src.views.blog.Blog",
+                "blog-cms.src.views.blog.blog.WriteBlog",
+                "blog-view.src.components.index.BlogPasswordDialog",
+                "top.naccl.controller.BlogController.checkBlogPassword",
+                "top.naccl.controller.LoginController.login",
+                "top.naccl.controller.BlogController.getBlog",
+                "top.naccl.controller.admin.BlogAdminController.updateVisibility",
+                "top.naccl.model.dto.BlogVisibility"
+            ],
+            "query": "实现文章密码保护功能"
         }
     ]
 }
