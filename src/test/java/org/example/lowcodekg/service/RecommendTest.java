@@ -121,8 +121,33 @@ public class RecommendTest {
     }
 
     @Test
+    void testBlogQueryList() {
+        FormatUtil.setPrintStream(logFilePath);
+
+        // load data and run
+        Map<String, List<String>> groundTruth = DataProcess.getQueryResultMap(BLOG_GROUND_TRUTH_JSON_FILE_PATH);
+        for (Map.Entry<String, List<String>> entry : groundTruth.entrySet()) {
+            String query = entry.getKey();
+            try {
+                TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
+                for(Task task : taskGraph.getTasks().values()) {
+                    taskMatching.rerankResource(task);
+                }
+                Map<Task, Set<Node>> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
+                saveResult(query, resourceList, SAVE_BLOG_RESULT_PATH);
+            } catch (Exception e) {
+                System.out.println("query = " + query);
+            }
+        }
+
+        // evaluate results
+        FormatUtil.setPrintStream(BLOG_EVALUATE_RESULT_PATH);
+        evaluate.evaluate(BLOG_GROUND_TRUTH_JSON_FILE_PATH, SAVE_BLOG_RESULT_PATH);
+    }
+
+    @Test
     void testEvaluate() {
-        FormatUtil.setPrintStream(EM_EVALUATE_RESULT_PATH);
-        evaluate.evaluate(EM_GROUND_TRUTH_JSON_FILE_PATH, SAVE_EM_RESULT_PATH);
+        FormatUtil.setPrintStream(BLOG_EVALUATE_RESULT_PATH);
+        evaluate.evaluate(BLOG_GROUND_TRUTH_JSON_FILE_PATH, SAVE_BLOG_RESULT_PATH);
     }
 }
