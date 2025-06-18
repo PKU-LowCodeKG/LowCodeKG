@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ResultCodeEnum {
     SUCCESS(200, "操作成功"),
+    FAIL(201, "操作失败"),
     LOGIN_ERROR(201, "用户名或者密码错误"),
     VALIDATE_CODE_ERROR(202, "验证码错误"),
     LOGIN_AUTH(208, "用户未登录"),

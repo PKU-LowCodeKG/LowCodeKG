@@ -1,0 +1,32 @@
+{
+  "entities": {
+    "PageTemplate": 312,
+    "Script": 312,
+    "Component+ComponentExample": 6538,
+    "ConfigItem": 12662,
+    "ScriptData": 981,
+    "ScriptMethod": 1051,
+    "JavaClass": 1108,
+    "JavaClass+DataObject": 437,
+    "JavaMethod": 7515,
+    "Workflow": 621,
+    "JavaField": 4459,
+    "Template": 1
+  },
+  "relations": {
+    "METHOD_CALL": 4533,
+    "VARIABLE_TYPE": 1092,
+    "HAVE_FIELD": 4459,
+    "PARAM_TYPE": 1802,
+    "RETURN_TYPE": 1954,
+    "CONTAIN": 16763,
+    "HAVE_METHOD": 7515,
+    "FIELD_TYPE": 986,
+    "PARENT_OF": 6227,
+    "RELATED_TO": 878,
+    "FIELD_ACCESS": 302,
+    "DEPENDENCY": 86,
+    "EXTEND": 41,
+    "IMPLEMENT": 168
+  }
+}

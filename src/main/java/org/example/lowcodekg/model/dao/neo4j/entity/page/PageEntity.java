@@ -1,6 +1,7 @@
 package org.example.lowcodekg.model.dao.neo4j.entity.page;
 
 import lombok.Data;
+import org.example.lowcodekg.model.dao.Describable;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.springframework.data.neo4j.core.schema.*;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Node("PageTemplate")
 @Data
-public class PageEntity {
+public class PageEntity implements Describable {
 
     @Id
     @GeneratedValue
@@ -32,6 +33,11 @@ public class PageEntity {
 
     @Property("category")
     private String category;
+
+    @Property("ir")
+    private String ir;
+
+    private List<Float> embedding = new ArrayList<>();
 
     @Relationship(type = "DEPENDENCY", direction = Relationship.Direction.OUTGOING)
     private List<PageEntity> dependedPageList = new ArrayList<>();

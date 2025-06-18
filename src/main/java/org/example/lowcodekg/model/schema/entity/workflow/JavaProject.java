@@ -12,8 +12,9 @@ import org.example.lowcodekg.model.dao.neo4j.repository.JavaClassRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.JavaFieldRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
-import org.example.lowcodekg.service.ElasticSearchService;
 import org.example.lowcodekg.common.util.JsonUtil;
+import org.example.lowcodekg.query.service.util.ElasticSearchService;
+import org.example.lowcodekg.query.service.util.summarize.FuncGenerate;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -23,6 +24,7 @@ import java.util.*;
 public class JavaProject {
 
     private final String jsonFilePath = "/src/main/resources/data/javaInfo_1210.json";
+    private final FuncGenerate funcGenerate;
     private Map<String, JSONObject> jsonMap = new HashMap<>();
 
     @Setter
@@ -43,6 +45,10 @@ public class JavaProject {
 
     private Map<IMethodBinding, JavaMethod> methodBindingMap = new HashMap<>();
 
+    public JavaProject(FuncGenerate funcGenerate) {
+        this.funcGenerate = funcGenerate;
+    }
+
 
     public void init() {
         // load local json file for description
@@ -50,7 +56,7 @@ public class JavaProject {
         File file = new File(projectDir + "/" + jsonFilePath);
         if(!file.exists()) {
             System.out.println("json file not found");
-            throw new RuntimeException("json file not found");
+            return;
         }
         jsonMap = JsonUtil.loadJsonFile(file.getAbsolutePath());
         System.out.println("jsonObject number:" + jsonMap.size());
@@ -97,13 +103,11 @@ public class JavaProject {
             classInfo.getSuperClassList().addAll(findJavaClassInfo(classInfo.getSuperClassType()));
             classInfo.getSuperInterfaceList().addAll(findJavaClassInfo(classInfo.getSuperInterfaceType()));
             JavaClassEntity classEntity = classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName()));
-
+            // 判定为数据实体类，生成描述信息并添加索引
+            if(classInfo.getIsData()) {
+                funcGenerate.genDataObjectFunc(classEntity);
+            }
             classEntityMap.put(classInfo.getFullName(), classEntity);
-
-            // vector store
-            classInfo.setVid(classEntity.getVid());
-            classInfo.setDescription(classEntity.getDescription());
-            elasticSearchService.storeJavaClassEmbedding(classInfo);
         });
         // class -[extend | implement]-> class
         classMap.values().forEach(classInfo -> {
@@ -142,11 +146,6 @@ public class JavaProject {
                 WorkflowEntity workflowEntity = workflow.createWorkflowEntity(workflowRepo);
                 workflowRepo.createRelationOfContainedMethod(workflowEntity.getId(), methodEntity.getId());
             }
-
-            // vector store
-            methodInfo.setVid(methodEntity.getVid());
-            methodInfo.setDescription(methodEntity.getDescription());
-           elasticSearchService.storeJavaMethodEmbedding(methodInfo);
         });
         // class -[have_method]-> method
         classMap.values().forEach(classInfo -> {
@@ -186,11 +185,6 @@ public class JavaProject {
 
             JavaFieldEntity fieldEntity = fieldInfo.storeInNeo4j(javaFieldRepo, jsonMap.get(fieldInfo.getFullName()));
             fieldEntityMap.put(fieldInfo.getFullName(), fieldEntity);
-
-            // vector store
-            fieldInfo.setVid(fieldEntity.getVid());
-            fieldInfo.setDescription(fieldEntity.getDescription());
-            elasticSearchService.storeJavaFieldEmbedding(fieldInfo);
         });
         // class -[have_field]-> field
         classMap.values().forEach(classInfo -> {

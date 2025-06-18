@@ -34,10 +34,4 @@ public class JsonUtil {
         List<JSONObject> jsonList = JSON.parseObject(jsonContent.toString(), List.class);
         return jsonList.stream().collect(java.util.stream.Collectors.toMap(json -> json.getString("fullName"), json -> json));
     }
-
-    public static void main(String[] args) {
-        Map<String, JSONObject> jsonMap = loadJsonFile("/Users/chang/Documents/projects/LowCodeKG/src/main/resources/data/javaInfo.json");
-//        System.out.println(jsonMap.get("top.naccl.util.MailUtils").getString("description"));
-        jsonMap.forEach((key, value) -> System.out.println(value.getString("fullName") + "\n" + value.getString("description") + "\n"));
-    }
 }
