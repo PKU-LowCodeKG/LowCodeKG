@@ -3,6 +3,7 @@ package org.example.lowcodekg.model.dao.neo4j.entity.java;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.lowcodekg.model.dao.Describable;
 import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class JavaClassEntity {
+public class JavaClassEntity implements Describable {
 
     @Id
     @GeneratedValue
@@ -47,6 +48,11 @@ public class JavaClassEntity {
 
     @Property("isData")
     private Boolean isData;
+
+    @Property
+    private String ir;
+
+    private List<Float> embedding;
 
     @Relationship(type = "EXTEND", direction = Relationship.Direction.OUTGOING)
     private List<JavaClassEntity> superClassList = new ArrayList<>();

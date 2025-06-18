@@ -1,0 +1,210 @@
+Query: 实现博客文章置顶的功能
+Precision: 0.8333, Recall: 0.8333
+Predicted: [top.naccl.controller.admin.BlogAdminController.updateTop, top.naccl.entity.Blog, blog-cms.src.views.blog.blog.BlogList, top.naccl.controller.admin.BlogAdminController.getBlog, blog-cms.src.views.blog.blog.WriteBlog, top.naccl.controller.BlogController.blogs]
+Ground Truth: [top.naccl.controller.admin.BlogAdminController.blogs, top.naccl.controller.BlogController.blogs, top.naccl.controller.admin.BlogAdminController.updateTop, top.naccl.entity.Blog, blog-cms.src.views.blog.blog.BlogList, blog-cms.src.views.blog.blog.WriteBlog]
+----------------------------------------
+Query: 实现博客评论审核的功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [top.naccl.controller.admin.CommentAdminController.updateNotice, top.naccl.controller.admin.CommentAdminController.updateComment, top.naccl.controller.admin.CommentAdminController.updatePublished, blog-cms.src.views.blog.comment.CommentList, top.naccl.entity.Comment]
+Ground Truth: [blog-cms.src.views.blog.comment.CommentList, top.naccl.entity.Comment, top.naccl.controller.admin.CommentAdminController.updateNotice, top.naccl.controller.admin.CommentAdminController.updateComment, top.naccl.controller.admin.CommentAdminController.updatePublished]
+----------------------------------------
+Query: 实现文章密码保护功能
+Precision: 0.8333, Recall: 0.8333
+Predicted: [top.naccl.controller.BlogController.checkBlogPassword, top.naccl.entity.Blog, blog-cms.src.views.blog.blog.BlogList, top.naccl.controller.CommentController.postComment, blog-cms.src.views.blog.blog.WriteBlog, top.naccl.controller.BlogController.getBlog]
+Ground Truth: [top.naccl.controller.BlogController.checkBlogPassword, top.naccl.controller.BlogController.getBlog, top.naccl.entity.Blog, blog-view.src.components.BlogPassword, blog-cms.src.views.blog.blog.BlogList, blog-cms.src.views.blog.blog.WriteBlog]
+----------------------------------------
+Query: 实现博客访问统计功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [top.naccl.entity.VisitRecord, top.naccl.controller.admin.BlogAdminController.getBlog, blog-cms.src.views.dashboard.index, top.naccl.entity.VisitLog, blog-cms.src.views.log.VisitLog, top.naccl.controller.BlogController.getBlog]
+Ground Truth: [top.naccl.controller.BlogController.getBlog, top.naccl.controller.admin.BlogAdminController.getBlog, top.naccl.entity.VisitRecord, top.naccl.entity.VisitLog, blog-cms.src.views.log.VisitLog, blog-cms.src.views.dashboard.index]
+----------------------------------------
+Query: 实现博客分类管理功能
+Precision: 0.8333, Recall: 0.8333
+Predicted: [top.naccl.controller.admin.CategoryAdminController.delete, top.naccl.entity.Category, top.naccl.controller.admin.BlogAdminController.updateBlog, top.naccl.controller.admin.CategoryAdminController.saveCategory, top.naccl.controller.admin.CategoryAdminController.categories, blog-cms.src.views.blog.category.CategoryList]
+Ground Truth: [top.naccl.controller.admin.CategoryAdminController.delete, top.naccl.controller.admin.CategoryAdminController.saveCategory, top.naccl.controller.admin.CategoryAdminController.categories, top.naccl.service.impl.CategoryServiceImpl, top.naccl.entity.Category, blog-cms.src.views.blog.category.CategoryList]
+----------------------------------------
+Query: 实现博客标签管理功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [top.naccl.controller.admin.TagAdminController.tags, top.naccl.controller.admin.TagAdminController.delete, top.naccl.controller.admin.TagAdminController.saveTag, top.naccl.controller.admin.TagAdminController.updateTag, blog-cms.src.views.blog.tag.TagList, top.naccl.entity.Tag]
+Ground Truth: [top.naccl.controller.admin.TagAdminController.tags, top.naccl.controller.admin.TagAdminController.saveTag, top.naccl.controller.admin.TagAdminController.delete, top.naccl.controller.admin.TagAdminController.updateTag, top.naccl.entity.Tag, blog-cms.src.views.blog.tag.TagList]
+----------------------------------------
+Query: 实现定时任务管理功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [top.naccl.entity.ScheduleJob, top.naccl.controller.admin.ScheduleJobController.saveJob, blog-cms.src.views.log.ScheduleJobLog, top.naccl.controller.admin.ScheduleJobController.updateJob, top.naccl.entity.ScheduleJobLog, top.naccl.controller.admin.ScheduleJobController.deleteJob, blog-cms.src.views.system.ScheduleJobList, top.naccl.controller.admin.ScheduleJobController.runJob]
+Ground Truth: [top.naccl.controller.admin.ScheduleJobController.deleteJob, top.naccl.controller.admin.ScheduleJobController.saveJob, top.naccl.controller.admin.ScheduleJobController.updateJob, top.naccl.controller.admin.ScheduleJobController.runJob, top.naccl.entity.ScheduleJob, top.naccl.entity.ScheduleJobLog, blog-cms.src.views.system.ScheduleJobList, blog-cms.src.views.log.ScheduleJobLog]
+----------------------------------------
+Query: 实现博客文章编辑功能
+Precision: 0.7273, Recall: 1.0000
+Predicted: [top.naccl.controller.admin.BlogAdminController.saveBlog, blog-cms.src.views.blog.blog.BlogList, top.naccl.entity.Blog, top.naccl.controller.admin.BlogAdminController.updateBlog, top.naccl.entity.Category, blog-view.src.views.blog.Blog, blog-view.src.components.blog.BlogItem, top.naccl.controller.admin.BlogAdminController.delete, blog-view.src.components.blog.BlogList, blog-cms.src.views.blog.blog.WriteBlog, top.naccl.entity.Tag]
+Ground Truth: [top.naccl.controller.admin.BlogAdminController.saveBlog, top.naccl.controller.admin.BlogAdminController.updateBlog, top.naccl.controller.admin.BlogAdminController.delete, top.naccl.entity.Blog, blog-view.src.components.blog.BlogItem, blog-view.src.views.blog.Blog, blog-cms.src.views.blog.blog.WriteBlog, blog-cms.src.views.blog.blog.BlogList]
+----------------------------------------
+Query: 实现博客搜索功能
+Precision: 0.6667, Recall: 0.8000
+Predicted: [top.naccl.entity.Blog, blog-view.src.components.blog.BlogItem, blog-view.src.components.blog.BlogList, top.naccl.controller.BlogController.searchBlog, top.naccl.controller.BlogController.getBlog, blog-view.src.components.index.Nav]
+Ground Truth: [top.naccl.controller.BlogController.searchBlog, top.naccl.controller.BlogController.getBlog, blog-view.src.components.blog.BlogItem, blog-cms.src.views.blog.blog.BlogList, top.naccl.entity.Blog]
+----------------------------------------
+Query: 实现友链申请功能
+Precision: 0.6667, Recall: 0.8571
+Predicted: [top.naccl.controller.FriendController.friends, top.naccl.controller.admin.FriendAdminController.updatePublished, blog-view.src.components.comment.CommentForm, top.naccl.controller.admin.FriendAdminController.friendInfo, top.naccl.controller.admin.FriendAdminController.deleteFriend, blog-cms.src.views.page.FriendList, top.naccl.entity.Friend, top.naccl.controller.admin.FriendAdminController.saveFriend, top.naccl.controller.admin.FriendAdminController.updateFriend]
+Ground Truth: [top.naccl.controller.admin.FriendAdminController.saveFriend, top.naccl.controller.admin.FriendAdminController.updateFriend, top.naccl.controller.admin.FriendAdminController.friendInfo, top.naccl.controller.FriendController.friends, top.naccl.entity.Friend, blog-cms.src.views.page.FriendList, blog-view.src.views.friends.Friends]
+----------------------------------------
+Query: 实现友链评论功能
+Precision: 0.8889, Recall: 0.8889
+Predicted: [blog-view.src.components.comment.CommentForm, top.naccl.controller.admin.FriendAdminController.friendInfo, top.naccl.controller.CommentController.comments, blog-view.src.components.comment.CommentList, blog-cms.src.views.page.FriendList, top.naccl.controller.CommentController.postComment, blog-view.src.components.comment.Comment, top.naccl.entity.Friend, top.naccl.controller.admin.CommentAdminController.comments]
+Ground Truth: [top.naccl.controller.CommentController.comments, top.naccl.controller.admin.CommentAdminController.comments, top.naccl.controller.CommentController.postComment, top.naccl.controller.admin.FriendAdminController.updateFriendInfoCommentEnabled, top.naccl.entity.Friend, blog-cms.src.views.page.FriendList, blog-view.src.components.comment.Comment, blog-view.src.components.comment.CommentForm, blog-view.src.components.comment.CommentList]
+----------------------------------------
+Query: 更改友链公开状态
+Precision: 0.6667, Recall: 1.0000
+Predicted: [top.naccl.controller.admin.FriendAdminController.updatePublished, blog-view.src.components.blog.Pagination, top.naccl.controller.admin.FriendAdminController.friendInfo, top.naccl.controller.admin.FriendAdminController.updateFriendInfoContent, top.naccl.controller.admin.FriendAdminController.updateFriendInfoCommentEnabled, blog-cms.src.components.Hamburger.index, blog-cms.src.views.page.FriendList, top.naccl.entity.Friend, top.naccl.controller.admin.FriendAdminController.updateFriend]
+Ground Truth: [top.naccl.controller.admin.FriendAdminController.updatePublished, top.naccl.controller.admin.FriendAdminController.updateFriend, top.naccl.controller.admin.FriendAdminController.updateFriendInfoCommentEnabled, top.naccl.controller.admin.FriendAdminController.friendInfo, top.naccl.entity.Friend, blog-cms.src.views.page.FriendList]
+----------------------------------------
+Query: 实现动态发布功能
+Precision: 0.8750, Recall: 0.8750
+Predicted: [top.naccl.controller.admin.MomentAdminController.saveMoment, top.naccl.controller.admin.MomentAdminController.moments, blog-cms.src.views.blog.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments, top.naccl.controller.admin.MomentAdminController.updateMoment, top.naccl.entity.Moment, top.naccl.controller.admin.MomentAdminController.updatePublished]
+Ground Truth: [top.naccl.controller.admin.MomentAdminController.saveMoment, top.naccl.controller.admin.MomentAdminController.moments, top.naccl.controller.admin.MomentAdminController.updatePublished, top.naccl.controller.admin.MomentAdminController.updateMoment, top.naccl.entity.Moment, blog-cms.src.views.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments]
+----------------------------------------
+Query: 实现登录日志记录功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [blog-cms.src.views.log.LoginLog, top.naccl.entity.LoginLog, top.naccl.controller.admin.LoginLogController.loginLogs, blog-view.src.views.Login, top.naccl.controller.LoginController.login]
+Ground Truth: [top.naccl.entity.LoginLog, top.naccl.controller.LoginController.login, top.naccl.controller.admin.LoginLogController.loginLogs, blog-cms.src.views.log.LoginLog, blog-view.src.views.Login]
+----------------------------------------
+Query: 实现用户密码修改功能
+Precision: 0.6667, Recall: 1.0000
+Predicted: [blog-cms.src.views.system.Account, blog-view.src.components.index.BlogPasswordDialog, top.naccl.controller.admin.AccountAdminController.account]
+Ground Truth: [top.naccl.controller.admin.AccountAdminController.account, blog-cms.src.views.system.Account]
+----------------------------------------
+Query: 实现关于我页面配置
+Precision: 0.6667, Recall: 0.6667
+Predicted: [blog-cms.src.views.page.About, blog-cms.src.views.page.SiteSetting, top.naccl.controller.admin.SiteSettingAdminController.siteSettings, top.naccl.controller.admin.AboutAdminController.updateAbout, top.naccl.controller.admin.AboutAdminController.about, top.naccl.controller.AboutController.about]
+Ground Truth: [top.naccl.controller.admin.AboutAdminController.about, top.naccl.controller.AboutController.about, top.naccl.controller.admin.AboutAdminController.updateAbout, blog-cms.src.views.about.About, blog-cms.src.views.page.About, blog-view.src.views.About]
+----------------------------------------
+Query: 实现站点设置管理功能
+Precision: 0.8000, Recall: 1.0000
+Predicted: [top.naccl.controller.admin.SiteSettingAdminController.updateAll, blog-cms.src.views.page.SiteSetting, top.naccl.entity.SiteSetting, top.naccl.controller.admin.SiteSettingAdminController.siteSettings, blog-cms.src.views.pictureHosting.Setting]
+Ground Truth: [top.naccl.entity.SiteSetting, top.naccl.controller.admin.SiteSettingAdminController.siteSettings, top.naccl.controller.admin.SiteSettingAdminController.updateAll, blog-cms.src.views.page.SiteSetting]
+----------------------------------------
+Query: 实现动态公开状态管理功能
+Precision: 0.6667, Recall: 0.6667
+Predicted: [blog-cms.src.views.page.About, blog-cms.src.views.blog.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments, top.naccl.entity.Moment, top.naccl.controller.admin.MomentAdminController.updatePublished]
+Ground Truth: [top.naccl.controller.admin.MomentAdminController.moment, top.naccl.controller.admin.MomentAdminController.updatePublished, top.naccl.entity.Moment, blog-cms.src.views.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments]
+----------------------------------------
+Query: 实现动态点赞功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [top.naccl.controller.MomentController.like, blog-cms.src.views.blog.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments, top.naccl.entity.Moment]
+Ground Truth: [top.naccl.controller.MomentController.like, top.naccl.entity.Moment, blog-cms.src.views.blog.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments]
+----------------------------------------
+Query: 实现用户登录功能
+Precision: 0.7143, Recall: 0.8333
+Predicted: [top.naccl.entity.OperationLog, top.naccl.util.JwtUtils.generateToken, top.naccl.entity.LoginLog, top.naccl.entity.VisitLog, top.naccl.controller.LoginController.login, blog-view.src.views.Login, top.naccl.entity.User]
+Ground Truth: [top.naccl.controller.LoginController.login, top.naccl.entity.User, top.naccl.entity.LoginLog, top.naccl.entity.VisitLog, blog-cms.src.views.Login, blog-view.src.views.Login]
+----------------------------------------
+
+=== Overall Evaluation Results ===
+Average Precision: 0.8253
+Average Recall: 0.9044
+Total Valid Queries: 20
+Query: 实现博客文章置顶的功能
+Precision: 0.8333, Recall: 0.8333
+Predicted: [top.naccl.controller.admin.BlogAdminController.updateTop, top.naccl.entity.Blog, blog-cms.src.views.blog.blog.BlogList, top.naccl.controller.admin.BlogAdminController.getBlog, blog-cms.src.views.blog.blog.WriteBlog, top.naccl.controller.BlogController.blogs]
+Ground Truth: [top.naccl.controller.admin.BlogAdminController.blogs, top.naccl.controller.BlogController.blogs, top.naccl.controller.admin.BlogAdminController.updateTop, top.naccl.entity.Blog, blog-cms.src.views.blog.blog.BlogList, blog-cms.src.views.blog.blog.WriteBlog]
+----------------------------------------
+Query: 实现博客评论审核的功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [top.naccl.controller.admin.CommentAdminController.updateNotice, top.naccl.controller.admin.CommentAdminController.updateComment, top.naccl.controller.admin.CommentAdminController.updatePublished, blog-cms.src.views.blog.comment.CommentList, top.naccl.entity.Comment]
+Ground Truth: [blog-cms.src.views.blog.comment.CommentList, top.naccl.entity.Comment, top.naccl.controller.admin.CommentAdminController.updateNotice, top.naccl.controller.admin.CommentAdminController.updateComment, top.naccl.controller.admin.CommentAdminController.updatePublished]
+----------------------------------------
+Query: 实现文章密码保护功能
+Precision: 0.8333, Recall: 0.8333
+Predicted: [top.naccl.controller.BlogController.checkBlogPassword, top.naccl.entity.Blog, blog-cms.src.views.blog.blog.BlogList, top.naccl.controller.CommentController.postComment, blog-cms.src.views.blog.blog.WriteBlog, top.naccl.controller.BlogController.getBlog]
+Ground Truth: [top.naccl.controller.BlogController.checkBlogPassword, top.naccl.controller.BlogController.getBlog, top.naccl.entity.Blog, blog-view.src.components.BlogPassword, blog-cms.src.views.blog.blog.BlogList, blog-cms.src.views.blog.blog.WriteBlog]
+----------------------------------------
+Query: 实现博客访问统计功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [top.naccl.entity.VisitRecord, top.naccl.controller.admin.BlogAdminController.getBlog, blog-cms.src.views.dashboard.index, top.naccl.entity.VisitLog, blog-cms.src.views.log.VisitLog, top.naccl.controller.BlogController.getBlog]
+Ground Truth: [top.naccl.controller.BlogController.getBlog, top.naccl.controller.admin.BlogAdminController.getBlog, top.naccl.entity.VisitRecord, top.naccl.entity.VisitLog, blog-cms.src.views.log.VisitLog, blog-cms.src.views.dashboard.index]
+----------------------------------------
+Query: 实现博客分类管理功能
+Precision: 0.8333, Recall: 0.8333
+Predicted: [top.naccl.controller.admin.CategoryAdminController.delete, top.naccl.entity.Category, top.naccl.controller.admin.BlogAdminController.updateBlog, top.naccl.controller.admin.CategoryAdminController.saveCategory, top.naccl.controller.admin.CategoryAdminController.categories, blog-cms.src.views.blog.category.CategoryList]
+Ground Truth: [top.naccl.controller.admin.CategoryAdminController.delete, top.naccl.controller.admin.CategoryAdminController.saveCategory, top.naccl.controller.admin.CategoryAdminController.categories, top.naccl.service.impl.CategoryServiceImpl, top.naccl.entity.Category, blog-cms.src.views.blog.category.CategoryList]
+----------------------------------------
+Query: 实现博客标签管理功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [top.naccl.controller.admin.TagAdminController.tags, top.naccl.controller.admin.TagAdminController.delete, top.naccl.controller.admin.TagAdminController.saveTag, top.naccl.controller.admin.TagAdminController.updateTag, blog-cms.src.views.blog.tag.TagList, top.naccl.entity.Tag]
+Ground Truth: [top.naccl.controller.admin.TagAdminController.tags, top.naccl.controller.admin.TagAdminController.saveTag, top.naccl.controller.admin.TagAdminController.delete, top.naccl.controller.admin.TagAdminController.updateTag, top.naccl.entity.Tag, blog-cms.src.views.blog.tag.TagList]
+----------------------------------------
+Query: 实现定时任务管理功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [top.naccl.entity.ScheduleJob, top.naccl.controller.admin.ScheduleJobController.saveJob, blog-cms.src.views.log.ScheduleJobLog, top.naccl.controller.admin.ScheduleJobController.updateJob, top.naccl.entity.ScheduleJobLog, top.naccl.controller.admin.ScheduleJobController.deleteJob, blog-cms.src.views.system.ScheduleJobList, top.naccl.controller.admin.ScheduleJobController.runJob]
+Ground Truth: [top.naccl.controller.admin.ScheduleJobController.deleteJob, top.naccl.controller.admin.ScheduleJobController.saveJob, top.naccl.controller.admin.ScheduleJobController.updateJob, top.naccl.controller.admin.ScheduleJobController.runJob, top.naccl.entity.ScheduleJob, top.naccl.entity.ScheduleJobLog, blog-cms.src.views.system.ScheduleJobList, blog-cms.src.views.log.ScheduleJobLog]
+----------------------------------------
+Query: 实现博客文章编辑功能
+Precision: 0.7273, Recall: 1.0000
+Predicted: [top.naccl.controller.admin.BlogAdminController.saveBlog, blog-cms.src.views.blog.blog.BlogList, top.naccl.entity.Blog, top.naccl.controller.admin.BlogAdminController.updateBlog, top.naccl.entity.Category, blog-view.src.views.blog.Blog, blog-view.src.components.blog.BlogItem, top.naccl.controller.admin.BlogAdminController.delete, blog-view.src.components.blog.BlogList, blog-cms.src.views.blog.blog.WriteBlog, top.naccl.entity.Tag]
+Ground Truth: [top.naccl.controller.admin.BlogAdminController.saveBlog, top.naccl.controller.admin.BlogAdminController.updateBlog, top.naccl.controller.admin.BlogAdminController.delete, top.naccl.entity.Blog, blog-view.src.components.blog.BlogItem, blog-view.src.views.blog.Blog, blog-cms.src.views.blog.blog.WriteBlog, blog-cms.src.views.blog.blog.BlogList]
+----------------------------------------
+Query: 实现博客搜索功能
+Precision: 0.6667, Recall: 0.8000
+Predicted: [top.naccl.entity.Blog, blog-view.src.components.blog.BlogItem, blog-view.src.components.blog.BlogList, top.naccl.controller.BlogController.searchBlog, top.naccl.controller.BlogController.getBlog, blog-view.src.components.index.Nav]
+Ground Truth: [top.naccl.controller.BlogController.searchBlog, top.naccl.controller.BlogController.getBlog, blog-view.src.components.blog.BlogItem, blog-cms.src.views.blog.blog.BlogList, top.naccl.entity.Blog]
+----------------------------------------
+Query: 实现友链申请功能
+Precision: 0.6667, Recall: 0.8571
+Predicted: [top.naccl.controller.FriendController.friends, top.naccl.controller.admin.FriendAdminController.updatePublished, blog-view.src.components.comment.CommentForm, top.naccl.controller.admin.FriendAdminController.friendInfo, top.naccl.controller.admin.FriendAdminController.deleteFriend, blog-cms.src.views.page.FriendList, top.naccl.entity.Friend, top.naccl.controller.admin.FriendAdminController.saveFriend, top.naccl.controller.admin.FriendAdminController.updateFriend]
+Ground Truth: [top.naccl.controller.admin.FriendAdminController.saveFriend, top.naccl.controller.admin.FriendAdminController.updateFriend, top.naccl.controller.admin.FriendAdminController.friendInfo, top.naccl.controller.FriendController.friends, top.naccl.entity.Friend, blog-cms.src.views.page.FriendList, blog-view.src.views.friends.Friends]
+----------------------------------------
+Query: 实现友链评论功能
+Precision: 0.8889, Recall: 0.8889
+Predicted: [blog-view.src.components.comment.CommentForm, top.naccl.controller.admin.FriendAdminController.friendInfo, top.naccl.controller.CommentController.comments, blog-view.src.components.comment.CommentList, blog-cms.src.views.page.FriendList, top.naccl.controller.CommentController.postComment, blog-view.src.components.comment.Comment, top.naccl.entity.Friend, top.naccl.controller.admin.CommentAdminController.comments]
+Ground Truth: [top.naccl.controller.CommentController.comments, top.naccl.controller.admin.CommentAdminController.comments, top.naccl.controller.CommentController.postComment, top.naccl.controller.admin.FriendAdminController.updateFriendInfoCommentEnabled, top.naccl.entity.Friend, blog-cms.src.views.page.FriendList, blog-view.src.components.comment.Comment, blog-view.src.components.comment.CommentForm, blog-view.src.components.comment.CommentList]
+----------------------------------------
+Query: 更改友链公开状态
+Precision: 0.6667, Recall: 1.0000
+Predicted: [top.naccl.controller.admin.FriendAdminController.updatePublished, blog-view.src.components.blog.Pagination, top.naccl.controller.admin.FriendAdminController.friendInfo, top.naccl.controller.admin.FriendAdminController.updateFriendInfoContent, top.naccl.controller.admin.FriendAdminController.updateFriendInfoCommentEnabled, blog-cms.src.components.Hamburger.index, blog-cms.src.views.page.FriendList, top.naccl.entity.Friend, top.naccl.controller.admin.FriendAdminController.updateFriend]
+Ground Truth: [top.naccl.controller.admin.FriendAdminController.updatePublished, top.naccl.controller.admin.FriendAdminController.updateFriend, top.naccl.controller.admin.FriendAdminController.updateFriendInfoCommentEnabled, top.naccl.controller.admin.FriendAdminController.friendInfo, top.naccl.entity.Friend, blog-cms.src.views.page.FriendList]
+----------------------------------------
+Query: 实现动态发布功能
+Precision: 0.8750, Recall: 0.8750
+Predicted: [top.naccl.controller.admin.MomentAdminController.saveMoment, top.naccl.controller.admin.MomentAdminController.moments, blog-cms.src.views.blog.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments, top.naccl.controller.admin.MomentAdminController.updateMoment, top.naccl.entity.Moment, top.naccl.controller.admin.MomentAdminController.updatePublished]
+Ground Truth: [top.naccl.controller.admin.MomentAdminController.saveMoment, top.naccl.controller.admin.MomentAdminController.moments, top.naccl.controller.admin.MomentAdminController.updatePublished, top.naccl.controller.admin.MomentAdminController.updateMoment, top.naccl.entity.Moment, blog-cms.src.views.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments]
+----------------------------------------
+Query: 实现登录日志记录功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [blog-cms.src.views.log.LoginLog, top.naccl.entity.LoginLog, top.naccl.controller.admin.LoginLogController.loginLogs, blog-view.src.views.Login, top.naccl.controller.LoginController.login]
+Ground Truth: [top.naccl.entity.LoginLog, top.naccl.controller.LoginController.login, top.naccl.controller.admin.LoginLogController.loginLogs, blog-cms.src.views.log.LoginLog, blog-view.src.views.Login]
+----------------------------------------
+Query: 实现用户密码修改功能
+Precision: 0.6667, Recall: 1.0000
+Predicted: [blog-cms.src.views.system.Account, blog-view.src.components.index.BlogPasswordDialog, top.naccl.controller.admin.AccountAdminController.account]
+Ground Truth: [top.naccl.controller.admin.AccountAdminController.account, blog-cms.src.views.system.Account]
+----------------------------------------
+Query: 实现关于我页面配置
+Precision: 0.6667, Recall: 0.6667
+Predicted: [blog-cms.src.views.page.About, blog-cms.src.views.page.SiteSetting, top.naccl.controller.admin.SiteSettingAdminController.siteSettings, top.naccl.controller.admin.AboutAdminController.updateAbout, top.naccl.controller.admin.AboutAdminController.about, top.naccl.controller.AboutController.about]
+Ground Truth: [top.naccl.controller.admin.AboutAdminController.about, top.naccl.controller.AboutController.about, top.naccl.controller.admin.AboutAdminController.updateAbout, blog-cms.src.views.about.About, blog-cms.src.views.page.About, blog-view.src.views.About]
+----------------------------------------
+Query: 实现站点设置管理功能
+Precision: 0.8000, Recall: 1.0000
+Predicted: [top.naccl.controller.admin.SiteSettingAdminController.updateAll, blog-cms.src.views.page.SiteSetting, top.naccl.entity.SiteSetting, top.naccl.controller.admin.SiteSettingAdminController.siteSettings, blog-cms.src.views.pictureHosting.Setting]
+Ground Truth: [top.naccl.entity.SiteSetting, top.naccl.controller.admin.SiteSettingAdminController.siteSettings, top.naccl.controller.admin.SiteSettingAdminController.updateAll, blog-cms.src.views.page.SiteSetting]
+----------------------------------------
+Query: 实现动态公开状态管理功能
+Precision: 0.6667, Recall: 0.6667
+Predicted: [blog-cms.src.views.page.About, blog-cms.src.views.blog.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments, top.naccl.entity.Moment, top.naccl.controller.admin.MomentAdminController.updatePublished]
+Ground Truth: [top.naccl.controller.admin.MomentAdminController.moment, top.naccl.controller.admin.MomentAdminController.updatePublished, top.naccl.entity.Moment, blog-cms.src.views.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments]
+----------------------------------------
+Query: 实现动态点赞功能
+Precision: 1.0000, Recall: 1.0000
+Predicted: [top.naccl.controller.MomentController.like, blog-cms.src.views.blog.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments, top.naccl.entity.Moment]
+Ground Truth: [top.naccl.controller.MomentController.like, top.naccl.entity.Moment, blog-cms.src.views.blog.moment.MomentList, blog-cms.src.views.blog.moment.WriteMoment, blog-view.src.views.moments.Moments]
+----------------------------------------
+Query: 实现用户登录功能
+Precision: 0.7143, Recall: 0.8333
+Predicted: [top.naccl.entity.OperationLog, top.naccl.util.JwtUtils.generateToken, top.naccl.entity.LoginLog, top.naccl.entity.VisitLog, top.naccl.controller.LoginController.login, blog-view.src.views.Login, top.naccl.entity.User]
+Ground Truth: [top.naccl.controller.LoginController.login, top.naccl.entity.User, top.naccl.entity.LoginLog, top.naccl.entity.VisitLog, blog-cms.src.views.Login, blog-view.src.views.Login]
+----------------------------------------
+
+=== Overall Evaluation Results ===
+Average Precision: 0.8253
+Average Recall: 0.9044
+Total Valid Queries: 20

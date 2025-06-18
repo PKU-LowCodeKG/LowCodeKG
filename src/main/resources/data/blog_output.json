@@ -1,0 +1,961 @@
+{
+    "predicted": [
+        {
+            "task": [
+                {
+                    "name": "在文章编辑页面添加置顶选项",
+                    "description": "在前端表单组件中添加一个选项，允许用户选择是否将文章置顶。",
+                    "resources": [
+                        "blog-cms.src.views.blog.blog.WriteBlog"
+                    ]
+                },
+                {
+                    "name": "创建置顶状态更新接口",
+                    "description": "定义一个API接口，接收博客ID和置顶状态作为参数，用于更新文章的置顶状态。",
+                    "resources": [
+                        "top.naccl.controller.admin.BlogAdminController.getBlog",
+                        "top.naccl.controller.admin.BlogAdminController.updateTop"
+                    ]
+                },
+                {
+                    "name": "添加文章置顶字段到数据库",
+                    "description": "在博客文章实体类中添加一个布尔类型的字段，用于表示文章是否被置顶，并更新数据库表结构以支持该字段。",
+                    "resources": [
+                        "top.naccl.entity.Blog"
+                    ]
+                },
+                {
+                    "name": "在博客列表页面显示置顶状态",
+                    "description": "在博客管理界面的表格展示中增加一列，用于显示每篇博客的置顶状态。",
+                    "resources": [
+                        "blog-cms.src.views.blog.blog.WriteBlog",
+                        "blog-cms.src.views.blog.blog.BlogList"
+                    ]
+                },
+                {
+                    "name": "实现置顶逻辑",
+                    "description": "在服务层中创建方法，处理文章置顶状态的更新，并确保数据的一致性和完整性。",
+                    "resources": [
+                        "top.naccl.controller.admin.BlogAdminController.updateTop"
+                    ]
+                },
+                {
+                    "name": "按置顶状态排序博客列表",
+                    "description": "修改博客列表查询逻辑，使得置顶的文章优先显示在列表顶部。",
+                    "resources": [
+                        "top.naccl.controller.BlogController.blogs"
+                    ]
+                }
+            ],
+            "query": "实现博客文章置顶的功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "添加审核按钮到评论列表",
+                    "description": "在前端的评论管理界面中为每条评论添加“批准”和“拒绝”的操作按钮。",
+                    "resources": [
+                        "blog-cms.src.views.blog.comment.CommentList"
+                    ]
+                },
+                {
+                    "name": "更新数据库模式以支持审核状态",
+                    "description": "修改数据库表结构，为评论表增加审核状态字段，并确保数据迁移。",
+                    "resources": []
+                },
+                {
+                    "name": "实现评论审核功能",
+                    "description": "创建服务方法来批准或拒绝评论，并更新评论的审核状态。",
+                    "resources": [
+                        "top.naccl.controller.admin.CommentAdminController.updateComment",
+                        "top.naccl.controller.admin.CommentAdminController.updatePublished"
+                    ]
+                },
+                {
+                    "name": "实现评论审核通知功能",
+                    "description": "当评论被批准或拒绝时，发送通知给相关用户或管理员。",
+                    "resources": [
+                        "top.naccl.controller.admin.CommentAdminController.updateNotice"
+                    ]
+                },
+                {
+                    "name": "在评论列表中显示审核状态",
+                    "description": "在前端的评论管理界面中添加列以显示每条评论的审核状态。",
+                    "resources": [
+                        "blog-cms.src.views.blog.comment.CommentList"
+                    ]
+                },
+                {
+                    "name": "添加评论审核状态字段",
+                    "description": "在评论实体中添加一个表示审核状态的字段，例如 is_approved。",
+                    "resources": [
+                        "top.naccl.entity.Comment"
+                    ]
+                }
+            ],
+            "query": "实现博客评论审核的功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "处理评论提交逻辑",
+                    "description": "更新评论提交功能，确保在文章受密码保护的情况下，只有授权用户才能发表评论。",
+                    "resources": [
+                        "top.naccl.controller.CommentController.postComment",
+                        "top.naccl.controller.BlogController.getBlog"
+                    ]
+                },
+                {
+                    "name": "更新数据库模式",
+                    "description": "修改数据库表结构，以支持存储文章密码的新字段。",
+                    "resources": [
+                        "top.naccl.entity.Blog"
+                    ]
+                },
+                {
+                    "name": "在编辑页面添加密码输入框",
+                    "description": "在前端的文章编辑页面中添加一个用于设置和修改文章密码的输入框。",
+                    "resources": []
+                },
+                {
+                    "name": "实现密码验证逻辑",
+                    "description": "创建服务方法来验证用户提供的密码是否正确，并生成相应的JWT令牌。",
+                    "resources": [
+                        "top.naccl.controller.BlogController.checkBlogPassword",
+                        "top.naccl.controller.BlogController.getBlog"
+                    ]
+                },
+                {
+                    "name": "添加文章密码字段",
+                    "description": "在博客文章实体类中添加一个用于存储密码的字段。",
+                    "resources": [
+                        "top.naccl.entity.Blog"
+                    ]
+                },
+                {
+                    "name": "在博客列表中显示密码保护状态",
+                    "description": "在前端的博客管理界面中，为受密码保护的文章添加一个标识符或标签。",
+                    "resources": [
+                        "blog-cms.src.views.blog.blog.WriteBlog",
+                        "blog-cms.src.views.blog.blog.BlogList"
+                    ]
+                },
+                {
+                    "name": "限制未授权访问",
+                    "description": "修改获取博客详情的API接口，确保只有提供正确密码的用户才能访问受密码保护的文章。",
+                    "resources": [
+                        "top.naccl.controller.BlogController.getBlog"
+                    ]
+                }
+            ],
+            "query": "实现文章密码保护功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "实现博客详情页的访问计数逻辑",
+                    "description": "在获取博客详情时，更新博客的访问统计信息，如增加PV和UV计数。",
+                    "resources": [
+                        "top.naccl.controller.BlogController.getBlog"
+                    ]
+                },
+                {
+                    "name": "添加博客访问统计实体",
+                    "description": "定义一个用于存储博客访问统计数据的实体类，包括字段如页面浏览量（PV）、独立访客数（UV）等。",
+                    "resources": [
+                        "top.naccl.entity.VisitRecord"
+                    ]
+                },
+                {
+                    "name": "更新数据库模式以支持访问统计",
+                    "description": "修改数据库模式，添加必要的表和字段来存储博客的访问统计数据。",
+                    "resources": [
+                        "top.naccl.entity.VisitRecord",
+                        "top.naccl.entity.VisitLog"
+                    ]
+                },
+                {
+                    "name": "更新仪表盘页面以显示访问统计信息",
+                    "description": "在前端仪表盘页面中添加图表和统计数据展示，包括今日PV、UV等信息。",
+                    "resources": [
+                        "blog-cms.src.views.log.VisitLog",
+                        "blog-cms.src.views.dashboard.index"
+                    ]
+                },
+                {
+                    "name": "实现获取访问统计的服务方法",
+                    "description": "创建服务方法以计算并返回博客的访问统计数据，如PV、UV等。",
+                    "resources": [
+                        "top.naccl.controller.admin.BlogAdminController.getBlog"
+                    ]
+                }
+            ],
+            "query": "实现博客访问统计功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "更新数据库以支持分类管理",
+                    "description": "在数据库中创建或修改表结构，以存储博客分类信息。",
+                    "resources": [
+                        "top.naccl.entity.Category"
+                    ]
+                },
+                {
+                    "name": "实现删除分类的功能",
+                    "description": "在后端实现删除分类的逻辑，确保分类关联的博客处理得当。",
+                    "resources": [
+                        "top.naccl.entity.Category",
+                        "top.naccl.controller.admin.CategoryAdminController.delete"
+                    ]
+                },
+                {
+                    "name": "实现编辑分类的功能",
+                    "description": "在后端实现编辑现有分类的逻辑，并更新数据库。",
+                    "resources": [
+                        "top.naccl.controller.admin.BlogAdminController.updateBlog",
+                        "top.naccl.entity.Category"
+                    ]
+                },
+                {
+                    "name": "实现添加分类的功能",
+                    "description": "在后端实现添加新分类的逻辑，并更新数据库。",
+                    "resources": [
+                        "top.naccl.entity.Category",
+                        "top.naccl.controller.admin.CategoryAdminController.saveCategory"
+                    ]
+                },
+                {
+                    "name": "实现获取分类列表的API接口",
+                    "description": "提供一个API接口，用于前端页面获取分类列表数据。",
+                    "resources": [
+                        "top.naccl.controller.admin.CategoryAdminController.categories",
+                        "blog-cms.src.views.blog.category.CategoryList"
+                    ]
+                },
+                {
+                    "name": "添加分类管理页面",
+                    "description": "实现一个前端界面，允许管理员添加、编辑和删除博客分类。",
+                    "resources": [
+                        "blog-cms.src.views.blog.category.CategoryList"
+                    ]
+                }
+            ],
+            "query": "实现博客分类管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "编辑现有标签",
+                    "description": "允许用户通过点击每个标签旁边的编辑选项来修改标签信息，并更新前端页面中的标签列表。",
+                    "resources": [
+                        "blog-cms.src.views.blog.tag.TagList",
+                        "top.naccl.controller.admin.TagAdminController.updateTag"
+                    ]
+                },
+                {
+                    "name": "API接口实现",
+                    "description": "实现获取、添加、编辑和删除标签的HTTP API接口，供前端页面调用。",
+                    "resources": [
+                        "top.naccl.controller.admin.TagAdminController.tags",
+                        "top.naccl.controller.admin.TagAdminController.saveTag",
+                        "top.naccl.controller.admin.TagAdminController.delete",
+                        "top.naccl.controller.admin.TagAdminController.updateTag"
+                    ]
+                },
+                {
+                    "name": "删除标签",
+                    "description": "提供一个功能让用户可以删除不再需要的标签，并从前端页面中移除该标签。",
+                    "resources": [
+                        "top.naccl.controller.admin.TagAdminController.delete",
+                        "blog-cms.src.views.blog.tag.TagList"
+                    ]
+                },
+                {
+                    "name": "标签数据结构定义",
+                    "description": "定义一个表示博客标签的数据结构或实体类，包含必要的字段如ID、名称和颜色等。",
+                    "resources": [
+                        "top.naccl.entity.Tag"
+                    ]
+                },
+                {
+                    "name": "添加新标签",
+                    "description": "提供一个功能允许用户通过点击“添加标签”按钮来创建新标签，并在表中显示新添加的标签。",
+                    "resources": [
+                        "top.naccl.controller.admin.TagAdminController.tags",
+                        "blog-cms.src.views.blog.tag.TagList"
+                    ]
+                },
+                {
+                    "name": "显示标签列表",
+                    "description": "在前端页面中展示所有标签的详细信息，包括序号、名称和颜色。",
+                    "resources": [
+                        "blog-cms.src.views.blog.tag.TagList"
+                    ]
+                },
+                {
+                    "name": "分页功能",
+                    "description": "实现标签列表的分页显示，允许用户根据需要调整每页显示的数量。",
+                    "resources": [
+                        "top.naccl.controller.admin.TagAdminController.tags"
+                    ]
+                },
+                {
+                    "name": "数据库表创建",
+                    "description": "在数据库中创建用于存储标签信息的表，并定义相应的字段和约束条件。",
+                    "resources": []
+                }
+            ],
+            "query": "实现博客标签管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "删除定时任务",
+                    "description": "在前端页面中实现删除定时任务的功能，用户可以选择要删除的任务并从数据库中移除。",
+                    "resources": [
+                        "blog-cms.src.views.system.ScheduleJobList",
+                        "top.naccl.controller.admin.ScheduleJobController.deleteJob"
+                    ]
+                },
+                {
+                    "name": "定时任务列表显示",
+                    "description": "在前端页面中显示定时任务的列表，包括任务ID、Bean名称、方法名、参数、Cron表达式、状态、备注和创建时间等信息，并提供操作按钮来执行一次任务、编辑任务或删除任务。",
+                    "resources": [
+                        "blog-cms.src.views.system.ScheduleJobList"
+                    ]
+                },
+                {
+                    "name": "定时任务状态管理",
+                    "description": "在数据库中存储定时任务的状态，并在业务逻辑中根据需要更新任务状态。",
+                    "resources": [
+                        "top.naccl.entity.ScheduleJob",
+                        "top.naccl.controller.admin.ScheduleJobController.saveJob",
+                        "top.naccl.controller.admin.ScheduleJobController.updateJob",
+                        "top.naccl.controller.admin.ScheduleJobController.deleteJob",
+                        "top.naccl.entity.ScheduleJobLog"
+                    ]
+                },
+                {
+                    "name": "执行一次定时任务",
+                    "description": "在前端页面中提供按钮来立即执行指定的定时任务，并返回操作结果。",
+                    "resources": [
+                        "top.naccl.controller.admin.ScheduleJobController.runJob"
+                    ]
+                },
+                {
+                    "name": "编辑现有定时任务",
+                    "description": "在前端页面中实现编辑现有定时任务的功能，用户可以通过弹出对话框修改任务的详细信息，并更新到数据库中。",
+                    "resources": [
+                        "blog-cms.src.views.system.ScheduleJobList",
+                        "top.naccl.controller.admin.ScheduleJobController.updateJob"
+                    ]
+                },
+                {
+                    "name": "添加新定时任务",
+                    "description": "在前端页面中实现添加新定时任务的功能，用户可以通过弹出对话框填写任务的详细信息，并保存到数据库中。",
+                    "resources": [
+                        "blog-cms.src.views.system.ScheduleJobList",
+                        "top.naccl.controller.admin.ScheduleJobController.saveJob"
+                    ]
+                },
+                {
+                    "name": "定时任务日志显示",
+                    "description": "在前端页面中显示定时任务的日志列表，包括序号、日志ID、任务ID、Bean名称、方法名、结果（成功或失败）、执行耗时和执行时间等信息，并提供查看详情和删除功能。",
+                    "resources": [
+                        "blog-cms.src.views.log.ScheduleJobLog"
+                    ]
+                }
+            ],
+            "query": "实现定时任务管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "博客文章删除",
+                    "description": "实现删除指定ID的博客文章及其所有评论，并更新blog_tag表的功能。",
+                    "resources": [
+                        "top.naccl.controller.admin.BlogAdminController.delete"
+                    ]
+                },
+                {
+                    "name": "博客文章编辑表单实现",
+                    "description": "实现一个博客文章编辑表单，包含标题、首图URL、描述、正文、分类、标签、字数、阅读时长和浏览次数等字段。用户可以设置文章的可见性（公开、私密或密码保护），并选择是否开启赞赏、推荐、评论和置顶功能。",
+                    "resources": [
+                        "blog-cms.src.views.blog.blog.WriteBlog"
+                    ]
+                },
+                {
+                    "name": "博客文章更新",
+                    "description": "实现更新博客文章的功能，包括验证参数、处理分类和标签，并维护博客与标签的关联关系。",
+                    "resources": [
+                        "top.naccl.controller.admin.BlogAdminController.updateBlog",
+                        "top.naccl.controller.admin.BlogAdminController.saveBlog"
+                    ]
+                },
+                {
+                    "name": "博客文章保存/发布",
+                    "description": "实现保存或发布博客文章的功能，处理分类和标签，并返回操作结果。",
+                    "resources": [
+                        "top.naccl.controller.admin.BlogAdminController.saveBlog"
+                    ]
+                },
+                {
+                    "name": "博客管理界面",
+                    "description": "实现一个博客管理界面，包含搜索、分类选择、表格展示（包括标题、分类、置顶状态、推荐状态、可见性等信息）、编辑和删除功能，以及分页和可见性设置对话框。",
+                    "resources": [
+                        "blog-cms.src.views.blog.blog.BlogList"
+                    ]
+                },
+                {
+                    "name": "博客列表展示",
+                    "description": "实现展示博客文章列表的功能，每篇文章显示标题、创建时间、浏览量、字数、阅读时长、分类和标签，并提供阅读全文的链接。",
+                    "resources": [
+                        "blog-view.src.components.blog.BlogItem",
+                        "blog-view.src.components.blog.BlogList"
+                    ]
+                },
+                {
+                    "name": "博客文章实体类定义",
+                    "description": "定义一个博客文章类，包含文章的基本信息和属性。",
+                    "resources": [
+                        "top.naccl.entity.Category",
+                        "top.naccl.entity.Tag",
+                        "top.naccl.entity.Blog"
+                    ]
+                },
+                {
+                    "name": "博客文章详细信息展示",
+                    "description": "实现展示博客文章详细信息的功能，包括标题、发布时间、阅读量、字数、阅读时长、分类、内容、赞赏选项、标签、作者信息和评论。",
+                    "resources": [
+                        "blog-view.src.views.blog.Blog"
+                    ]
+                }
+            ],
+            "query": "实现博客文章编辑功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "更新博客实体以支持搜索",
+                    "description": "确保博客实体包含必要的字段以便进行全文搜索或关键字匹配。",
+                    "resources": [
+                        "top.naccl.entity.Blog"
+                    ]
+                },
+                {
+                    "name": "实现博客搜索逻辑",
+                    "description": "根据用户输入的关键字，查询符合条件的公开且无密码保护的博客文章，并返回结果。",
+                    "resources": [
+                        "top.naccl.controller.BlogController.searchBlog",
+                        "top.naccl.controller.BlogController.getBlog"
+                    ]
+                },
+                {
+                    "name": "添加博客搜索功能到页面",
+                    "description": "在博客管理界面和首页中添加搜索框，允许用户输入关键字进行搜索。",
+                    "resources": [
+                        "blog-view.src.components.index.Nav",
+                        "blog-view.src.components.blog.BlogList"
+                    ]
+                },
+                {
+                    "name": "展示搜索结果",
+                    "description": "在搜索结果页面中显示符合条件的博客文章列表，并提供分页功能。",
+                    "resources": [
+                        "blog-view.src.components.blog.BlogItem",
+                        "blog-view.src.components.blog.BlogList"
+                    ]
+                }
+            ],
+            "query": "实现博客搜索功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "处理友链申请数据",
+                    "description": "定义并更新数据库中的友链实体类以存储申请的友链信息，并创建相应的服务方法来处理这些数据。",
+                    "resources": [
+                        "top.naccl.entity.Friend",
+                        "top.naccl.controller.admin.FriendAdminController.saveFriend",
+                        "top.naccl.controller.admin.FriendAdminController.friendInfo",
+                        "top.naccl.controller.admin.FriendAdminController.deleteFriend"
+                    ]
+                },
+                {
+                    "name": "通知用户申请结果",
+                    "description": "在友链申请表单中添加功能，向提交申请的用户发送友链申请的结果通知。",
+                    "resources": [
+                        "top.naccl.controller.admin.FriendAdminController.updateFriend",
+                        "top.naccl.controller.FriendController.friends",
+                        "top.naccl.controller.admin.FriendAdminController.friendInfo"
+                    ]
+                },
+                {
+                    "name": "添加友链申请表单",
+                    "description": "在友链管理界面中添加一个友链申请表单，允许用户提交友链信息。",
+                    "resources": [
+                        "blog-view.src.components.comment.CommentForm"
+                    ]
+                },
+                {
+                    "name": "显示友链申请列表",
+                    "description": "在管理界面中添加一个友链申请列表，管理员可以查看和审核提交的友链申请。",
+                    "resources": [
+                        "blog-cms.src.views.page.FriendList"
+                    ]
+                },
+                {
+                    "name": "实现友链申请审核逻辑",
+                    "description": "创建服务方法来处理友链申请的审核流程，包括批准或拒绝申请，并更新友链状态。",
+                    "resources": [
+                        "top.naccl.controller.admin.FriendAdminController.updatePublished",
+                        "top.naccl.controller.admin.FriendAdminController.updateFriend",
+                        "top.naccl.controller.FriendController.friends"
+                    ]
+                }
+            ],
+            "query": "实现友链申请功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "实现友链评论回复功能",
+                    "description": "允许用户对友链的评论进行回复，并展示回复内容。",
+                    "resources": [
+                        "blog-view.src.components.comment.CommentForm",
+                        "top.naccl.controller.CommentController.comments",
+                        "blog-view.src.components.comment.CommentList",
+                        "blog-view.src.components.comment.Comment"
+                    ]
+                },
+                {
+                    "name": "添加友链评论开关",
+                    "description": "在友链管理界面中添加一个评论开关，允许管理员开启或关闭友链的评论功能。",
+                    "resources": [
+                        "top.naccl.entity.Friend",
+                        "blog-cms.src.views.page.FriendList"
+                    ]
+                },
+                {
+                    "name": "更新数据库以支持友链评论",
+                    "description": "在数据库中为友链实体增加一个字段，用于存储评论开关的状态。",
+                    "resources": [
+                        "top.naccl.entity.Friend"
+                    ]
+                },
+                {
+                    "name": "展示友链评论列表",
+                    "description": "在友链页面中显示评论列表，支持分页导航。",
+                    "resources": [
+                        "top.naccl.controller.admin.CommentAdminController.comments",
+                        "blog-view.src.components.comment.CommentList"
+                    ]
+                },
+                {
+                    "name": "实现友链评论提交功能",
+                    "description": "允许用户在友链页面提交评论，并对评论内容进行验证和处理。",
+                    "resources": [
+                        "top.naccl.controller.CommentController.postComment",
+                        "top.naccl.controller.CommentController.comments",
+                        "top.naccl.controller.admin.FriendAdminController.friendInfo"
+                    ]
+                }
+            ],
+            "query": "实现友链评论功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "更新数据库中的友链公开状态",
+                    "description": "确保数据库中友链的公开状态字段能够被正确更新。",
+                    "resources": [
+                        "top.naccl.controller.admin.FriendAdminController.updateFriendInfoContent",
+                        "top.naccl.controller.admin.FriendAdminController.updatePublished",
+                        "top.naccl.controller.admin.FriendAdminController.updateFriend",
+                        "top.naccl.entity.Friend",
+                        "top.naccl.controller.admin.FriendAdminController.updateFriendInfoCommentEnabled",
+                        "top.naccl.controller.admin.FriendAdminController.friendInfo"
+                    ]
+                },
+                {
+                    "name": "更新友链公开状态",
+                    "description": "实现友链实体类中公开状态字段的更新逻辑。",
+                    "resources": [
+                        "top.naccl.controller.admin.FriendAdminController.updateFriendInfoContent",
+                        "top.naccl.controller.admin.FriendAdminController.updatePublished",
+                        "top.naccl.controller.admin.FriendAdminController.updateFriend",
+                        "top.naccl.entity.Friend",
+                        "top.naccl.controller.admin.FriendAdminController.updateFriendInfoCommentEnabled",
+                        "top.naccl.controller.admin.FriendAdminController.friendInfo"
+                    ]
+                },
+                {
+                    "name": "提供友链公开状态切换按钮",
+                    "description": "在友链管理界面添加一个按钮，用于切换友链的公开状态。",
+                    "resources": [
+                        "blog-view.src.components.blog.Pagination",
+                        "blog-cms.src.views.page.FriendList",
+                        "blog-cms.src.components.Hamburger.index"
+                    ]
+                }
+            ],
+            "query": "更改友链公开状态"
+        },
+        {
+            "task": [
+                {
+                    "name": "动态列表展示",
+                    "description": "展示用户的动态列表，包括发布者信息、发布时间和点赞数，并支持分页浏览。",
+                    "resources": [
+                        "top.naccl.controller.admin.MomentAdminController.moments",
+                        "blog-cms.src.views.blog.moment.MomentList",
+                        "blog-view.src.views.moments.Moments"
+                    ]
+                },
+                {
+                    "name": "公开状态更新功能",
+                    "description": "实现更新动态公开状态的功能。",
+                    "resources": [
+                        "top.naccl.controller.admin.MomentAdminController.updatePublished",
+                        "top.naccl.controller.admin.MomentAdminController.updateMoment"
+                    ]
+                },
+                {
+                    "name": "动态内容实体定义",
+                    "description": "定义一个表示博客动态的类，包含内容、创建时间、点赞数量和公开状态等属性。",
+                    "resources": [
+                        "top.naccl.entity.Moment"
+                    ]
+                },
+                {
+                    "name": "发布动态功能实现",
+                    "description": "实现发布博客动态的功能，设置创建时间和保存到数据库中。",
+                    "resources": [
+                        "top.naccl.entity.Moment",
+                        "top.naccl.controller.admin.MomentAdminController.saveMoment",
+                        "top.naccl.controller.admin.MomentAdminController.updateMoment"
+                    ]
+                },
+                {
+                    "name": "动态内容发布表单实现",
+                    "description": "实现一个包含动态内容、点赞数和创建时间输入项的发布表单，并提供“仅自己可见”和“发布动态”两个提交按钮。",
+                    "resources": [
+                        "blog-cms.src.views.blog.moment.WriteMoment"
+                    ]
+                }
+            ],
+            "query": "实现动态发布功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "在登录页面添加日志记录逻辑",
+                    "description": "在现有登录表单中集成日志记录功能，在用户成功登录后自动记录相关信息。",
+                    "resources": [
+                        "blog-cms.src.views.log.LoginLog",
+                        "blog-view.src.views.Login"
+                    ]
+                },
+                {
+                    "name": "添加登录日志记录功能",
+                    "description": "在用户登录时，记录用户的登录信息，包括用户名、IP地址和登录时间等。",
+                    "resources": [
+                        "top.naccl.controller.LoginController.login",
+                        "top.naccl.entity.LoginLog"
+                    ]
+                },
+                {
+                    "name": "更新数据库模式以支持登录日志记录",
+                    "description": "修改数据库结构，添加表或字段以存储登录日志信息。",
+                    "resources": [
+                        "top.naccl.entity.LoginLog"
+                    ]
+                },
+                {
+                    "name": "实现登录日志查询功能",
+                    "description": "提供一个接口供用户查询登录日志，支持按时间范围筛选和分页展示。",
+                    "resources": [
+                        "blog-cms.src.views.log.LoginLog",
+                        "top.naccl.controller.admin.LoginLogController.loginLogs"
+                    ]
+                },
+                {
+                    "name": "创建登录日志实体类",
+                    "description": "定义一个用于存储登录日志的实体类，包含必要的字段如用户ID、IP地址、登录时间和状态等。",
+                    "resources": [
+                        "top.naccl.entity.LoginLog"
+                    ]
+                }
+            ],
+            "query": "实现登录日志记录功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "更新用户密码数据",
+                    "description": "在数据库中更新用户的密码信息。",
+                    "resources": [
+                        "top.naccl.controller.admin.AccountAdminController.account"
+                    ]
+                },
+                {
+                    "name": "密码强度校验",
+                    "description": "确保新密码符合系统的安全要求（如长度、复杂度等）。",
+                    "resources": [
+                        "top.naccl.controller.admin.AccountAdminController.account"
+                    ]
+                },
+                {
+                    "name": "用户密码修改表单",
+                    "description": "实现一个页面，允许用户输入当前密码和新密码，并提交修改请求。",
+                    "resources": [
+                        "blog-view.src.components.index.BlogPasswordDialog",
+                        "blog-cms.src.views.system.Account"
+                    ]
+                },
+                {
+                    "name": "验证当前密码",
+                    "description": "在修改密码之前，验证用户输入的当前密码是否正确。",
+                    "resources": [
+                        "top.naccl.controller.admin.AccountAdminController.account"
+                    ]
+                }
+            ],
+            "query": "实现用户密码修改功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "更新关于我页面内容",
+                    "description": "实现一个接口，允许用户修改关于我页面的内容，并返回操作成功的消息。",
+                    "resources": [
+                        "top.naccl.controller.AboutController.about",
+                        "top.naccl.controller.admin.AboutAdminController.updateAbout"
+                    ]
+                },
+                {
+                    "name": "配置关于我页面",
+                    "description": "实现一个前端表单，允许用户编辑关于我页面的内容，并提供保存功能。",
+                    "resources": [
+                        "blog-cms.src.views.page.About",
+                        "blog-cms.src.views.page.SiteSetting"
+                    ]
+                },
+                {
+                    "name": "获取关于我页面配置",
+                    "description": "提供接口用于获取关于我页面的当前配置信息。",
+                    "resources": [
+                        "top.naccl.controller.admin.SiteSettingAdminController.siteSettings",
+                        "top.naccl.controller.admin.AboutAdminController.about"
+                    ]
+                }
+            ],
+            "query": "实现关于我页面配置"
+        },
+        {
+            "task": [
+                {
+                    "name": "站点设置页面开发",
+                    "description": "实现一个前端表单，包含基础设置、资料卡和页脚徽标三个部分。用户可以编辑各项设置，并支持添加和删除自定义项。最后提供保存功能。",
+                    "resources": [
+                        "blog-cms.src.views.pictureHosting.Setting",
+                        "blog-cms.src.views.page.SiteSetting"
+                    ]
+                },
+                {
+                    "name": "获取所有站点配置信息",
+                    "description": "实现一个功能来获取所有站点配置信息并返回结果。",
+                    "resources": [
+                        "top.naccl.controller.admin.SiteSettingAdminController.siteSettings"
+                    ]
+                },
+                {
+                    "name": "更新站点配置信息",
+                    "description": "实现一个功能来更新站点配置信息，包括修改、删除和添加部分配置。",
+                    "resources": [
+                        "top.naccl.controller.admin.SiteSettingAdminController.siteSettings",
+                        "top.naccl.controller.admin.SiteSettingAdminController.updateAll"
+                    ]
+                },
+                {
+                    "name": "站点配置数据结构设计",
+                    "description": "定义站点配置的数据结构，包括站点名称、值和类型等属性。",
+                    "resources": [
+                        "top.naccl.entity.SiteSetting"
+                    ]
+                }
+            ],
+            "query": "实现站点设置管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "添加公开状态字段到动态实体",
+                    "description": "在动态实体中添加一个表示公开状态的字段。",
+                    "resources": [
+                        "top.naccl.entity.Moment"
+                    ]
+                },
+                {
+                    "name": "更新数据库模式以支持公开状态",
+                    "description": "修改数据库模式，确保新增的公开状态字段能够被持久化存储。",
+                    "resources": [
+                        "top.naccl.entity.Moment"
+                    ]
+                },
+                {
+                    "name": "在动态编辑表单中添加公开状态选项",
+                    "description": "在动态编辑表单中增加一个选择框或开关，允许用户修改动态的公开状态。",
+                    "resources": [
+                        "blog-cms.src.views.page.About"
+                    ]
+                },
+                {
+                    "name": "实现更新公开状态的服务方法",
+                    "description": "创建一个服务方法来处理动态公开状态的更新请求。",
+                    "resources": [
+                        "top.naccl.controller.admin.MomentAdminController.updatePublished"
+                    ]
+                },
+                {
+                    "name": "在动态列表中显示公开状态",
+                    "description": "在动态列表页面中添加一列，用于显示每个动态的公开状态。",
+                    "resources": [
+                        "blog-cms.src.views.blog.moment.MomentList",
+                        "blog-view.src.views.moments.Moments"
+                    ]
+                },
+                {
+                    "name": "在动态发布表单中添加公开状态选项",
+                    "description": "在动态发布表单中增加一个选择框或开关，允许用户设置动态的公开状态。",
+                    "resources": [
+                        "blog-cms.src.views.blog.moment.WriteMoment"
+                    ]
+                }
+            ],
+            "query": "实现动态公开状态管理功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "在动态内容发布表单中添加点赞按钮",
+                    "description": "在动态内容发布表单中添加一个点赞按钮，允许用户对发布的动态进行点赞操作。",
+                    "resources": [
+                        "blog-cms.src.views.blog.moment.WriteMoment"
+                    ]
+                },
+                {
+                    "name": "更新数据库模式以支持点赞计数",
+                    "description": "更新数据库模式，为动态内容表添加一个字段以存储点赞数量。",
+                    "resources": [
+                        "top.naccl.entity.Moment"
+                    ]
+                },
+                {
+                    "name": "在动态列表页面中显示点赞数",
+                    "description": "在动态列表页面中为每个动态内容项添加点赞数的显示功能。",
+                    "resources": [
+                        "blog-cms.src.views.blog.moment.MomentList",
+                        "blog-view.src.views.moments.Moments"
+                    ]
+                },
+                {
+                    "name": "在动态实体类中添加点赞计数字段",
+                    "description": "在表示博客动态的实体类中添加一个用于记录点赞数量的字段。",
+                    "resources": []
+                },
+                {
+                    "name": "创建服务方法来处理点赞操作",
+                    "description": "创建一个服务方法，用于处理用户的点赞请求，并更新相应的点赞计数。",
+                    "resources": [
+                        "top.naccl.controller.MomentController.like"
+                    ]
+                },
+                {
+                    "name": "实现每天只能点赞一次的限制逻辑",
+                    "description": "在点赞操作的服务方法中添加逻辑，确保用户每天只能对每个动态点赞一次。",
+                    "resources": [
+                        "top.naccl.controller.MomentController.like"
+                    ]
+                }
+            ],
+            "query": "实现动态点赞功能"
+        },
+        {
+            "task": [
+                {
+                    "name": "处理登录请求",
+                    "description": "验证用户名和密码后签发JWT Token。",
+                    "resources": [
+                        "top.naccl.util.JwtUtils.generateToken",
+                        "top.naccl.controller.LoginController.login"
+                    ]
+                },
+                {
+                    "name": "用户实体类定义",
+                    "description": "定义一个包含用户基本信息及权限相关方法的用户实体类。",
+                    "resources": [
+                        "top.naccl.entity.User"
+                    ]
+                },
+                {
+                    "name": "用户登录表单实现",
+                    "description": "实现一个用户登录表单，包含用户名和密码输入框以及登录按钮。",
+                    "resources": [
+                        "blog-view.src.views.Login"
+                    ]
+                },
+                {
+                    "name": "登录日志记录",
+                    "description": "在用户登录时记录用户的登录信息，包括操作时间、IP地址等。",
+                    "resources": [
+                        "top.naccl.entity.OperationLog",
+                        "top.naccl.entity.VisitLog",
+                        "top.naccl.entity.LoginLog"
+                    ]
+                }
+            ],
+            "query": "实现用户登录功能"
+        },
+        {
+            "task": [
+                "top.naccl.model.dto.Blog",
+                "blog-cms.src.views.blog.blog.WriteBlog",
+                "top.naccl.controller.admin.BlogAdminController.updateBlog",
+                "top.naccl.model.vo.BlogDetail",
+                "top.naccl.entity.Category",
+                "top.naccl.controller.admin.BlogAdminController.saveBlog",
+                "top.naccl.entity.Tag",
+                "top.naccl.entity.Blog"
+            ],
+            "query": "实现博客文章编辑功能"
+        },
+        {
+            "task": [
+                "blog-cms.src.views.page.About",
+                "top.naccl.controller.admin.AboutAdminController.updateAbout",
+                "top.naccl.controller.admin.SiteSettingAdminController.updateAll",
+                "top.naccl.controller.TelegramBotController.getUpdate",
+                "top.naccl.controller.admin.AboutAdminController.about",
+                "blog-cms.src.views.page.SiteSetting"
+            ],
+            "query": "实现关于我页面配置"
+        },
+        {
+            "task": [
+                "top.naccl.model.dto.Blog",
+                "top.naccl.model.dto.BlogPassword",
+                "blog-view.src.views.blog.Blog",
+                "blog-cms.src.views.blog.blog.WriteBlog",
+                "blog-view.src.components.index.BlogPasswordDialog",
+                "top.naccl.controller.BlogController.checkBlogPassword",
+                "top.naccl.controller.LoginController.login",
+                "top.naccl.controller.BlogController.getBlog",
+                "top.naccl.controller.admin.BlogAdminController.updateVisibility",
+                "top.naccl.model.dto.BlogVisibility"
+            ],
+            "query": "实现文章密码保护功能"
+        }
+    ]
+}

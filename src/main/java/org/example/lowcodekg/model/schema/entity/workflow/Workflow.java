@@ -21,6 +21,8 @@ public class Workflow {
 
     private String name;
 
+    private String fullName;
+
     private String description;
 
     // 直接关联的method（工作流起点）
@@ -28,6 +30,8 @@ public class Workflow {
 
     // 调用链中方法体内容拼接
     private String content;
+
+    private String mappingUrl;
 
     // 请求响应方法调用链
     private List<JavaMethod> methodList = new ArrayList<>();
@@ -37,14 +41,18 @@ public class Workflow {
 
     public Workflow(JavaMethod method) {
         this.name = method.getName();
+        this.fullName = method.getFullName();
         this.method = method;
+        this.mappingUrl = method.getMappingUrl();
         appendMethod(method);
     }
 
     public WorkflowEntity createWorkflowEntity(WorkflowRepo workflowRepo) {
         WorkflowEntity entity = new WorkflowEntity();
         entity.setName(name);
+        entity.setFullName(fullName);
         entity.setDescription(description);
+        entity.setMappingUrl(mappingUrl);
         entity = workflowRepo.save(entity);
         return entity;
     }

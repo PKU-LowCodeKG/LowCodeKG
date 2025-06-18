@@ -25,4 +25,11 @@ public interface WorkflowRepo extends Neo4jRepository<WorkflowEntity, Long> {
             "SET n:WorkflowModule " +
             "return n")
     void setWorkflowModule(Long id);
+
+    /**
+     * 将前端PageTemplate实体通过url匹配建立与Workflow实体的关联
+     */
+    @Query("MATCH (p:PageTemplate), (w:Workflow) WHERE id(p)=$pid and id(w)=$wid " +
+            "CREATE (p)-[:BINDING]->(w)")
+    void createRelationBetweenPageAndWorkflow(Long pid, Long wid);
 }
