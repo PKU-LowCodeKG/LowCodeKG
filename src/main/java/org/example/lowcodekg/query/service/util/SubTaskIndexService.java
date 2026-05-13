@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.example.lowcodekg.query.utils.Constants.SUBTASK_INDEX_NAME;
+import static org.example.lowcodekg.query.utils.Constants.SUBTASK_TEMPLATE_THRESHOLD;
 
+@Slf4j
 @Service
 public class SubTaskIndexService {
 
@@ -23,33 +26,33 @@ public class SubTaskIndexService {
     private ElasticSearchService esService;
 
     /**
-     * 启动时自动检查并初始化子任务索引
+     * 模板 ID → 子任务列表
+     */
+    private final Map<Integer, List<Document>> templateSubtasks = new HashMap<>();
+
+    /**
+     * 启动时自动构建任务模板索引
      */
     @PostConstruct
     public void init() {
         try {
             esService.setUp(SUBTASK_INDEX_NAME);
-            List<Document> documents = loadSubTasksFromJson("data/blog_output.json");
-            for (Document doc : documents) {
-                doc.setEmbedding(FormatUtil.ListToArray(EmbeddingUtil.embedText(
-                        doc.getName() + " " + doc.getContent())));
-                esService.indexDocument(doc, SUBTASK_INDEX_NAME);
+            List<Document> templates = loadTemplates("data/blog_output.json");
+            for (Document template : templates) {
+                template.setEmbedding(FormatUtil.ListToArray(EmbeddingUtil.embedText(template.getName())));
+                esService.indexDocument(template, SUBTASK_INDEX_NAME);
             }
-            System.out.println("SubTask index initialized with " + documents.size() + " entries.");
+            log.info("Task template index initialized with {} templates.", templates.size());
         } catch (Exception e) {
-            System.err.println("Failed to init subtask index: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Failed to init task template index", e);
         }
     }
 
     /**
-     * 从 JSON 文件中加载所有子任务描述
-     * 跳过格式残缺的条目（task 不是对象数组的）
+     * 从 JSON 加载任务模板，每个模板作为一条 ES 文档，子任务存入内存 map
      */
-    private List<Document> loadSubTasksFromJson(String resourcePath) {
-        List<Document> documents = new ArrayList<>();
-        Set<String> seen = new HashSet<>();
-        int idCounter = 0;
+    private List<Document> loadTemplates(String resourcePath) {
+        List<Document> templates = new ArrayList<>();
 
         try (InputStream is = new ClassPathResource(resourcePath).getInputStream()) {
             String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
@@ -58,11 +61,14 @@ public class SubTaskIndexService {
 
             for (int i = 0; i < predicted.size(); i++) {
                 JSONObject entry = predicted.getJSONObject(i);
+                String query = entry.getString("query");
                 Object taskField = entry.get("task");
 
-                if (!(taskField instanceof JSONArray taskArray)) {
+                if (query == null || !(taskField instanceof JSONArray taskArray)) {
                     continue;
                 }
+
+                List<Document> subtasks = new ArrayList<>();
                 for (int j = 0; j < taskArray.size(); j++) {
                     Object item = taskArray.get(j);
                     if (!(item instanceof JSONObject taskObj)) {
@@ -73,39 +79,58 @@ public class SubTaskIndexService {
                     if (name == null || description == null) {
                         continue;
                     }
-                    // 去重：name+description 组合唯一
-                    String key = name + "|||" + description;
-                    if (seen.contains(key)) {
-                        continue;
-                    }
-                    seen.add(key);
 
                     Document doc = new Document();
-                    doc.setId(String.valueOf(idCounter++));
+                    doc.setId(i + "_" + j);
                     doc.setName(name);
                     doc.setContent(description);
                     doc.setLabel("SubTask");
-                    documents.add(doc);
+                    subtasks.add(doc);
+                }
+
+                if (!subtasks.isEmpty()) {
+                    templateSubtasks.put(i, subtasks);
+
+                    Document template = new Document();
+                    template.setId(String.valueOf(i));
+                    template.setName(query);
+                    template.setContent(query);
+                    template.setLabel("TaskTemplate");
+                    templates.add(template);
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error loading subtask data: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error loading task templates", e);
         }
-        return documents;
+        return templates;
     }
 
     /**
-     * 根据用户需求检索匹配的子任务描述
+     * 搜索最匹配的任务模板，返回其子任务列表
+     * 若无模板匹配（低于阈值），返回空列表，由调用方 fallback
      */
     public List<Document> searchSubTasks(String query) {
         try {
             float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(query));
-            return esService.hybridSearch(query, vector,
-                    org.example.lowcodekg.query.utils.Constants.MAX_SUBTASK_NUM,
-                    0.0, 0.5, SUBTASK_INDEX_NAME);
+            List<Document> matches = esService.hybridSearch(query, vector,
+                    1, SUBTASK_TEMPLATE_THRESHOLD, 0.3, SUBTASK_INDEX_NAME);
+
+            if (matches.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            Document bestTemplate = matches.get(0);
+            int templateId = Integer.parseInt(bestTemplate.getId());
+            List<Document> subtasks = templateSubtasks.get(templateId);
+
+            if (subtasks != null) {
+                log.info("命中模板: {}", bestTemplate.getName());
+                return subtasks;
+            }
+            return Collections.emptyList();
+
         } catch (Exception e) {
-            System.err.println("Error searching subtasks: " + e.getMessage());
+            log.error("Error searching task templates", e);
             return Collections.emptyList();
         }
     }

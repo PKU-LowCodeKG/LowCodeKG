@@ -20,8 +20,11 @@ public final class Constants {
     public static final int MAX_RESULTS = 10;
     // 子任务检索
     public static final int MAX_CODE_ENTITY_NUM = 30;
-    public static final int MAX_SUBTASK_NUM = 10;
+    public static final int MAX_SUBTASK_NUM = 1;
     public static final float MIN_SCORE = 0.9f;
+
+    // 阶段一：任务模板匹配阈值
+    public static final float SUBTASK_TEMPLATE_THRESHOLD = 0.65f;
 
     /**
      * 子任务推荐候选资源重排序后的个数

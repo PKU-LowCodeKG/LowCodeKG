@@ -1,15 +1,13 @@
 package org.example.lowcodekg.query.service.processor.impl;
 
-import org.example.lowcodekg.common.config.DebugConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
-import org.example.lowcodekg.query.model.Node;
 import org.example.lowcodekg.query.model.Task;
 import org.example.lowcodekg.query.model.TaskGraph;
 import org.example.lowcodekg.query.service.processor.TaskSplit;
 import org.example.lowcodekg.query.service.util.SubTaskIndexService;
-import org.example.lowcodekg.query.service.util.retriever.TemplateRetrieve;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +15,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Service
 public class TaskSplitImpl implements TaskSplit {
     @Autowired
     private SubTaskIndexService subTaskIndexService;
-    @Autowired
-    private TemplateRetrieve templateRetrieve;
-    @Autowired
-    private DebugConfig debugConfig;
 
     private static final List<String> ALL_CATEGORIES = Arrays.asList("page", "workflow", "data");
 
@@ -33,32 +28,36 @@ public class TaskSplitImpl implements TaskSplit {
         try {
             TaskGraph graph = new TaskGraph();
 
-            // 检索相关资源（用于调试参考）
-            List<Node> nodes = templateRetrieve.queryByTask(query).getData();
-            if (debugConfig.isDebugMode()) {
-                System.out.println("初步检索资源:\n" + nodes);
-            }
+            log.info("==== 阶段一：需求分解 ====");
+            log.info("查询: {}", query);
 
-            // 搜索子任务索引，获取匹配的子任务描述
+            // 搜索最匹配的任务模板
             List<Document> matchedDocs = subTaskIndexService.searchSubTasks(query);
-            if (debugConfig.isDebugMode()) {
-                System.out.println("子任务检索匹配数: " + matchedDocs.size());
-            }
 
-            // 将子任务文档转换为 Task 对象
-            List<Task> taskList = buildTaskList(matchedDocs);
-
-            for (Task task : taskList) {
-                graph.addTask(task);
-                if (debugConfig.isDebugMode()) {
-                    System.out.println("Task: " + task.getName() + " | " + task.getDescription());
+            if (matchedDocs.isEmpty()) {
+                // 未命中任何模板，使用原始查询作为 fallback
+                log.info("  未命中模板，使用原始查询直接检索");
+                Task fallbackTask = new Task(
+                        "fallback_0",
+                        query,
+                        ALL_CATEGORIES,
+                        query,
+                        new ArrayList<>());
+                graph.addTask(fallbackTask);
+            } else {
+                // 命中模板，使用模板的子任务列表
+                List<Task> taskList = buildTaskList(matchedDocs);
+                for (int i = 0; i < taskList.size(); i++) {
+                    Task task = taskList.get(i);
+                    graph.addTask(task);
+                    log.info("  子任务 {}: {} | {}", i + 1, task.getName(), task.getDescription());
                 }
             }
 
             return Result.build(graph, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
-            System.err.println("Error occurred while splitting the task: " + e.getMessage());
+            log.error("Error occurred while splitting the task", e);
             return Result.build(null, ResultCodeEnum.FAIL);
         }
     }

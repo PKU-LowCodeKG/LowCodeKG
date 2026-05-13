@@ -1,5 +1,6 @@
 package org.example.lowcodekg.query.service.processor.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
@@ -17,6 +18,7 @@ import java.util.*;
  * @Author Sherloque
  * @Date 2025/3/22 21:02
  */
+@Slf4j
 @Service
 public class TaskMergeImpl implements TaskMerge {
     @Autowired
@@ -32,20 +34,19 @@ public class TaskMergeImpl implements TaskMerge {
             }
 
             if (debugConfig.isDebugMode()) {
-                System.out.println("合并后的结果集:");
+                log.debug("合并后的结果集:");
                 for (Task task : result.keySet()) {
-                    System.out.println("Task: " + task.getName() + ": " + task.getDescription());
+                    log.debug("Task: {}: {}", task.getName(), task.getDescription());
                     for (Node node : result.get(task)) {
-                        System.out.println("Node: " + node.getName() + ": " + node.getDescription());
+                        log.debug("Node: {}: {}", node.getName(), node.getDescription());
                     }
-                    System.out.println();
                 }
             }
 
             return Result.build(result, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
-            System.err.println("Error in mergeTask: " + e.getMessage());
+            log.error("Error in mergeTask", e);
             throw new RuntimeException("Error in mergeTask: " + e.getMessage());
         }
     }

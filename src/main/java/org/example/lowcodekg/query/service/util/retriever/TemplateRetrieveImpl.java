@@ -1,5 +1,6 @@
 package org.example.lowcodekg.query.service.util.retriever;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.lowcodekg.common.config.DebugConfig;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.result.Result;
@@ -22,6 +23,7 @@ import static org.example.lowcodekg.query.utils.Constants.*;
  * @Author Sherloque
  * @Date 2025/3/22 20:58
  */
+@Slf4j
 @Service
 public class TemplateRetrieveImpl implements TemplateRetrieve {
 
@@ -42,7 +44,7 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
                     .collect(Collectors.toList());
             return Result.build(nodes, ResultCodeEnum.SUCCESS);
         } catch (Exception e) {
-            System.err.println("Error in queryEntitiesByTask: " + e.getMessage());
+            log.error("Error in queryEntitiesByTask", e);
             return Result.build(null, ResultCodeEnum.FAIL);
         }
     }
@@ -52,7 +54,7 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
         try {
             String taskInfo = task.getName() + " " + task.getDescription();
             if(debugConfig.isDebugMode()) {
-                System.out.println("子任务检索信息:\n" + taskInfo + "\n");
+                log.debug("子任务检索信息:\n{}\n", taskInfo);
             }
 
             float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(taskInfo));
@@ -66,8 +68,7 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
             return Result.build(nodeList, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
-            System.err.println("Error in queryEntitiesBySubTask: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error in queryEntitiesBySubTask", e);
             return Result.build(null, ResultCodeEnum.FAIL);
         }
     }

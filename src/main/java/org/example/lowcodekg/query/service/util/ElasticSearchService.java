@@ -7,6 +7,7 @@ import co.elastic.clients.elasticsearch.indices.IndexState;
 import co.elastic.clients.json.JsonData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import static org.example.lowcodekg.query.utils.Constants.*;
  * @Author Sherloque
  * @Date 2025/3/23 14:08
  */
+@Slf4j
 @Service
 public class ElasticSearchService {
 
@@ -65,13 +67,13 @@ public class ElasticSearchService {
             for (String indexName : indices.keySet()) {
                 try {
                     client.indices().delete(d -> d.index(indexName));
-                    System.out.println("Deleted index: " + indexName);
+                    log.debug("Deleted index: {}", indexName);
                 } catch (Exception e) {
-                    System.err.println("Failed to delete index: " + indexName + ", error: " + e.getMessage());
+                    log.error("Failed to delete index: {}", indexName, e);
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error while deleting all indices: " + e.getMessage());
+            log.error("Error while deleting all indices", e);
         }
     }
 
@@ -79,10 +81,10 @@ public class ElasticSearchService {
     public void deleteIndex(String indexName) {
         try {
             client.indices().delete(d -> d.index(indexName));
-            System.out.println("Existing index deleted successfully.");
+            log.debug("Existing index deleted successfully.");
         } catch (Exception e) {
             // 忽略删除不存在的索引的异常
-            System.out.println("Index does not exist, skipping deletion.");
+            log.debug("Index does not exist, skipping deletion.");
         }
     }
 

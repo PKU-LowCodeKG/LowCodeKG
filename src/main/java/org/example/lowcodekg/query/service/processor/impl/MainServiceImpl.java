@@ -1,5 +1,6 @@
 package org.example.lowcodekg.query.service.processor.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.lowcodekg.model.result.Result;
 import org.example.lowcodekg.model.result.ResultCodeEnum;
 import org.example.lowcodekg.query.model.Node;
@@ -19,6 +20,7 @@ import static org.example.lowcodekg.query.utils.Constants.SAVE_EM_RESULT_PATH;
 import static org.example.lowcodekg.query.utils.Constants.logFilePath;
 import static org.example.lowcodekg.query.utils.FormatUtil.saveResult;
 
+@Slf4j
 @Service
 public class MainServiceImpl implements MainService {
 
@@ -41,7 +43,7 @@ public class MainServiceImpl implements MainService {
                 saveResult(query, resourceList, savePath);
             }
         } catch(Exception e) {
-            System.err.println("Error in recommendList: " + e.getMessage());
+            log.error("Error in recommendList", e);
             throw new RuntimeException("Error in recommendList: " + e.getMessage());
         }
         return Result.build(null, ResultCodeEnum.SUCCESS);
@@ -52,10 +54,11 @@ public class MainServiceImpl implements MainService {
         try {
             Map<Task, Set<Node>> resourceList;
 
-            // 检索增强的需求分解
+            // 阶段一：检索增强的需求分解
             TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
 
-            // 基于IR的需求-资源匹配并重排序
+            // 阶段二：基于IR的需求-资源匹配并重排序
+            log.info("==== 阶段二：资源匹配 ====");
             for(Task task : taskGraph.getTasks().values()) {
                 taskMatching.rerankResource(task);
             }
@@ -66,11 +69,10 @@ public class MainServiceImpl implements MainService {
             for(Task task : resourceList.keySet()) {
                 nodeList.addAll(resourceList.get(task));
             }
-
-            return Result.build(nodeList, ResultCodeEnum.SUCCESS);
+            return Result.build(new ArrayList<>(new HashSet<>(nodeList)), ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
-            System.err.println("Error in recommend: " + e.getMessage());
+            log.error("Error in recommend", e);
             throw new RuntimeException("Error in recommend: " + e.getMessage());
         }
     }

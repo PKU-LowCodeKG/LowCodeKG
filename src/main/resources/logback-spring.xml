@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss} %-5level [%logger{0}] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 框架日志：只显示 WARN 及以上 -->
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.neo4j" level="WARN"/>
+    <logger name="co.elastic" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="com.alibaba" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+
+    <!-- Neo4j cypher 去噪 -->
+    <logger name="org.springframework.data.neo4j.cypher.deprecation" level="OFF"/>
+    <logger name="org.springframework.data.neo4j.cypher.unrecognized" level="ERROR"/>
+
+    <!-- 应用自身：INFO 及以上 -->
+    <logger name="org.example.lowcodekg" level="INFO"/>
+
+    <!-- 根级别：WARN -->
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
