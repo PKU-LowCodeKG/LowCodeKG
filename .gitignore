@@ -35,3 +35,6 @@ build/
 
 ### macOS ###
 .DS_Store
+
+### Neo4j ###
+neo4j/data/
