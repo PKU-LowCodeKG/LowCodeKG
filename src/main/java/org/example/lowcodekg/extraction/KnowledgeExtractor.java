@@ -5,7 +5,6 @@ import lombok.Setter;
 import org.example.lowcodekg.model.dao.neo4j.repository.*;
 import org.example.lowcodekg.query.service.util.summarize.FuncGenerate;
 import org.example.lowcodekg.query.service.util.ElasticSearchService;
-import org.example.lowcodekg.service.LLMGenerateService;
 import org.springframework.data.neo4j.core.Neo4jClient;
 
 import java.io.IOException;
@@ -39,8 +38,6 @@ public abstract class KnowledgeExtractor {
 
     @Setter
     protected static ElasticSearchService elasticSearchService;
-    @Setter
-    protected static LLMGenerateService llmGenerateService;
     @Setter
     protected static Neo4jClient neo4jClient;
     @Setter

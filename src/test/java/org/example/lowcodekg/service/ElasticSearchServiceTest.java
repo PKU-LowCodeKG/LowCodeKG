@@ -30,8 +30,6 @@ public class ElasticSearchServiceTest {
     @Autowired
     private ElasticSearchService esService;
     @Autowired
-    private LLMGenerateService llmService;
-    @Autowired
     private Neo4jClient neo4jClient;
 
     @BeforeEach
@@ -112,7 +110,7 @@ public class ElasticSearchServiceTest {
         List<Document> documents = new ArrayList<>();
         float[] vector = FormatUtil.ListToArray(EmbeddingUtil.embedText(taskInfo));
         documents.addAll(esService.searchByVector(
-                vector, MAX_RESULTS, 0, WORKFLOW_INDEX_NAME
+                vector, MAX_RESULTS, 0, CODE_ENTITY_INDEX_NAME
         ));
         List<Node> nodeList = new ArrayList<>();
         for(Document document : documents) {

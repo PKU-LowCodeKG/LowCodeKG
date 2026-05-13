@@ -1,6 +1,7 @@
 package org.example.lowcodekg.query.service.util.summarize;
 
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaMethodEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.model.result.Result;
@@ -26,4 +27,9 @@ public interface FuncGenerate {
      * 针对数据实体，生成功能描述信息
      */
     void genDataObjectFunc(JavaClassEntity classEntity);
+
+    /**
+     * 针对方法，生成功能描述信息并索引到 ES
+     */
+    void genMethodFunc(JavaMethodEntity methodEntity);
 }

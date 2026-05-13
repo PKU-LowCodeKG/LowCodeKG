@@ -47,9 +47,8 @@ public class ElasticSearchService {
 
     public void createDefaultIndex() {
         try {
-            createIndex(Document.class, PAGE_INDEX_NAME);
-            createIndex(Document.class, WORKFLOW_INDEX_NAME);
-            createIndex(Document.class, DATA_OBJECT_INDEX_NAME);
+            createIndex(Document.class, CODE_ENTITY_INDEX_NAME);
+            createIndex(Document.class, SUBTASK_INDEX_NAME);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

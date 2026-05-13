@@ -22,11 +22,4 @@ public interface TaskMerge {
      * @return
      */
     Result<Map<Task, Set<Node>>> mergeTask(TaskGraph graph, String query);
-
-    /**
-     * 对重排后的子任务推荐资源列表进行决策
-     * @param task
-     * @return
-     */
-    Result<Void> rerankWithinTask(Task task);
 }

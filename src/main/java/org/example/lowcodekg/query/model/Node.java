@@ -6,10 +6,7 @@ import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 
-import java.util.List;
 import java.util.Objects;
-
-import com.alibaba.fastjson.JSONObject;
 
 /**
  * @Description 检索得到的实体类型
@@ -35,15 +32,12 @@ public class Node {
 
     private String description;
 
-    private List<IR> irList;
-
     public Node(PageEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();
         this.label = "PageTemplate";
         this.content = entity.getContent();
         this.description = entity.getDescription();
-        this.irList = JSONObject.parseArray(entity.getIr(), IR.class);
     }
 
     public Node(WorkflowEntity entity) {
@@ -52,7 +46,6 @@ public class Node {
         this.label = "Workflow";
         this.content = entity.getContent();
         this.description = entity.getDescription();
-        this.irList = JSONObject.parseArray(entity.getIr(), IR.class);
     }
 
     public Node(JavaClassEntity entity) {
@@ -61,7 +54,6 @@ public class Node {
         this.label = "DataObject";
         this.content = entity.getContent();
         this.description = entity.getDescription();
-        this.irList = JSONObject.parseArray(entity.getIr(), IR.class);
     }
 
     @Override
@@ -70,9 +62,7 @@ public class Node {
                 "name='" + name + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", label='" + label + '\'' +
-//                ", content='" + content + '\'' +
                 ", description='" + description + '\'' +
-                ", irList=" + irList +
                 '}';
     }
 

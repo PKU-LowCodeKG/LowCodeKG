@@ -10,9 +10,8 @@ public final class Constants {
     /**
      * ES 索引名称
      */
-    public static final String PAGE_INDEX_NAME = "page";
-    public static final String WORKFLOW_INDEX_NAME = "workflow";
-    public static final String DATA_OBJECT_INDEX_NAME = "data_object";
+    public static final String CODE_ENTITY_INDEX_NAME = "code_entity";
+    public static final String SUBTASK_INDEX_NAME = "subtask";
 
     /**
      * 任务检索参数设置
@@ -20,15 +19,14 @@ public final class Constants {
     // 初步检索
     public static final int MAX_RESULTS = 10;
     // 子任务检索
-    public static final int MAX_DATA_OBJECT_NUM = 15;
-    public static final int MAX_PAGE_NUM = 15;
-    public static final int MAX_WORKFLOW_NUM = 15;
+    public static final int MAX_CODE_ENTITY_NUM = 30;
+    public static final int MAX_SUBTASK_NUM = 10;
     public static final float MIN_SCORE = 0.9f;
 
     /**
      * 子任务推荐候选资源重排序后的个数
      */
-    public static final int MAX_RESOURCE_RECOMMEND_NUM = 7;
+    public static final int MAX_RESOURCE_RECOMMEND_NUM = 1;
 
     /**
      * 数据记录路径

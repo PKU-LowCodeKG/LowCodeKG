@@ -49,9 +49,6 @@ public class JavaClassEntity implements Describable {
     @Property("isData")
     private Boolean isData;
 
-    @Property
-    private String ir;
-
     private List<Float> embedding;
 
     @Relationship(type = "EXTEND", direction = Relationship.Direction.OUTGOING)

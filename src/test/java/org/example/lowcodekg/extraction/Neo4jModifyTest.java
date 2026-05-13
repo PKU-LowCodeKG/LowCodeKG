@@ -144,14 +144,4 @@ public class Neo4jModifyTest {
 
          scriptMethodRepo.createRelationOfMethod(sm1.getId(), jm1.getId());
      }
-
-     @Test
-     public void testIR() {
-        Optional<PageEntity> entity = pageRepo.findById(145L);
-        if(entity.isPresent()) {
-            PageEntity pageEntity = entity.get();
-            Node node = new Node(pageEntity);
-            System.out.println(node.getIrList());
-        }
-     }
 }

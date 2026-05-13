@@ -2,6 +2,7 @@ package org.example.lowcodekg.model.dao.neo4j.entity.java;
 
 import lombok.Data;
 import org.example.lowcodekg.model.dao.Describable;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Node("JavaMethod")
 @Data
-public class JavaMethodEntity {
+public class JavaMethodEntity implements Describable {
 
     @Id
     @GeneratedValue
@@ -66,4 +67,17 @@ public class JavaMethodEntity {
     @Relationship(type = "FIELD_ACCESS", direction = Relationship.Direction.OUTGOING)
     private List<JavaFieldEntity> fieldAccessList = new ArrayList<>();
 
+    @Transient
+    private List<Float> embedding;
+
+    @Override
+    public Long getId() { return id; }
+    @Override
+    public String getName() { return name; }
+    @Override
+    public String getFullName() { return fullName; }
+    @Override
+    public String getDescription() { return description; }
+    @Override
+    public List<Float> getEmbedding() { return embedding; }
 }

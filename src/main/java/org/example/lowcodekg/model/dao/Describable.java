@@ -25,8 +25,6 @@ public interface Describable {
 
     List<Float> getEmbedding();
 
-    String getIr();
-
     /**
      * 获取实体的类型
      */

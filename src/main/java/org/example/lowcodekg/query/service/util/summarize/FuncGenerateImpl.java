@@ -3,17 +3,16 @@ package org.example.lowcodekg.query.service.util.summarize;
 import com.alibaba.fastjson.JSONObject;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaMethodEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.model.dao.neo4j.repository.JavaClassRepo;
+import org.example.lowcodekg.model.dao.neo4j.repository.JavaMethodRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.PageRepo;
 import org.example.lowcodekg.model.dao.neo4j.repository.WorkflowRepo;
-import org.example.lowcodekg.query.model.IR;
-import org.example.lowcodekg.query.service.ir.IRGenerate;
 import org.example.lowcodekg.query.service.util.EmbeddingUtil;
 import org.example.lowcodekg.query.utils.FormatUtil;
 import org.example.lowcodekg.query.service.util.ElasticSearchService;
-import org.example.lowcodekg.service.LLMGenerateService;
 import org.neo4j.driver.QueryRunner;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -28,8 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.example.lowcodekg.query.utils.Constants.*;
-import static org.example.lowcodekg.query.utils.Prompt.PAGE_SUMMARIZE_PROMPT;
-import static org.example.lowcodekg.query.utils.Prompt.WORKFLOW_SUMMARIZE_PROMPT;
 
 /**
  * @Description
@@ -42,8 +39,6 @@ public class FuncGenerateImpl implements FuncGenerate {
     @Autowired
     private ElasticSearchService elasticSearchService;
     @Autowired
-    private LLMGenerateService llmGenerateService;
-    @Autowired
     private Neo4jClient neo4jClient;
     @Autowired
     private ElasticSearchService esService;
@@ -54,49 +49,52 @@ public class FuncGenerateImpl implements FuncGenerate {
     @Autowired
     private JavaClassRepo classRepo;
     @Autowired
-    private IRGenerate irGenerate;
+    private JavaMethodRepo methodRepo;
 
     @Override
     public void genDataObjectFunc(JavaClassEntity classEntity) {
         try {
-            // functional description
-            String prompt = WORKFLOW_SUMMARIZE_PROMPT.replace("{code}", classEntity.getContent());
-            String result = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
-            JSONObject jsonObject = JSONObject.parseObject(result);
-            String description = jsonObject.getString("functionality");
+            String description = classEntity.getDescription() != null
+                    ? classEntity.getDescription()
+                    : classEntity.getFullName();
             classEntity.setDescription(description);
-            // convert to IR list
-            List<IR> irList = irGenerate.generateIR(description, "DataObject").getData();
-            classEntity.setIr(JSONObject.toJSONString(irList));
             JavaClassEntity entity = classRepo.save(classEntity);
 
             // create es index
-//            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
             entity.setEmbedding(EmbeddingUtil.embedText(description));
             Document document = FormatUtil.entityToDocument(entity);
-            esService.indexDocument(document, DATA_OBJECT_INDEX_NAME);
+            esService.indexDocument(document, CODE_ENTITY_INDEX_NAME);
         } catch (Exception e) {
             System.err.println("Error in genDataObjectFunc");
         }
     }
     @Override
+    public void genMethodFunc(JavaMethodEntity methodEntity) {
+        try {
+            String description = methodEntity.getDescription() != null
+                    ? methodEntity.getDescription()
+                    : methodEntity.getFullName();
+            methodEntity.setDescription(description);
+            JavaMethodEntity entity = methodRepo.save(methodEntity);
+
+            entity.setEmbedding(EmbeddingUtil.embedText(description));
+            Document document = FormatUtil.entityToDocument(entity);
+            esService.indexDocument(document, CODE_ENTITY_INDEX_NAME);
+        } catch (Exception e) {
+            System.err.println("Error in genMethodFunc: " + e.getMessage());
+        }
+    }
+    @Override
     public void genWorkflowFunc(WorkflowEntity workflowEntity) {
         try {
-            String prompt = WORKFLOW_SUMMARIZE_PROMPT.replace("{code}", workflowEntity.getContent());
-            String result = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
-            JSONObject jsonObject = JSONObject.parseObject(result);
-            String description = jsonObject.getString("functionality");
+            String description = workflowEntity.getName();
             workflowEntity.setDescription(description);
-            // IR
-            List<IR> irList = irGenerate.generateIR(description, "Workflow").getData();
-            workflowEntity.setIr(JSONObject.toJSONString(irList));
             WorkflowEntity entity = workflowRepo.save(workflowEntity);
 
             // create es index
-//            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
             entity.setEmbedding(EmbeddingUtil.embedText(description));
             Document document = FormatUtil.entityToDocument(entity);
-            esService.indexDocument(document, WORKFLOW_INDEX_NAME);
+            esService.indexDocument(document, CODE_ENTITY_INDEX_NAME);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,23 +132,14 @@ public class FuncGenerateImpl implements FuncGenerate {
                 scanComponentProperty(node, keywords);
             });
 
-            // construct final prompt
-            String prompt = PAGE_SUMMARIZE_PROMPT
-                    .replace("{code}", codeContent.toString())
-                    .replace("{keywords}", keywords.toString());
-            String res = FormatUtil.extractJson(llmGenerateService.generateAnswer(prompt));
-            JSONObject jsonObject = JSONObject.parseObject(res);
-            String description = jsonObject.getString("functionality");
+            String description = pageEntity.getName();
             pageEntity.setDescription(description);
-            List<IR> irList = irGenerate.generateIR(description, "DataObject").getData();
-            pageEntity.setIr(JSONObject.toJSONString(irList));
             PageEntity entity = pageRepo.save(pageEntity);
 
             // create es index
-//            entity.setEmbedding(EmbeddingUtil.embedText(JSONObject.toJSONString(irList)));
             entity.setEmbedding(EmbeddingUtil.embedText(description));
             Document document = FormatUtil.entityToDocument(entity);
-            esService.indexDocument(document, PAGE_INDEX_NAME);
+            esService.indexDocument(document, CODE_ENTITY_INDEX_NAME);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("generate PageFunctionality error, " + pageEntity.getFullName());

@@ -1,7 +1,6 @@
 package org.example.lowcodekg.query.service.evaluation;
 
 // 修改导入语句
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public class Metric {
      * @return 准确率
      */
     public double calculatePrecision(List<String> predicted, List<String> groundTruth) {
-        if (CollectionUtils.isEmpty(predicted)) {
+        if (predicted == null || predicted.isEmpty()) {
             return 0.0;
         }
         
@@ -42,7 +41,7 @@ public class Metric {
      * @return 召回率
      */
     public double calculateRecall(List<String> predicted, List<String> groundTruth) {
-        if (CollectionUtils.isEmpty(groundTruth)) {
+        if (groundTruth == null || groundTruth.isEmpty()) {
             return 0.0;
         }
         

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,11 +30,6 @@ public class Task {
     private String description;
 
     /**
-     * 子任务转换得到的IR列表
-     */
-    private List<IR> irList;
-
-    /**
      * 子任务推荐的资源列表
      */
     private List<Node> resourceList;
@@ -45,12 +41,12 @@ public class Task {
     private String downstreamDependency;
 
 
-    public Task(String id, String name, List<String> category, String description, List<IR> irList) {
+    public Task(String id, String name, List<String> category, String description, List<Node> resourceList) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.description = description;
-        this.irList = irList;
+        this.resourceList = resourceList;
         for(String type: category) {
             if("data".equals(type)) {
                 this.isData = true;
@@ -76,22 +72,10 @@ public class Task {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Task: {")
-                .append("id='").append(id).append('\'')
-                .append(", name='").append(name).append('\'')
-                .append(", description='").append(description).append('\'')
-                .append(", dslList=[");
-
-        for (int i = 0; i < irList.size(); i++) {
-            IR dsl = irList.get(i);
-            sb.append(dsl.toString());
-            if (i < irList.size() - 1) {
-                sb.append(", ");
-            }
-        }
-
-        sb.append("]}");
-        return sb.toString();
+        return "Task: {" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

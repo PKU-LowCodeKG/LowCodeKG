@@ -240,34 +240,13 @@ public class PageExtractor extends KnowledgeExtractor {
     }
 
     public List<Script.ScriptData> parseScriptData(String content) {
-        // get data block
         String dataBlock = getScriptData(content);
-        if(StringUtils.isEmpty(dataBlock)) {
+        if (StringUtils.isEmpty(dataBlock)) {
             return null;
         }
-        // json format
-        String prompt = """
-                给定下面的代码内容，你的任务是对其进行解析返回一个json对象，以 ```json 开始，以 ``` 结尾。注意，如果key对应的value包含了表达式或函数调用，将其转为字符串格式
-                比如：对于
-                "headers": {
-                    "Authorization": "Bearer " + sessionStorage.getItem('token')
-               }，应该表示为：
-                "headers": {
-                    "Authorization": "'Bearer ' + sessionStorage.getItem('token')"
-                  }
-                如果包含了"//""标识的注释内容，请将注释的文字删除
-                
-                下面是给出的代码片段:
-                {content}
-                """;
         List<Script.ScriptData> dataList = new ArrayList<>();
         try {
-            prompt = prompt.replace("{content}", dataBlock);
-            String answer = llmGenerateService.generateAnswer(prompt);
-            if(answer.contains("```json")) {
-                answer = answer.substring(answer.indexOf("```json") + 7, answer.lastIndexOf("```"));
-            }
-            JSONObject jsonObject = JSONObject.parseObject(answer);
+            JSONObject jsonObject = JSONObject.parseObject(dataBlock);
             jsonObject.forEach((k, v) -> {
                 Script.ScriptData data = new Script.ScriptData();
                 data.setName(k);
@@ -275,8 +254,8 @@ public class PageExtractor extends KnowledgeExtractor {
                 dataList.add(data);
             });
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("script data json format error:\n" + dataBlock);
+            System.out.println("script data json format error (non-JSON data block, LLM parsing disabled):\n" + dataBlock);
+            return new ArrayList<>();
         }
         return dataList;
     }

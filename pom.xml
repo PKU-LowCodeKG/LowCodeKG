@@ -110,14 +110,6 @@
             <version>3.15.0</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-bom</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-
-        <dependency>
             <groupId>co.elastic.clients</groupId>
             <artifactId>elasticsearch-java</artifactId>
             <version>8.15.0</version>
@@ -158,12 +150,6 @@
             <version>0.35.0</version>
         </dependency>
         <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-ollama-spring-boot-starter</artifactId>
-            <version>0.35.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>elasticsearch</artifactId>
             <version>1.20.1</version>
@@ -199,12 +185,6 @@
             <version>7.1.0.202411261347-r</version>
         </dependency>
 
-        <!-- Spring应用-ai4j -->
-        <dependency>
-            <groupId>io.github.lnyo-cly</groupId>
-            <artifactId>ai4j-spring-boot-starter</artifactId>
-            <version>1.3.1</version>
-        </dependency>
         <dependency>
             <groupId>com.huaban</groupId>
             <artifactId>jieba-analysis</artifactId>

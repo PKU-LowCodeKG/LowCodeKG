@@ -27,6 +27,8 @@ public class JavaProject {
     private final FuncGenerate funcGenerate;
     private Map<String, JSONObject> jsonMap = new HashMap<>();
 
+    private static final Set<String> ALLOWED_PREFIXES = Set.of("com.aurora", "top.naccl");
+
     @Setter
     private ElasticSearchService elasticSearchService;
 
@@ -59,7 +61,12 @@ public class JavaProject {
             return;
         }
         jsonMap = JsonUtil.loadJsonFile(file.getAbsolutePath());
-        System.out.println("jsonObject number:" + jsonMap.size());
+        // 只保留 aurora-springboot (com.aurora) 和 blog-api (top.naccl) 两个库
+        jsonMap.entrySet().removeIf(entry -> {
+            String fullName = entry.getKey();
+            return ALLOWED_PREFIXES.stream().noneMatch(fullName::startsWith);
+        });
+        System.out.println("jsonObject number (filtered):" + jsonMap.size());
     }
 
     public void addClass(JavaClass javaClass) {
@@ -103,10 +110,8 @@ public class JavaProject {
             classInfo.getSuperClassList().addAll(findJavaClassInfo(classInfo.getSuperClassType()));
             classInfo.getSuperInterfaceList().addAll(findJavaClassInfo(classInfo.getSuperInterfaceType()));
             JavaClassEntity classEntity = classInfo.storeInNeo4j(javaClassRepo, jsonMap.get(classInfo.getFullName()));
-            // 判定为数据实体类，生成描述信息并添加索引
-            if(classInfo.getIsData()) {
-                funcGenerate.genDataObjectFunc(classEntity);
-            }
+            // 所有类都生成描述信息并添加到 ES 索引
+            funcGenerate.genDataObjectFunc(classEntity);
             classEntityMap.put(classInfo.getFullName(), classEntity);
         });
         // class -[extend | implement]-> class
@@ -139,6 +144,9 @@ public class JavaProject {
 
             JavaMethodEntity methodEntity = methodInfo.storeInNeo4j(javaMethodRepo, jsonMap.get(methodInfo.getFullName()));
             methodEntityMap.put(methodInfo.getFullName(), methodEntity);
+
+            // 方法描述信息索引到 ES
+            funcGenerate.genMethodFunc(methodEntity);
 
             // check if the method belongs to workflow
             if(methodInfo.belongToWorkflow()) {

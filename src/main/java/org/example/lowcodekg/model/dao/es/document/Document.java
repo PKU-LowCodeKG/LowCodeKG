@@ -29,9 +29,6 @@ public class Document {
     @Field(type = FieldType.Text)
     private String content;
 
-    @Field(type = FieldType.Text)
-    private String ir;
-
     @Field(type = FieldType.Dense_Vector, dims = 512)
     private float[] embedding;
 
@@ -41,7 +38,6 @@ public class Document {
                 "name='" + name + '\'' +
                 ", label='" + label + '\'' +
                 ", content='" + content + '\'' +
-                ", ir='" + ir + '\'' +
                 '}';
     }
 }

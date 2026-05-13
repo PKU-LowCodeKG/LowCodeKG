@@ -7,6 +7,7 @@ import com.huaban.analysis.jieba.SegToken;
 import org.example.lowcodekg.model.dao.Describable;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
+import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaMethodEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.WorkflowEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.page.PageEntity;
 import org.example.lowcodekg.query.model.Node;
@@ -129,7 +130,6 @@ public class FormatUtil {
         document.setFullName(entity.getFullName());
         document.setContent(entity.getDescription());
         document.setEmbedding(FormatUtil.ListToArray(entity.getEmbedding()));
-        document.setIr(entity.getIr());
         // 设置label
         if(entity instanceof WorkflowEntity) {
             document.setLabel("Workflow");
@@ -137,6 +137,8 @@ public class FormatUtil {
             document.setLabel("PageTemplate");
         } else if(entity instanceof JavaClassEntity) {
             document.setLabel("DataObject");
+        } else if(entity instanceof JavaMethodEntity) {
+            document.setLabel("JavaMethod");
         }
         return document;
     }

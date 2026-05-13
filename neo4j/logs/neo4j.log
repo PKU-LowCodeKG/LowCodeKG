@@ -1,0 +1,29 @@
+2026-05-11 10:23:39.011+0000 INFO  Logging config in use: Embedded default config 'default-user-logs.xml'
+2026-05-11 10:23:39.014+0000 INFO  Starting...
+2026-05-11 10:23:39.417+0000 INFO  This instance is ServerId{db63569f} (db63569f-3f76-43f6-bd87-ce1861e49817)
+2026-05-11 10:23:39.884+0000 INFO  ======== Neo4j 5.24.2 ========
+2026-05-11 10:23:40.937+0000 INFO  Anonymous Usage Data is being sent to Neo4j, see https://neo4j.com/docs/usage-data/
+2026-05-11 10:23:42.188+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2026-05-11 10:23:42.528+0000 INFO  HTTP enabled on 0.0.0.0:7474.
+2026-05-11 10:23:42.528+0000 INFO  Remote interface available at http://localhost:7474/
+2026-05-11 10:23:42.531+0000 INFO  id: 5CCAD12698F829C8BED3F3835DFD121C5B101AA3D7BA10025D6E6CB8F880EA28
+2026-05-11 10:23:42.531+0000 INFO  name: system
+2026-05-11 10:23:42.531+0000 INFO  creationDate: 2026-05-11T10:23:40.438Z
+2026-05-11 10:23:42.531+0000 INFO  Started.
+2026-05-11 11:26:24.351+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.General.UnknownError]: Failed to transmit operation result: Response write failure, reference 4bd47f23-5005-44ac-9381-7e5fc6e6feb9.
+2026-05-11 11:26:24.369+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.General.UnknownError]: Failed to transmit operation result: Response write failure, reference b189cdd6-0067-4233-aa82-a410ed483e05.
+2026-05-11 14:53:09.992+0000 INFO  Neo4j Server shutdown initiated by request
+2026-05-11 14:53:09.999+0000 INFO  Stopping...
+2026-05-11 14:53:15.403+0000 INFO  Stopped.
+2026-05-13 08:25:32.686+0000 INFO  Logging config in use: Embedded default config 'default-user-logs.xml'
+2026-05-13 08:25:32.693+0000 INFO  Starting...
+2026-05-13 08:25:33.378+0000 INFO  This instance is ServerId{db63569f} (db63569f-3f76-43f6-bd87-ce1861e49817)
+2026-05-13 08:25:34.742+0000 INFO  ======== Neo4j 5.24.2 ========
+2026-05-13 08:25:36.192+0000 INFO  Anonymous Usage Data is being sent to Neo4j, see https://neo4j.com/docs/usage-data/
+2026-05-13 08:25:40.249+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2026-05-13 08:25:40.806+0000 INFO  HTTP enabled on 0.0.0.0:7474.
+2026-05-13 08:25:40.807+0000 INFO  Remote interface available at http://localhost:7474/
+2026-05-13 08:25:40.810+0000 INFO  id: 5CCAD12698F829C8BED3F3835DFD121C5B101AA3D7BA10025D6E6CB8F880EA28
+2026-05-13 08:25:40.810+0000 INFO  name: system
+2026-05-13 08:25:40.810+0000 INFO  creationDate: 2026-05-11T10:23:40.438Z
+2026-05-13 08:25:40.811+0000 INFO  Started.
