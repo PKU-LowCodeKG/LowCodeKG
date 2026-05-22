@@ -1,6 +1,6 @@
 package org.example.lowcodekg.query.service.util.summarize;
 
-import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.example.lowcodekg.model.dao.es.document.Document;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaClassEntity;
 import org.example.lowcodekg.model.dao.neo4j.entity.java.JavaMethodEntity;
@@ -28,11 +28,7 @@ import java.util.Set;
 
 import static org.example.lowcodekg.query.utils.Constants.*;
 
-/**
- * @Description
- * @Author Sherloque
- * @Date 2025/3/23 15:47
- */
+@Slf4j
 @Service
 public class FuncGenerateImpl implements FuncGenerate {
 
@@ -65,7 +61,7 @@ public class FuncGenerateImpl implements FuncGenerate {
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document, CODE_ENTITY_INDEX_NAME);
         } catch (Exception e) {
-            System.err.println("Error in genDataObjectFunc");
+            log.error("Error in genDataObjectFunc", e);
         }
     }
     @Override
@@ -81,7 +77,7 @@ public class FuncGenerateImpl implements FuncGenerate {
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document, CODE_ENTITY_INDEX_NAME);
         } catch (Exception e) {
-            System.err.println("Error in genMethodFunc: " + e.getMessage());
+            log.error("Error in genMethodFunc: {}", methodEntity.getFullName(), e);
         }
     }
     @Override
@@ -97,8 +93,7 @@ public class FuncGenerateImpl implements FuncGenerate {
             esService.indexDocument(document, CODE_ENTITY_INDEX_NAME);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("genWorkflowFunc error, " + workflowEntity.getName());
+            log.error("genWorkflowFunc error, {}", workflowEntity.getName(), e);
         }
     }
 
@@ -141,8 +136,7 @@ public class FuncGenerateImpl implements FuncGenerate {
             Document document = FormatUtil.entityToDocument(entity);
             esService.indexDocument(document, CODE_ENTITY_INDEX_NAME);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("generate PageFunctionality error, " + pageEntity.getFullName());
+            log.error("generate PageFunctionality error, {}", pageEntity.getFullName(), e);
         }
     }
 
@@ -152,7 +146,8 @@ public class FuncGenerateImpl implements FuncGenerate {
     private void scanComponentProperty(Node node, Set<String> keywords) {
         try {
             // current component entity contained config item
-            String formattedId = String.format("%d", node.id());
+            Object idObj = node.asMap().get("id");
+            String formattedId = idObj != null ? String.valueOf(((Number) idObj).longValue()) : "-1";
             String nodeCypher = MessageFormat.format("""
                 MATCH (p:Component)-[:CONTAIN]->(c:ConfigItem)
                 where id(p)={0}
@@ -176,8 +171,7 @@ public class FuncGenerateImpl implements FuncGenerate {
                 scanComponentProperty(n, keywords);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("scanConfigItemProperty error, " + node.asMap().get("fullName"));
+            log.error("scanConfigItemProperty error, {}", node.asMap().get("fullName"), e);
         }
     }
 

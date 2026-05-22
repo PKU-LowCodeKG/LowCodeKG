@@ -32,44 +32,69 @@ public class TaskMatchingImpl implements TaskMatching {
     public Result<Void> rerankResource(Task task) {
         try {
             List<Node> nodeList = templateRetrieve.queryBySubTask(task).getData();
-            if (debugConfig.isDebugMode()) {
-                log.debug("子任务名称：{}:{}", task.getName(), task.getDescription());
-                log.debug("子任务检索结果个数: {}", nodeList.size());
-                log.debug("子任务检索资源:");
-                for (Node node : nodeList) {
-                    log.debug("{}", node);
-                }
-            }
+            selectAndAssign(task, nodeList);
+            return Result.build(null, ResultCodeEnum.SUCCESS);
+        } catch (Exception e) {
+            log.error("Error occurred while reranking resources", e);
+            throw new RuntimeException("Error occurred while reranking resources: " + e.getMessage());
+        }
+    }
 
-            int limit = MAX_RESOURCE_RECOMMEND_NUM;
-            List<Node> selectedNodes = nodeList.size() > limit
-                    ? nodeList.subList(0, limit)
-                    : nodeList;
+    @Override
+    public Result<Void> rerankResources(List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            return Result.build(null, ResultCodeEnum.SUCCESS);
+        }
 
-            task.setResourceList(selectedNodes);
+        try {
+            // 批量嵌入 + 并行 ES 检索
+            Map<Task, List<Node>> resultMap = templateRetrieve.queryBySubTasks(tasks).getData();
 
-            if (selectedNodes.isEmpty()) {
-                log.info("[{}] 无匹配资源（低于阈值），跳过", task.getName());
-            } else {
-                log.info("[{}] 匹配 {} 个资源:", task.getName(), selectedNodes.size());
-                for (Node node : selectedNodes) {
-                    log.info("  - {} ({})", node.getName(), node.getLabel());
-                }
-            }
-
-            if (debugConfig.isDebugMode()) {
-                log.debug("筛选后的资源个数: {}", selectedNodes.size());
-                log.debug("筛选后的资源:");
-                for (Node node : selectedNodes) {
-                    log.debug("{}", node);
-                }
+            for (Task task : tasks) {
+                List<Node> nodeList = resultMap.getOrDefault(task, Collections.emptyList());
+                selectAndAssign(task, nodeList);
             }
 
             return Result.build(null, ResultCodeEnum.SUCCESS);
 
         } catch (Exception e) {
-            log.error("Error occurred while reranking resources", e);
-            throw new RuntimeException("Error occurred while reranking resources: " + e.getMessage());
+            log.error("Error occurred while batch reranking resources", e);
+            throw new RuntimeException("Error occurred while batch reranking resources: " + e.getMessage());
+        }
+    }
+
+    private void selectAndAssign(Task task, List<Node> nodeList) {
+        if (debugConfig.isDebugMode()) {
+            log.debug("子任务名称：{}:{}", task.getName(), task.getDescription());
+            log.debug("子任务检索结果个数: {}", nodeList.size());
+            log.debug("子任务检索资源:");
+            for (Node node : nodeList) {
+                log.debug("{}", node);
+            }
+        }
+
+        int limit = MAX_RESOURCE_RECOMMEND_NUM;
+        List<Node> selectedNodes = nodeList.size() > limit
+                ? nodeList.subList(0, limit)
+                : nodeList;
+
+        task.setResourceList(selectedNodes);
+
+        if (selectedNodes.isEmpty()) {
+            log.info("[{}] 无匹配资源（低于阈值），跳过", task.getName());
+        } else {
+            log.info("[{}] 匹配 {} 个资源:", task.getName(), selectedNodes.size());
+            for (Node node : selectedNodes) {
+                log.info("  - {} ({})", node.getName(), node.getLabel());
+            }
+        }
+
+        if (debugConfig.isDebugMode()) {
+            log.debug("筛选后的资源个数: {}", selectedNodes.size());
+            log.debug("筛选后的资源:");
+            for (Node node : selectedNodes) {
+                log.debug("{}", node);
+            }
         }
     }
 

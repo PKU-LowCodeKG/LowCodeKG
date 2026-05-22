@@ -13,7 +13,8 @@ import org.example.lowcodekg.query.utils.FormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static org.example.lowcodekg.query.utils.Constants.*;
@@ -69,6 +70,56 @@ public class TemplateRetrieveImpl implements TemplateRetrieve {
 
         } catch (Exception e) {
             log.error("Error in queryEntitiesBySubTask", e);
+            return Result.build(null, ResultCodeEnum.FAIL);
+        }
+    }
+
+    @Override
+    public Result<Map<Task, List<Node>>> queryBySubTasks(List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            return Result.build(Collections.emptyMap(), ResultCodeEnum.SUCCESS);
+        }
+
+        try {
+            // 批量嵌入：所有子任务文本一次编码
+            List<String> taskTexts = tasks.stream()
+                    .map(t -> t.getName() + " " + t.getDescription())
+                    .collect(Collectors.toList());
+            List<List<Float>> allVectors = EmbeddingUtil.embedTexts(taskTexts);
+
+            // 并行 ES 查询
+            List<CompletableFuture<AbstractMap.SimpleEntry<Task, List<Node>>>> futures = new ArrayList<>();
+            for (int i = 0; i < tasks.size(); i++) {
+                final Task task = tasks.get(i);
+                final String taskText = taskTexts.get(i);
+                final float[] vector = FormatUtil.ListToArray(allVectors.get(i));
+
+                futures.add(CompletableFuture.supplyAsync(() -> {
+                    try {
+                        List<Document> docs = esService.hybridSearch(
+                                taskText, vector, MAX_CODE_ENTITY_NUM, MIN_SCORE, 0.0, CODE_ENTITY_INDEX_NAME);
+                        List<Node> nodes = docs.stream()
+                                .map(this::convertToNeo4jNode)
+                                .collect(Collectors.toList());
+                        return new AbstractMap.SimpleEntry<>(task, nodes);
+                    } catch (Exception e) {
+                        log.error("Error searching for subtask: {}", task.getName(), e);
+                        return new AbstractMap.SimpleEntry<>(task, Collections.emptyList());
+                    }
+                }));
+            }
+
+            // 等待全部完成并收集结果
+            Map<Task, List<Node>> resultMap = futures.stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toMap(
+                            AbstractMap.SimpleEntry::getKey,
+                            AbstractMap.SimpleEntry::getValue));
+
+            return Result.build(resultMap, ResultCodeEnum.SUCCESS);
+
+        } catch (Exception e) {
+            log.error("Error in batch queryBySubTasks", e);
             return Result.build(null, ResultCodeEnum.FAIL);
         }
     }

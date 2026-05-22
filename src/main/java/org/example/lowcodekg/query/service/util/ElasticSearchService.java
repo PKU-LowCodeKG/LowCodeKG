@@ -4,7 +4,6 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.indices.IndexState;
-import co.elastic.clients.json.JsonData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -187,24 +187,22 @@ public class ElasticSearchService {
     }
 
     /**
-     * 基于向量搜索文档
+     * 基于向量搜索文档（使用原生 k-NN，利用 HNSW 索引）
      * @param queryVector 查询向量
      * @param maxResults 最大返回结果数，默认为10
-     * @param minScore 最小相似度阈值，默认为0
+     * @param minScore 最小相似度阈值（cosine 相似度范围 [0,1]）
      * @return 匹配的文档列表
      */
     public List<Document> searchByVector(float[] queryVector, int maxResults, double minScore, String indexName)
             throws IOException {
+        List<Float> vectorList = toFloatList(queryVector);
         SearchResponse<Document> response = client.search(s -> s
                         .index(indexName)
-                        .query(q -> q
-                                .scriptScore(ss -> ss
-                                        .query(qq -> qq.matchAll(m -> m))
-                                        .script(script -> script
-                                                .source("cosineSimilarity(params.queryVector, 'embedding') + 1.0")
-                                                .params("queryVector", JsonData.of(queryVector))
-                                        )
-                                )
+                        .knn(k -> k
+                                .field("embedding")
+                                .queryVector(vectorList)
+                                .k(maxResults)
+                                .numCandidates(Math.max(maxResults * 3, 100))
                         )
                         .size(maxResults),
                 Document.class
@@ -214,47 +212,63 @@ public class ElasticSearchService {
     }
 
     /**
-     * 混合检索文档
+     * 混合检索文档（使用原生 k-NN 替代 script_score，利用 HNSW 索引加速向量搜索）
      * @param textQuery 文本查询
      * @param vectorQuery 向量查询
      * @param maxResults 最大返回结果数
-     * @param minScore 最小相似度阈值
-     * @param textWeight 文本搜索权重 (0.0-1.0)
+     * @param minScore 最小相似度阈值（cosine 相似度范围 [0,1]）
+     * @param textWeight 文本搜索权重 (0.0-1.0)，0 表示纯向量搜索
      * @param indexName 索引名称
      * @return 匹配的文档列表
      */
-    public List<Document> hybridSearch(String textQuery, float[] vectorQuery, 
+    public List<Document> hybridSearch(String textQuery, float[] vectorQuery,
             int maxResults, double minScore, double textWeight, String indexName) throws IOException {
-        // 确保权重在有效范围内并提前计算，使其成为effectively final
         final float normalizedTextWeight = (float) Math.max(0.0, Math.min(1.0, textWeight));
-        final float normalizedVectorWeight = (float) (1.0 - normalizedTextWeight);
+        final List<Float> vectorList = toFloatList(vectorQuery);
 
-        SearchResponse<Document> response = client.search(s -> s
-                .index(indexName)
-                .query(q -> q
-                        .bool(b -> b
-                                .should(s1 -> s1
-                                        .multiMatch(m -> m
-                                                .fields("name", "content")
-                                                .query(textQuery)
-                                                .boost(normalizedTextWeight)  // 直接使用float类型
-                                        )
-                                )
-                                .should(s2 -> s2
-                                        .scriptScore(ss -> ss
-                                                .query(qq -> qq.matchAll(m -> m))
-                                                .script(script -> script
-                                                        .source("cosineSimilarity(params.queryVector, 'embedding') * params.weight + 1.0")
-                                                        .params("queryVector", JsonData.of(vectorQuery))
-                                                        .params("weight", JsonData.of(normalizedVectorWeight))  // 转换为JsonData
-                                                )
-                                        )
-                                )
-                        )
-                )
-                .size(maxResults),
-                Document.class
-        );
+        SearchResponse<Document> response;
+
+        if (normalizedTextWeight <= 0.01) {
+            // 纯向量搜索：使用原生 k-NN，利用 HNSW 索引，O(log N) 替代 O(N) 遍历
+            response = client.search(s -> s
+                    .index(indexName)
+                    .knn(k -> k
+                            .field("embedding")
+                            .queryVector(vectorList)
+                            .k(maxResults)
+                            .numCandidates(Math.max(maxResults * 3, 100))
+                    )
+                    .size(maxResults),
+                    Document.class
+            );
+        } else {
+            // 混合搜索：k-NN + BM25
+            final float normalizedVectorWeight = 1.0f - normalizedTextWeight;
+            response = client.search(s -> s
+                    .index(indexName)
+                    .query(q -> q
+                            .bool(b -> b
+                                    .should(s1 -> s1
+                                            .knn(k -> k
+                                                    .field("embedding")
+                                                    .queryVector(vectorList)
+                                                    .numCandidates(Math.max(maxResults * 3, 100))
+                                                    .boost(normalizedVectorWeight)
+                                            )
+                                    )
+                                    .should(s2 -> s2
+                                            .multiMatch(m -> m
+                                                    .fields("name", "content")
+                                                    .query(textQuery)
+                                                    .boost(normalizedTextWeight)
+                                            )
+                                    )
+                            )
+                    )
+                    .size(maxResults),
+                    Document.class
+            );
+        }
 
         return extractHits(response, minScore);
     }
@@ -270,5 +284,13 @@ public class ElasticSearchService {
                 .filter(hit -> hit.score() >= minScore)
                 .map(Hit::source)
                 .collect(Collectors.toList());
+    }
+
+    private static List<Float> toFloatList(float[] array) {
+        List<Float> list = new ArrayList<>(array.length);
+        for (float v : array) {
+            list.add(v);
+        }
+        return list;
     }
 }

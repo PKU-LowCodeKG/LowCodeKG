@@ -36,9 +36,7 @@ public class MainServiceImpl implements MainService {
         try {
             for(String query: queryList) {
                 TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
-                for(Task task : taskGraph.getTasks().values()) {
-                    taskMatching.rerankResource(task);
-                }
+                taskMatching.rerankResources(new ArrayList<>(taskGraph.getTasks().values()));
                 Map<Task, Set<Node>> resourceList = taskMerge.mergeTask(taskGraph, query).getData();
                 saveResult(query, resourceList, savePath);
             }
@@ -57,11 +55,9 @@ public class MainServiceImpl implements MainService {
             // 阶段一：检索增强的需求分解
             TaskGraph taskGraph = taskSplit.taskSplit(query).getData();
 
-            // 阶段二：基于IR的需求-资源匹配并重排序
+            // 阶段二：批量嵌入 + 并行 ES 资源检索
             log.info("==== 阶段二：资源匹配 ====");
-            for(Task task : taskGraph.getTasks().values()) {
-                taskMatching.rerankResource(task);
-            }
+            taskMatching.rerankResources(new ArrayList<>(taskGraph.getTasks().values()));
 
             // 任务合并
             resourceList = taskMerge.mergeTask(taskGraph, query).getData();

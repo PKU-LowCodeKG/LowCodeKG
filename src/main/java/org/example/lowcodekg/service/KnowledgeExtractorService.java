@@ -5,6 +5,7 @@ import org.example.lowcodekg.extraction.ExtractorConfig;
 import org.example.lowcodekg.extraction.KnowledgeExtractor;
 import org.example.lowcodekg.model.dao.neo4j.repository.*;
 import org.example.lowcodekg.query.service.util.ElasticSearchService;
+import org.example.lowcodekg.query.service.util.summarize.DescriptionGenerator;
 import org.example.lowcodekg.query.service.util.summarize.FuncGenerate;
 import org.neo4j.driver.QueryRunner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,8 @@ public class KnowledgeExtractorService {
     private ElasticSearchService elasticSearchService;
     @Autowired
     private FuncGenerate funcGenerateService;
+    @Autowired
+    private DescriptionGenerator descriptionGenerator;
 
     public void execute(String yamlStr)
     {
@@ -80,6 +83,9 @@ public class KnowledgeExtractorService {
             elasticSearchService.createDefaultIndex();
         }
         KnowledgeExtractor.execute(configs);
+
+        // 批量生成 LLM 描述
+        descriptionGenerator.generateAll();
     }
 
     private void initExtractorBean() {
